@@ -1,0 +1,8 @@
+a = 1;
+b = 6;
+c = 0;
+while (b > a) {
+	a = a + 1;
+	if (c < 2) c = c + 1;
+	else c = c + 2;
+}
