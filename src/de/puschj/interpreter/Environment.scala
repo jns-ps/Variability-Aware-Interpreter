@@ -1,14 +1,12 @@
 package de.puschj.interpreter
 
-class Environment {
-  var memory = scala.collection.mutable.Map[String, Int]()
-  
-  def put(name: String, value: Int) = memory.put(name, value);
-  def get(name: String) : Int = return memory(name)
-  
+import de.fosd.typechef.conditional.ConditionalMap
+
+class Environment extends ConditionalMap[String,Int] {
+
   def print() {
     println("====== Environment =======")
-    memory foreach (println(_))
+    println(toString())
     println("==========================")
   }
 }
