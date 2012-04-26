@@ -1,0 +1,7 @@
+begin
+a = 2;
+b = 4;
+if (a <= b) {
+  a = a + b;
+}
+end

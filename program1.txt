@@ -1,0 +1,10 @@
+begin
+a = 0;
+b = 0;
+//#ifdef X
+b = 6;
+//#endif
+a = a + 1;
+b = b + 1;
+assert(b == a);
+end

@@ -1,0 +1,8 @@
+begin
+a = 0;
+b = 5;
+if(a > b) {
+  a = a + 1;
+}
+assert(b == a)
+end
