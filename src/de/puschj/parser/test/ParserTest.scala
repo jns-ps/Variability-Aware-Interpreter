@@ -37,4 +37,12 @@ class ParserTest {
       source.close()
       parser.runTest(input)
   }
+  
+  @Test
+  def ifdefTest() {
+      val source = scala.io.Source.fromFile("program_ifdef.txt")
+      val input = source.mkString
+      source.close()
+      parser.runTest(input)
+  }
 }
