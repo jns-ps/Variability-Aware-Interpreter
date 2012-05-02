@@ -12,7 +12,10 @@ abstract class ASTNode {
 }
 
 case class Program(stmts: List[Opt[Statement]]) {
-  //def run(env: Environment) = stmts foreach (StatementExecutor.execute(_, env))
+  def run(env: Environment): Environment = {
+    stmts foreach (StatementExecutor.execute(_, env))
+    return env
+  }
   def print() = println(stmts)
 }
 
@@ -23,7 +26,8 @@ case class While(cond: Condition, stmt: Statement) extends Statement
 case class If(cond: Condition, s1: Statement, s2: Option[Statement]) extends Statement
 case class Assert(cond: Condition) extends Statement
 
-sealed abstract class Expression extends Statement
+
+sealed abstract class Expression extends ASTNode
 case class Num(n: Int) extends Expression
 case class Add(e1: Expression, e2: Expression) extends Expression
 case class Sub(e1: Expression, e2: Expression) extends Expression

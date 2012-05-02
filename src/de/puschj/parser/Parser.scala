@@ -91,13 +91,15 @@ class WhileParser extends MultiFeatureParser() {
       case "/" => Div(l, r._2)
     }
 
-    def runTest(code:String) = {
+    def runTest(code:String): Program = {
       val parser = new WhileParser()
       val y = parser.start(JavaLexer.lex(code), FeatureExprFactory.True)
       y match{
-        case parser.Success(v,_) =>
+        case parser.Success(v,_) => {
             val p = new Program(v)
             println(p)
+            return p
+        }
         case e: parser.NoSuccess =>
             throw new IllegalArgumentException("Bad syntax: "+code)
       }
