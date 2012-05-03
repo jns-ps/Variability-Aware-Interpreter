@@ -36,6 +36,9 @@ object StatementExecutor {
             execute(s2.get, x.not(), env)
         }
       }
+      case Assert(cnd) => 
+        if (!ConditionalLib.equals(ConditionEvaluator.eval(cnd,env), One(true)))
+           throw new AssertionError("violation of "+cnd)
     }
     return env;
   }
