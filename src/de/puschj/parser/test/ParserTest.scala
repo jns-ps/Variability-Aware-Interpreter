@@ -19,7 +19,7 @@ class ParserTest {
       val source = scala.io.Source.fromFile("program_while.txt")
       val input = source.mkString
       source.close()
-      parser.runTest(input)
+      parser.parse(input)
   }
   
   @Test
@@ -27,7 +27,7 @@ class ParserTest {
       val source = scala.io.Source.fromFile("program_if.txt")
       val input = source.mkString
       source.close()
-      parser.runTest(input)
+      parser.parse(input)
   }
     
   @Test
@@ -35,14 +35,14 @@ class ParserTest {
       val source = scala.io.Source.fromFile("program_expression.txt")
       val input = source.mkString
       source.close()
-      parser.runTest(input)
+      parser.parse(input)
   }
   
   @Test
-  def ifdefTest() {
-      val source = scala.io.Source.fromFile("program_ifdef.txt")
+  def assignmentsTest() {
+      val source = scala.io.Source.fromFile("program_assignments.txt")
       val input = source.mkString
       source.close()
-      parser.runTest(input)
+      parser.parse(input)
   }
 }

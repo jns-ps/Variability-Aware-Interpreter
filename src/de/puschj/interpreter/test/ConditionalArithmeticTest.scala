@@ -30,19 +30,21 @@ class ConditionalArithmeticTest {
 
     assertTrue("addition failure", ConditionalLib.equals(
         Choice(fX, Choice(fY, One(4), One(5)), Choice(fY, One(5), One(6))), 
-        ExpressionEvaluator.calc(x,y,f)))
+        ConditionalLib.mapCombination(x,y,f)))
     assertTrue("commutativity failure", ConditionalLib.equals(
-        ExpressionEvaluator.calc(x,y,f), 
-        ExpressionEvaluator.calc(y,x,f)))
+        ConditionalLib.mapCombination(x,y,f), 
+        ConditionalLib.mapCombination(y,x,f)))
   }
   
   @Test
   def testComparison() {
-    
     val x: Conditional[Int] = Choice(fX, One(1), One(3))
     val y: Conditional[Int] = Choice(fY, One(2), One(4))
     
-    val res =  ConditionEvaluator.compare(x, y, (a,b) => a < b)
-    println(res)
+    val res =  ConditionalLib.mapCombination(x, y, (a: Int, b: Int) => a < b)
+    
+    assertTrue("comparison failure", ConditionalLib.equals(
+        Choice(fX, One(true), Choice(fY, One(false), One(true))),
+        res))
   }
 }

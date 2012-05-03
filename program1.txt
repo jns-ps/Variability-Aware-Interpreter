@@ -1,10 +1,16 @@
 begin
-a = 0;
-b = 0;
-//#ifdef X
-b = 6;
+c = 0;
+//#ifdef A
+c = 1;
 //#endif
-a = a + 1;
-b = b + 1;
-assert(b == a);
+if(c == 1) {
+  //#ifdef B
+  x = 1;
+  //#endif
+  //#ifndef B
+  x = 3;
+  //#endif
+} else {
+  x = 2;
+}
 end

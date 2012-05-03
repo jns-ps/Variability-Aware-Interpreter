@@ -1,7 +1,16 @@
 begin
-a = 2;
-b = 4;
-if (a <= b) {
-  a = a + b;
+c = 0;
+//#ifdef A
+c = 1;
+//#endif
+if(c == 1) {
+  //#ifdef B
+  x = 1;
+  //#endif
+  //#ifndef B
+  x = 3;
+  //#endif
+} else {
+  x = 2;
 }
 end

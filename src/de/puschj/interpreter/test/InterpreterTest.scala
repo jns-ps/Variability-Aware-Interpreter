@@ -17,6 +17,7 @@ import de.puschj.interpreter.Program
 
 class InterpreterTest {
   
+  var NL: String = "\n"
   var env: Environment = null
   val parser: WhileParser = new WhileParser()
   
@@ -24,42 +25,36 @@ class InterpreterTest {
   def setUp() = {
      env = new Environment()
   }
-  
-  @Test
-  def testSimpleProg() {
-    val code: String = 
-    		"begin\n" +
-    		"a = 1;\n" +
-    		"b = 1;\n" +
-    		"//#ifdef X\n" +
-    		"b = 3;\n" +
-    		"//#endif\n" +
-    		"a = a + b;\n" +
-    		"end\n"
     
-    val program: Program = parser.runTest(code)
+  @Test
+  def testAssignments() {
+    val source = scala.io.Source.fromFile("program_assignments.txt")
+    val input = source.mkString
+    source.close()
+    val program: Program = parser.parse(input)
     println(program.run(env).print())
     // TODO: add proper assertions
   }
   
   @Test
-  def testInnerIfdef() {
-    val code: String = 
-    		"begin\n" +
-    		"a = 1;\n" +
-    		"b = 1;\n" +
-    		"//#ifdef X\n" +
-    		"b = 3;\n" +
-    		"//#ifdef Y\n" +
-    		"a = 3;" +
-    		"//#endif\n" +
-    		"//#endif\n" +
-    		"a = a + b;\n" +
-    		"end\n"
-    
-    val program: Program = parser.runTest(code)
+  def testIf() {
+    val source = scala.io.Source.fromFile("program_if.txt")
+    val input = source.mkString
+    source.close()
+    val program: Program = parser.parse(input)
     println(program.run(env).print())
     // TODO: add proper assertions
+  }
+
+  @Test
+  def testWhile() {
+    val source = scala.io.Source.fromFile("program_while.txt")
+    val input = source.mkString
+    source.close()
+    val program: Program = parser.parse(input)
+    println(program.run(env).print())
+    // TODO: add proper assertions
+
   }
   
 }

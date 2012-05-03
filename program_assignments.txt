@@ -1,0 +1,16 @@
+begin
+//#ifdef A
+a = 1;
+//#endif
+//#ifndef A
+a = 2;
+//#endif 
+b = 0;
+c = 0;
+//#ifdef X
+c = 1;
+//#ifdef Y
+c = 2;
+//#endif
+//#endif
+end
