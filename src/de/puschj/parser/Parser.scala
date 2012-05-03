@@ -40,7 +40,7 @@ class WhileParser extends MultiFeatureParser() {
       case c~s => While(c,s) 
     }
     lazy val ifStatement : MultiParser[Statement] = textToken("if") ~> (textToken("(") ~> condition <~ textToken(")")) ~ statement ~ ((textToken("else") ~> statement)?) ^^ {
-      case c~s1~s2 => If(c,s1,s2)
+      case c~thn~els => If(c,thn,els)
     } 
     lazy val assertStatement : MultiParser[Statement] = textToken("assert") ~> textToken("(") ~> condition  <~ textToken(")") <~ textToken(";") ^^ {
       c => Assert(c)
@@ -91,7 +91,7 @@ class WhileParser extends MultiFeatureParser() {
       case "/" => Div(l, r._2)
     }
 
-    def runTest(code:String): Program = {
+    def parse(code:String): Program = {
       val parser = new WhileParser()
       val y = parser.start(JavaLexer.lex(code), FeatureExprFactory.True)
       y match{

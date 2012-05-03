@@ -4,6 +4,7 @@ import scala.collection.mutable.Map
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Conditional
 import scala.collection.mutable.HashMap
+import de.fosd.typechef.conditional.One
 
 class Environment {
   
@@ -22,7 +23,8 @@ class Environment {
   @throws(classOf[NoSuchElementException])
   def get(key: String): Conditional[Int] = {
     if (!entries.contains(key))
-      throw new NoSuchElementException("no value stored for "+key)
+      //throw new NoSuchElementException("no value stored for "+key)
+      return One(0)
     return entries.get(key).get
   }
 }

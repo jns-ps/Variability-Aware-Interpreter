@@ -1,75 +1,77 @@
 package de.puschj.interpreter
 import de.fosd.typechef.conditional._
 import de.fosd.typechef.featureexpr.FeatureExpr
-import de.fosd.typechef.featureexpr.FeatureExprFactory.True
-
-
+import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
 object StatementExecutor {
-  def execute(s: Opt[Statement], env: Environment) : Environment = {
-    val feature: FeatureExpr = s.feature
-    if (feature.isContradiction()) return env
-    
-    s.entry match {
-      case Assignment(key ,exp) => {
-        if (feature.isTautology()) 
+  def execute(s: Statement, fe: FeatureExpr, env: Environment): Environment = {
+    if (fe.isContradiction()) return env
+
+    s match {
+      case Assignment(key, exp) => {
+        if (fe.isTautology())
           env.put(key, ExpressionEvaluator.eval(exp, env))
         else
-          env.put(key, Choice(feature, ExpressionEvaluator.eval(exp, env), env.get(key)))
-        
-        env.print()
+          env.put(key, Choice(fe, ExpressionEvaluator.eval(exp, env), env.get(key)).simplify)
+
+//        env.print()
       }
-      case Block(stmts) => stmts.foreach(execute(_,env))
-//      case While(c, s) => while (ConditionEvaluator.eval(c, env)) execute(s, env)
-//      case If(c, s1, s2) => if (ConditionEvaluator.eval(c, env)) execute(s1, env) else if (s2.isDefined) execute(s2.get, env)
-    
+      case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and fe, env)
+      case While(c, s) => {
+        var isSat: Boolean = true
+        while(isSat) {
+            val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
+            isSat = x.isSatisfiable()
+            if (isSat) {
+              execute(s, x, env)
+            }
+        }
+      }
+      case If(c, s1, s2) => {
+        val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
+        if (x.isSatisfiable()) {
+          execute(s1, x, env)
+          if (s2.isDefined)
+            execute(s2.get, x.not(), env)
+        }
+      }
     }
     return env;
   }
 }
 
-
 object ExpressionEvaluator {
-  def eval(exp: Expression, env: Environment) : Conditional[Int] = 
+  def eval(exp: Expression, env: Environment): Conditional[Int] =
     exp match {
-          case Num(n) => One(n)
-		  case Id(x) => env.get(x)
-		  case Add(e1,e2) => calc(eval(e1,env), eval(e2,env), (a, b) => a + b)
-		  case Sub(e1,e2) => calc(eval(e1,env), eval(e2,env), (a, b) => a - b)
-		  case Mul(e1,e2) => calc(eval(e1,env), eval(e2,env), (a, b) => a * b)
-		  case Div(e1,e2) => calc(eval(e1,env), eval(e2,env), (a, b) => a / b)
-		  case Parens(e) => eval(e, env)
+      case Num(n) => One(n)
+      case Id(x) => env.get(x)
+      case Add(e1, e2) => ConditionalLib.mapCombination(eval(e1, env), eval(e2, env), (a: Int, b: Int) => a + b)
+      case Sub(e1, e2) => ConditionalLib.mapCombination(eval(e1, env), eval(e2, env), (a: Int, b: Int) => a - b)
+      case Mul(e1, e2) => ConditionalLib.mapCombination(eval(e1, env), eval(e2, env), (a: Int, b: Int) => a * b)
+      case Div(e1, e2) => ConditionalLib.mapCombination(eval(e1, env), eval(e2, env), (a: Int, b: Int) => a / b)
+      case Parens(e) => eval(e, env)
     }
-  
-  
-  def calc(a: Conditional[Int], b: Conditional[Int], f: (Int, Int) => Int): Conditional[Int] = {
-	a match {
-	  case One(x) => b.map( n => f(x,n) )
-	  case Choice(feature, thn, els) => {
-	    Choice(feature, calc(thn, b, f), calc(els, b, f)).simplify
-	  }
-	}
-  }
 }
 
-
 object ConditionEvaluator {
-  def eval(cnd: Condition, env: Environment) : Conditional[Boolean] = 
+  def eval(cnd: Condition, env: Environment): Conditional[Boolean] =
     cnd match {
-	  case Neg(c) => eval(c,env).map( b => !b )
-	  case Equal(e1,e2) => compare(ExpressionEvaluator.eval(e1,env), ExpressionEvaluator.eval(e2,env), (a, b) => a == b)
-	  case GreaterThan(e1,e2) => compare(ExpressionEvaluator.eval(e1,env), ExpressionEvaluator.eval(e2,env), (a, b) => a > b)
-	  case LessThan(e1,e2) => compare(ExpressionEvaluator.eval(e1,env), ExpressionEvaluator.eval(e2,env), (a, b) => a < b)
-	  case GreaterOrEqualThan(e1,e2) => compare(ExpressionEvaluator.eval(e1,env), ExpressionEvaluator.eval(e2,env), (a, b) => a >= b)
-	  case LessOrEqualThan(e1,e2) => compare(ExpressionEvaluator.eval(e1,env), ExpressionEvaluator.eval(e2,env), (a, b) => a <= b)
-  }
-  
-  def compare(a: Conditional[Int], b: Conditional[Int], f: (Int, Int) => Boolean): Conditional[Boolean] = {
-    a match {
-      case One(x) => b.map( n => f(x,n) )
-      case Choice(feature, thn, els) => {
-        Choice(feature, compare(thn, b, f), compare(els, b, f)).simplify
-      }
+      case Neg(c) => eval(c, env).map(b => !b)
+      case Equal(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a == b)
+      case GreaterThan(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a > b)
+      case LessThan(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a < b)
+      case GreaterOrEqualThan(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a >= b)
+      case LessOrEqualThan(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a <= b)
+    }
+
+  def whenTrue(c: Condition, env: Environment): FeatureExpr = whenTrueRek(True, eval(c, env))
+
+  private def whenTrueRek(fe: FeatureExpr, c: Conditional[Boolean]): FeatureExpr = {
+    c match {
+      case One(x) => if (x) fe else False
+      case Choice(feature, thn, els) =>
+        whenTrueRek(feature and fe, thn) or whenTrueRek(feature.not() and fe, els)
     }
   }
 }

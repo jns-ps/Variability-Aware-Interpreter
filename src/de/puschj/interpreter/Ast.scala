@@ -13,7 +13,7 @@ abstract class ASTNode {
 
 case class Program(stmts: List[Opt[Statement]]) {
   def run(env: Environment): Environment = {
-    stmts foreach (StatementExecutor.execute(_, env))
+    for(stm <- stmts) StatementExecutor.execute(stm.entry, stm.feature, env)
     return env
   }
   def print() = println(stmts)
