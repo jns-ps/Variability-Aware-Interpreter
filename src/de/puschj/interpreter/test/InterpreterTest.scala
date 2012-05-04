@@ -86,7 +86,7 @@ class InterpreterTest {
   @Test
   def testAssertions() {
     val program: Program = parser.parseFile("program_assertions.txt")
-    program.run(env).print()
+    program.run(env).print("Assertions")
     
     // no exception thrown = test successful
     assertTrue(true)
