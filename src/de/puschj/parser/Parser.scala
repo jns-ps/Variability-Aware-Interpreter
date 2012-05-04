@@ -104,4 +104,11 @@ class WhileParser extends MultiFeatureParser() {
             throw new IllegalArgumentException("Bad syntax: "+code)
       }
     }
+    
+    def parseFile(filename: String): Program = {
+      val source = scala.io.Source.fromFile(filename)
+      val input = source.mkString
+      source.close()
+      return parse(input)
+    }
 }
