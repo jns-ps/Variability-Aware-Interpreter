@@ -1,0 +1,15 @@
+begin
+a = 0;
+b = 1;
+assert(a < 5);
+//#ifdef X
+a = 5;
+assert(a >= 5);
+assert(b == 1);
+//#endif
+b = 10;
+while(a < b) {
+  a = a + 1;
+}
+assert(a == 10);
+end

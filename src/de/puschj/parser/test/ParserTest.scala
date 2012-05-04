@@ -45,4 +45,12 @@ class ParserTest {
       source.close()
       parser.parse(input)
   }
+  
+  @Test
+  def assertionsTest() {
+      val source = scala.io.Source.fromFile("program_assertions.txt")
+      val input = source.mkString
+      source.close()
+      parser.parse(input)
+  }
 }

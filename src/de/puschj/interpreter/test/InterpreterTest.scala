@@ -57,4 +57,14 @@ class InterpreterTest {
 
   }
   
+  @Test
+  def testAssertions() {
+    val source = scala.io.Source.fromFile("program_assertions.txt")
+    val input = source.mkString
+    source.close()
+    val program: Program = parser.parse(input)
+    println(program.run(env).print())
+    // TODO: add proper assertions
+
+  }
 }
