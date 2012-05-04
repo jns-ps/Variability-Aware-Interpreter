@@ -39,11 +39,23 @@ object StatementExecutor {
       case Assert(cnd) => {
         val whenTrue: FeatureExpr = ConditionEvaluator.whenTrue(cnd, env)
         val equivWithCurrent: Boolean = whenTrue.equivalentTo(fe)
-        if ( !(whenTrue.isTautology() || equivWithCurrent) )
-          throw new AssertionError("violation of "+cnd)     
+
+        if ( !(whenTrue.isTautology() || equivWithCurrent) ) {
+          throw new AssertionError("violation of " + cnd +
+                                   "\nexpected to be true when: " + renameFeatureExpectation(fe) +
+                                   "\nactually was true when: " + renameFeatureExpectation(whenTrue))
+        } 
       }
     }
     return env;
+  }
+  
+  def renameFeatureExpectation(fe: FeatureExpr): String = {
+    if (fe.equivalentTo(FeatureExprFactory.True))
+      return "ever"
+    if (fe.equivalentTo(FeatureExprFactory.False))
+      return "never"
+    return fe.toString()
   }
 }
 
