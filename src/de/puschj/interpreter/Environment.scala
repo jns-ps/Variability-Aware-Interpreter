@@ -10,10 +10,14 @@ class Environment {
   
   val entries: Map[String,Conditional[Int]] = new HashMap[String,Conditional[Int]]()
 
-  def print() {
-    println("====== Environment =======")
+  def print(headline: String = "") {
+    val s: String = if (headline.isEmpty()) "Environment" else headline
+    println("====== "+s+" =======")
     println(entries.toString())
-    println("==========================")
+    val sb: StringBuilder = new StringBuilder()
+    for (i <- 1 to s.length()) sb.append("=")
+    println("======="+sb.toString()+"========")
+    println()
   }
   
   def put(key: String, value: Conditional[Int]): Unit = {
