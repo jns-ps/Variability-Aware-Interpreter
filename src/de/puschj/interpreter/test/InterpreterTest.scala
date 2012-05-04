@@ -28,43 +28,67 @@ class InterpreterTest {
     
   @Test
   def testAssignments() {
-    val source = scala.io.Source.fromFile("program_assignments.txt")
-    val input = source.mkString
-    source.close()
-    val program: Program = parser.parse(input)
-    println(program.run(env).print())
-    // TODO: add proper assertions
+    val program: Program = parser.parseFile("program_assignments.txt")
+    program.run(env).print("Assignments")
+    
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
+    val fY: FeatureExpr = FeatureExprFactory.createDefinedExternal("Y")
+    
+    assertTrue("assigning 'a' failed", ConditionalLib.equals(Choice(fA, One(1), One(2)), env.get("a")))
+    assertEquals("assigning 'b' failed", One(0), env.get("b"))
+    assertTrue("assigning 'c' failed", ConditionalLib.equals(
+        Choice(fX, Choice(fY, One(2), One(1)), One(0)), 
+        env.get("c") ))
+  }
+  
+  @Test
+  def testExpressions() {
+    val program: Program = parser.parseFile("program_expression.txt")
+    program.run(env).print("Expressions")
+    
+    assertEquals("calculating 'x' failed", One(2), env.get("x"))
+    assertEquals("calculating 'y' failed", One(6), env.get("y"))
+    assertEquals("calculating 'z' failed", One(7), env.get("z"))
   }
   
   @Test
   def testIf() {
-    val source = scala.io.Source.fromFile("program_if.txt")
-    val input = source.mkString
-    source.close()
-    val program: Program = parser.parse(input)
-    println(program.run(env).print())
-    // TODO: add proper assertions
+    val program: Program = parser.parseFile("program_if.txt")
+    program.run(env).print("If")
+    
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+    
+    assertTrue("'c' incorrectly assigned", ConditionalLib.equals(
+        Choice(fA, One(1), One(0)), 
+        env.get("c") ))
+    assertTrue("unexpected value for 'x'", ConditionalLib.equals(
+        Choice(fA.not(), One(2), Choice(fB, One(1), One(3))),
+        env.get("x") ))
   }
 
   @Test
   def testWhile() {
-    val source = scala.io.Source.fromFile("program_while.txt")
-    val input = source.mkString
-    source.close()
-    val program: Program = parser.parse(input)
-    println(program.run(env).print())
-    // TODO: add proper assertions
-
+    val program: Program = parser.parseFile("program_while.txt")
+    program.run(env).print("While")
+    
+    val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
+    
+    assertTrue("unexpected value for 'a'", ConditionalLib.equals(
+        Choice(fX, One(5), One(3)), 
+        env.get("a") ))
+    assertTrue("unexpected value for 'b'", ConditionalLib.equals(
+        Choice(fX, One(4), One(3)), 
+        env.get("b") ))
   }
   
   @Test
   def testAssertions() {
-    val source = scala.io.Source.fromFile("program_assertions.txt")
-    val input = source.mkString
-    source.close()
-    val program: Program = parser.parse(input)
-    println(program.run(env).print())
-    // TODO: add proper assertions
-
+    val program: Program = parser.parseFile("program_assertions.txt")
+    program.run(env).print()
+    
+    // no exception thrown = test successful
+    assertTrue(true)
   }
 }
