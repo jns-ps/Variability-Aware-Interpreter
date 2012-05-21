@@ -12,9 +12,9 @@ abstract class ASTNode {
 }
 
 case class Program(stmts: List[Opt[Statement]]) {
-  def run(env: Store): Store = {
-    for(stm <- stmts) StatementExecutor.execute(stm.entry, stm.feature, env)
-    return env
+  def run(store: Store): Store = {
+    for(stm <- stmts) StatementExecutor.execute(stm.entry, stm.feature, store)
+    return store
   }
   def print() = println(stmts)
 }

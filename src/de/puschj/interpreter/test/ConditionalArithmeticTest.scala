@@ -17,7 +17,7 @@ import de.puschj.interpreter.ConditionEvaluator
 
 class ConditionalArithmeticTest {
   
-  val env: Store = new Store()
+  val store: Store = new Store()
   val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
   val fY: FeatureExpr = FeatureExprFactory.createDefinedExternal("Y")
   

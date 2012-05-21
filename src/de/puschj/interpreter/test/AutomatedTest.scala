@@ -45,11 +45,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
 
   // === Expressions === 
-  val genVarName = oneOf("a", "b", "c", "d", "e")
+  val gstorearName = oneOf("a", "b", "c", "d", "e")
         
   def genAtomicExpression() = {
     val genId = for {
-      name <- genVarName
+      name <- gstorearName
     } yield Id(name)
   
     val genNum = for {
@@ -120,7 +120,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   // === Statements ===
   val genAssignment = for {
-    name <- genVarName
+    name <- gstorearName
     value <- genExpression
   } yield Assignment(name, value)
   
@@ -146,10 +146,10 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     
   property("test") = 
     Prop.forAll( (p: Program) => {
-    val env = new Store()
+    val store = new Store()
     p.print()
 //    try {
-//      p.run(env).print()
+//      p.run(store).print()
 //    } catch {
 //      case e: Exception => e.printStackTrace()
 //    }
