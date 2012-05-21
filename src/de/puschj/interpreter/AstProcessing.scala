@@ -5,44 +5,39 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
 object StatementExecutor {
-  def execute(s: Statement, fe: FeatureExpr, env: Environment): Environment = {
-    if (fe.isContradiction()) return env
+  def execute(s: Statement, context: FeatureExpr, env: Environment): Environment = {
+    if (context.isContradiction()) return env
 
     s match {
       case Assignment(key, exp) => {
-        if (fe.isTautology())
-          env.put(key, ExpressionEvaluator.eval(exp, env))
-        else
-          env.put(key, Choice(fe, ExpressionEvaluator.eval(exp, env), env.get(key)).simplify)
-
-//        env.print()
+          env.put(key, Choice(context, ExpressionEvaluator.eval(exp, env), env.get(key)).simplify)
       }
-      case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and fe, env)
+      case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, env)
       case While(c, s) => {
         var isSat: Boolean = true
         while(isSat) {
             val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
             isSat = x.isSatisfiable()
             if (isSat) {
-              execute(s, x, env)
+              execute(s, context and x, env)
             }
         }
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
         if (x.isSatisfiable()) {
-          execute(s1, x, env)
+          execute(s1, context and x, env)
           if (s2.isDefined)
-            execute(s2.get, x.not(), env)
+            execute(s2.get, context and x.not(), env)
         }
       }
       case Assert(cnd) => {
         val whenTrue: FeatureExpr = ConditionEvaluator.whenTrue(cnd, env)
-        val equivWithCurrent: Boolean = whenTrue.equivalentTo(fe)
+        val equivToContext: Boolean = whenTrue.equivalentTo(context)
 
-        if ( !(whenTrue.isTautology() || equivWithCurrent) ) {
+        if ( !(whenTrue.isTautology() || equivToContext) ) {
           throw new AssertionError("violation of " + cnd +
-                                   "\nexpected to be true when: " + renameFeatureExpectation(fe) +
+                                   "\nexpected to be true when: " + renameFeatureExpectation(context) +
                                    "\nactually was true when: " + renameFeatureExpectation(whenTrue))
         } 
       }
@@ -55,7 +50,7 @@ object StatementExecutor {
       return "ever"
     if (fe.equivalentTo(FeatureExprFactory.False))
       return "never"
-    return fe.toString()
+    fe.toString()
   }
 }
 

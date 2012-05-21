@@ -86,9 +86,37 @@ class InterpreterTest {
   @Test
   def testAssertions() {
     val program: Program = parser.parseFile("program_assertions.txt")
-    program.run(env).print()
+    program.run(env).print("Assertions")
     
     // no exception thrown = test successful
     assertTrue(true)
+  }
+  
+  @Test
+  def testChoiceExplotion() {
+    val program: Program = parser.parseFile("program_choiceExplotion.txt")
+    program.run(env).print("Choice Explotion")
+    
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
+    val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
+    
+//    assertEquals("unexpected value for 'a'", 
+//      Choice(fA.and(fC), One(1), One)
+//    
+//    )
+    
+  }
+  
+  @Test
+  def testMapping() {
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+    
+    var x: Conditional[Int] = One(1).mapfr(fA, (fexpr, a) => Choice(fA.and(fexpr), One(a+10), One(a)))
+//    var x: Conditional[Int] = Choice(fB, One(1), One(2)).mapfr(fA, (fexpr, a) => Choice(fA.and(fexpr), One(a+10), One(a)))
+    
+    println(x.simplify)
   }
 }
