@@ -1,0 +1,14 @@
+begin
+x = 1;
+//#ifdef A
+x = 2;
+//#endif
+//#ifdef B
+while(x > 0) {
+  y = y + 1;
+  x = x - 1;
+}
+//#endif 
+
+
+end

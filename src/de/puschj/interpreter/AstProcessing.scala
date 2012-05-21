@@ -11,13 +11,14 @@ object StatementExecutor {
     s match {
       case Assignment(key, exp) => {
           env.put(key, Choice(context, ExpressionEvaluator.eval(exp, env), env.get(key)).simplify)
+          env.print()
       }
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, env)
       case While(c, s) => {
         var isSat: Boolean = true
         while(isSat) {
             val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
-            isSat = x.isSatisfiable()
+            isSat = (context and x).isSatisfiable()
             if (isSat) {
               execute(s, context and x, env)
             }
@@ -25,7 +26,7 @@ object StatementExecutor {
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = ConditionEvaluator.whenTrue(c, env)
-        if (x.isSatisfiable()) {
+        if ((context and x).isSatisfiable()) {
           execute(s1, context and x, env)
           if (s2.isDefined)
             execute(s2.get, context and x.not(), env)

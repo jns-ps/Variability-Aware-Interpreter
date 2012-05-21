@@ -110,6 +110,14 @@ class InterpreterTest {
   }
   
   @Test
+  def testContextImportance() {
+    val program: Program = parser.parseFile("program_contextImportance.txt")
+    program.run(env).print("Context Importance")
+    
+    
+  }
+  
+  @Test
   def testMapping() {
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
