@@ -5,7 +5,7 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
 object StatementExecutor {
-  def execute(s: Statement, context: FeatureExpr, env: Environment): Environment = {
+  def execute(s: Statement, context: FeatureExpr, env: Store): Store = {
     if (context.isContradiction()) return env
 
     s match {
@@ -56,7 +56,7 @@ object StatementExecutor {
 }
 
 object ExpressionEvaluator {
-  def eval(exp: Expression, env: Environment): Conditional[Int] =
+  def eval(exp: Expression, env: Store): Conditional[Int] =
     exp match {
       case Num(n) => One(n)
       case Id(x) => env.get(x)
@@ -69,7 +69,7 @@ object ExpressionEvaluator {
 }
 
 object ConditionEvaluator {
-  def eval(cnd: Condition, env: Environment): Conditional[Boolean] =
+  def eval(cnd: Condition, env: Store): Conditional[Boolean] =
     cnd match {
       case Neg(c) => eval(c, env).map(b => !b)
       case Equal(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a == b)
@@ -79,7 +79,7 @@ object ConditionEvaluator {
       case LessOrEqualThan(e1, e2) => ConditionalLib.mapCombination(ExpressionEvaluator.eval(e1, env), ExpressionEvaluator.eval(e2, env), (a: Int, b: Int) => a <= b)
     }
 
-  def whenTrue(c: Condition, env: Environment): FeatureExpr = whenTrueRek(True, eval(c, env))
+  def whenTrue(c: Condition, env: Store): FeatureExpr = whenTrueRek(True, eval(c, env))
 
   private def whenTrueRek(fe: FeatureExpr, c: Conditional[Boolean]): FeatureExpr = {
     c match {

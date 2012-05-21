@@ -1,6 +1,6 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.{Environment,Assignment,Statement,Mul,Num}
+import de.puschj.interpreter.{Store,Assignment,Statement,Mul,Num}
 import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
@@ -18,12 +18,12 @@ import de.puschj.interpreter.Program
 class InterpreterTest {
   
   var NL: String = "\n"
-  var env: Environment = null
+  var env: Store = null
   val parser: WhileParser = new WhileParser()
   
   @Before
   def setUp() = {
-     env = new Environment()
+     env = new Store()
   }
     
   @Test

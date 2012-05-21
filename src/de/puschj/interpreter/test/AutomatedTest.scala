@@ -8,8 +8,8 @@ import de.puschj.interpreter._
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Opt
-import de.puschj.interpreter.Environment
-import de.puschj.interpreter.Environment
+import de.puschj.interpreter.Store
+import de.puschj.interpreter.Store
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
   
@@ -146,7 +146,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     
   property("test") = 
     Prop.forAll( (p: Program) => {
-    val env = new Environment()
+    val env = new Store()
     p.print()
 //    try {
 //      p.run(env).print()
