@@ -1,0 +1,15 @@
+begin
+//#ifdef A
+x = 1;
+//#endif
+//#ifdef B
+y = 2;
+//#endif 
+//#ifdef C
+x = 1;
+//#endif
+//#ifdef D
+y = 2;
+//#endif
+z = x + y;
+end

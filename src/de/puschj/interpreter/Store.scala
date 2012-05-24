@@ -14,9 +14,7 @@ class Store {
     val s: String = if (headline.isEmpty()) "Store" else headline
     println("====== "+s+" =======")
     println(entries.toString())
-    val sb: StringBuilder = new StringBuilder()
-    for (i <- 1 to s.length()) sb.append("=")
-    println("======="+sb.toString()+"========")
+    println("======="+ ("=" * s.length()) +"========")
     println()
   }
   

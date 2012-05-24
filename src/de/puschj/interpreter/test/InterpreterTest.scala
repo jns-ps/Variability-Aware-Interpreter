@@ -48,6 +48,7 @@ class InterpreterTest {
     val program: Program = parser.parseFile("program_expression.txt")
     program.run(store).print("Expressions")
     
+
     assertEquals("calculating 'x' failed", One(IntValue(2)), store.get("x"))
     assertEquals("calculating 'y' failed", One(IntValue(6)), store.get("y"))
     assertEquals("calculating 'z' failed", One(IntValue(7)), store.get("z"))

@@ -5,6 +5,7 @@ import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
+
 object Interpreter {
   
   def execute(s: Statement, context: FeatureExpr, store: Store): Store = {
@@ -40,7 +41,6 @@ object Interpreter {
       case Assert(cnd) => {
         val whentrue: FeatureExpr = whenTrue(cnd, store)
         val equivToContext: Boolean = whentrue.equivalentTo(context)
-
         if ( !(whentrue.isTautology() || equivToContext) ) {
           throw new AssertionError("violation of " + cnd +
                                    "\nexpected to be true when: " + renameFeatureExpectation(context) +

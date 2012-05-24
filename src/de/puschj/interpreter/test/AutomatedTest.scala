@@ -9,7 +9,6 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Opt
 import de.puschj.interpreter.Store
-import de.puschj.interpreter.Store
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
   
