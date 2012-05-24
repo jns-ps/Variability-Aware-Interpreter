@@ -6,12 +6,12 @@ import de.fosd.typechef.conditional.Conditional
 import scala.collection.mutable.HashMap
 import de.fosd.typechef.conditional.One
 
-class Environment {
+class Store {
   
   val entries: Map[String,Conditional[Int]] = new HashMap[String,Conditional[Int]]()
 
   def print(headline: String = "") {
-    val s: String = if (headline.isEmpty()) "Environment" else headline
+    val s: String = if (headline.isEmpty()) "Store" else headline
     println("====== "+s+" =======")
     println(entries.toString())
     println("======="+ ("=" * s.length()) +"========")

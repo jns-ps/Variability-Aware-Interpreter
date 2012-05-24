@@ -12,9 +12,9 @@ abstract class ASTNode {
 }
 
 case class Program(stmts: List[Opt[Statement]]) {
-  def run(env: Environment): Environment = {
-    for(stm <- stmts) StatementExecutor.execute(stm.entry, stm.feature, env)
-    return env
+  def run(store: Store): Store = {
+    for(stm <- stmts) StatementExecutor.execute(stm.entry, stm.feature, store)
+    return store
   }
   def print() = println(stmts)
 }
@@ -44,3 +44,4 @@ case class LessThan(e1: Expression, e2: Expression) extends Condition
 case class GreaterOrEqualThan(e1: Expression, e2: Expression) extends Condition
 case class LessOrEqualThan(e1: Expression, e2: Expression) extends Condition
 case class Neg(c: Condition) extends Condition
+

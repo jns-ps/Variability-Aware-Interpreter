@@ -1,8 +1,8 @@
 package de.puschj.parser.test
 
 import de.puschj.parser.WhileParser
-import org.junit.Test
-import org.junit.Before
+import org.junit._
+import Assert._
 
 class ParserTest {
   
@@ -10,27 +10,28 @@ class ParserTest {
 
   
   @Test
-  def testAssignments() {
+  def testParseAssignments() {
       parser.parseFile("program_assignments.txt")
+      assertTrue(true)
   }
 
   @Test
-  def testExpressions() {
+  def testParseExpressions() {
       parser.parseFile("program_expression.txt")
   }
   
   @Test
-  def testIf() {
+  def testParseIf() {
       parser.parseFile("program_if.txt")
   }
     
   @Test
-  def testWhile() {
+  def testParseWhile() {
       parser.parseFile("program_while.txt")
   }
   
   @Test
-  def testAssertions() {
+  def testParseAssertions() {
       parser.parseFile("program_assertions.txt")
   }
 }

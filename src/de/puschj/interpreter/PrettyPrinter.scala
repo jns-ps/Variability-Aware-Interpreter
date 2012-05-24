@@ -1,10 +1,10 @@
 package de.puschj.interpreter
 
 
-class PrettyPrinter extends Visitor {  
+class PrettyPrinter {  
   def toDoc(node: ASTNode): Doc = {
     node match {
-      case Assignment(name, value) => Text("Assignment") ~ block(Text(""))
+      case Assignment(name, value) => Text("Assignment") ~ (Text(""))
     }
   }
   
