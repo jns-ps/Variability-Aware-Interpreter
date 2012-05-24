@@ -8,7 +8,7 @@ import de.fosd.typechef.conditional.One
 
 class Store {
   
-  val entries: Map[String,Conditional[Int]] = new HashMap[String,Conditional[Int]]()
+  val entries: Map[String,Conditional[Value]] = new HashMap[String,Conditional[Value]]()
 
   def print(headline: String = "") {
     val s: String = if (headline.isEmpty()) "Store" else headline
@@ -20,15 +20,13 @@ class Store {
     println()
   }
   
-  def put(key: String, value: Conditional[Int]): Unit = {
+  def put(key: String, value: Conditional[Value]): Unit = {
     entries.put(key, value)
   }
   
-  @throws(classOf[NoSuchElementException])
-  def get(key: String): Conditional[Int] = {
+  def get(key: String): Conditional[Value] = {
     if (!entries.contains(key))
-      //throw new NoSuchElementException("no value stored for "+key)
-      return One(0)
+      return One(UndefinedValue(key+" not yet initialized."))
     return entries.get(key).get
   }
 }

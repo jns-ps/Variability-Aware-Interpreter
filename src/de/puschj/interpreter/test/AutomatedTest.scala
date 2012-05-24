@@ -34,7 +34,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
     if (size <= 0) genAtomicFeatureExpression
-    else Gen.frequency( (1, genAtomicFeatureExpression), (3, genCompoundFeatureExpr(size/2)) )
+    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)) )
   }
   
   def genFeatureExpr() = Gen.sized(size => genFeatureExprSized(size))
@@ -45,11 +45,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
 
   // === Expressions === 
-  val genVarName = oneOf("a", "b", "c", "d", "e")
+  val gstorearName = oneOf("a", "b", "c", "d", "e")
         
   def genAtomicExpression() = {
     val genId = for {
-      name <- genVarName
+      name <- gstorearName
     } yield Id(name)
   
     val genNum = for {
@@ -85,7 +85,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genExpressionSized(size: Int): Gen[Expression] = {
     if (size <= 0) genAtomicExpression
-    else Gen.frequency( (1, genAtomicExpression), (1, genCompoundExpression(size / 2)))
+    else Gen.frequency( (2, genAtomicExpression), (1, genCompoundExpression(size / 2)))
   }
   
   def genExpression = Gen.sized(size => genExpressionSized(size))
@@ -104,7 +104,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
  val genGOE = for {
     left <- lzy(genExpression)
     right <- genExpression
-  } yield GreaterOrEqualThan(left, right)
+  } yield GreaterOE(left, right)
   
  val genLT = for {
     left <- lzy(genExpression)
@@ -114,13 +114,13 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   val genLOE = for {
     left <- lzy(genExpression)
     right <- genExpression
-  } yield LessOrEqualThan(left, right)
+  } yield LessOE(left, right)
   
   def genCondition = oneOf(genEQ, genGT, genGOE, genLT, genLOE)
   
   // === Statements ===
   val genAssignment = for {
-    name <- genVarName
+    name <- gstorearName
     value <- genExpression
   } yield Assignment(name, value)
   
@@ -146,13 +146,13 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     
   property("test") = 
     Prop.forAll( (p: Program) => {
-    val env = new Store()
+    val store = new Store()
     p.print()
-//    try {
-//      p.run(env).print()
-//    } catch {
-//      case e: Exception => e.printStackTrace()
-//    }
+    try {
+      p.run(store).print()
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
     true
   })
 

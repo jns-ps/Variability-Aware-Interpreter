@@ -57,10 +57,10 @@ class WhileParser extends MultiFeatureParser() {
       case e1~_~e2 => LessThan(e1,e2)
     }
     lazy val greaterOrEqual: MultiParser[Condition] = expression ~ textToken(">=") ~ expression ^^ {
-      case e1~_~e2 => GreaterOrEqualThan(e1,e2)
+      case e1~_~e2 => GreaterOE(e1,e2)
     }
     lazy val lessOrEqual: MultiParser[Condition] = expression ~ textToken("<=") ~ expression ^^ {
-      case e1~_~e2 => LessOrEqualThan(e1,e2)
+      case e1~_~e2 => LessOE(e1,e2)
     }
     lazy val negation = textToken("!") ~> condition ^^ {
       case c => Neg(c)

@@ -1,6 +1,6 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.{Store,Assignment,Statement,Mul,Num,GreaterOrEqualThan}
+import de.puschj.interpreter.{Store,Assignment,Statement,Mul,Num}
 import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
@@ -11,13 +11,11 @@ import de.fosd.typechef.conditional.Conditional
 import org.junit._
 import Assert._
 import de.fosd.typechef.conditional.ConditionalLib
-import de.puschj.interpreter.ExpressionEvaluator
-import de.puschj.interpreter.ConditionEvaluator
 
 
 class ConditionalArithmeticTest {
   
-  val env: Store = new Store()
+  val store: Store = new Store()
   val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
   val fY: FeatureExpr = FeatureExprFactory.createDefinedExternal("Y")
   
