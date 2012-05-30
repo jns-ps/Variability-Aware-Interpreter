@@ -74,12 +74,12 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 	    right <- genExpressionSized(size)
 	  } yield Mul(left,right)
 	    
-//	  val genDiv = for {
-//	    left <- lzy(genExpressionSized(size))
-//	    right <- genExpressionSized(size)
-//	  } yield Div(left,right)
+	  val genDiv = for {
+	    left <- lzy(genExpressionSized(size))
+	    right <- genExpressionSized(size)
+	  } yield Div(left,right)
     
-	  Gen.oneOf(genAdd, genSub, genMul) //genDiv
+	  Gen.oneOf(genAdd, genSub, genMul, genDiv) 
   }
   
   def genExpressionSized(size: Int): Gen[Expression] = {

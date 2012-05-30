@@ -25,11 +25,11 @@ object ASTPrettyPrinter {
       case Block(stmts) => {
         if (stmts.isEmpty) Empty
         else {
-        var doc: Doc = stmts(0).entry
-        for (optStmt <- stmts.tail) {
-          doc = doc <~ prettyPrintNode(optStmt.entry)
-        }
-          doc
+	       var doc: Doc = stmts(0).entry
+	       for (optStmt <- stmts.tail) {
+	         doc = doc <~ prettyPrintNode(optStmt.entry) ~~ prettyPrintFeatureExpr(optStmt.feature)
+	       }
+	       doc
         }
       }
       case If(cond, s1, s2) => "if" ~ "(" ~ cond ~ ")" ~> s1 ~ (

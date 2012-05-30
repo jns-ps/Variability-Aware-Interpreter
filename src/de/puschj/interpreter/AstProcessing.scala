@@ -107,7 +107,7 @@ object Interpreter {
     c match {
       case One(value) => {
         value match {
-          case UndefinedValue(_) => False
+          case ErrorValue(_) => False
           case x => if (x.getBoolValue()) fe else False
         }
       }
