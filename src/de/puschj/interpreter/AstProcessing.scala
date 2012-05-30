@@ -20,14 +20,13 @@ object Interpreter {
       case While(c, s) => {
         var isSat: Boolean = true
         var n = 0
-        while(isSat && (n < 1000)) {
+        while(isSat && (n < 100)) {
             val x: FeatureExpr = whenTrue(c, store)
             isSat = (context and x).isSatisfiable()
             if (isSat) {
               execute(s, context and x, store)
             }
             n += 1
-            println(n)
         }
       }
       case If(c, s1, s2) => {
@@ -65,13 +64,14 @@ object Interpreter {
       case Num(n) => One(IntValue(n))
       case Id(x) => store.get(x)
       case Add(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateIntValue(a, b, (a,b) => a+b ))    
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => IntValue(a+b) ))    
       case Sub(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateIntValue(a, b, (a,b) => a-b ))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => IntValue(a-b) ))
       case Mul(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateIntValue(a, b, (a,b) => a*b ))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => IntValue(a*b) ))
       case Div(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateIntValue(a, b, (a,b) => a/b ))
+          (a: Value, b: Value) => calculateValue(a, b, 
+              (a,b) => if (b==0) NotANumberValue("divide by zero") else IntValue(a/b) ))
       case Parens(e) => eval(e, store)
       // conditions
       case Neg(c) => eval(c, store).map(value => {
@@ -81,32 +81,23 @@ object Interpreter {
         }
       })
       case Equal(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateBoolValue(a, b, (a,b) => a==b))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a==b)))
       case GreaterThan(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateBoolValue(a, b, (a,b) => a>b))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a>b)))
       case LessThan(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateBoolValue(a, b, (a,b) => a<b))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a<b)))
       case GreaterOE(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateBoolValue(a, b, (a,b) => a>=b))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a>=b)))
       case LessOE(e1, e2) => ConditionalLib.mapCombination(eval(e1, store), eval(e2, store), 
-          (a: Value, b: Value) => calculateBoolValue(a, b, (a,b) => a<=b))
+          (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a<=b)))
     }
   
-  private def calculateIntValue(a: Value, b: Value, f: (Int, Int) => Int) = {
+  private def calculateValue(a: Value, b: Value, f: (Int, Int) => Value) = {
     (a, b) match {
-      case (UndefinedValue(s1), UndefinedValue(s2)) => UndefinedValue(s1+"/"+s2)
-      case (u@UndefinedValue(_), _) => u
-      case (_, u@UndefinedValue(_)) => u
-      case (a, b) => IntValue( f(a.getIntValue(), b.getIntValue()) )
-    }
-  }
-  
-  private def calculateBoolValue(a: Value, b: Value, f: (Int, Int) => Boolean) = {
-    (a, b) match {
-      case (UndefinedValue(s1), UndefinedValue(s2)) => UndefinedValue(s1+"/"+s2)
-      case (u@UndefinedValue(_), _) => u
-      case (_, u@UndefinedValue(_)) => u
-      case (a, b) => BoolValue( f(a.getIntValue(), b.getIntValue()) )
+      case (e1: ErrorValue, e2: ErrorValue) => ErrorValue("multiple errors") //s1+"/"+s2
+      case (e: ErrorValue, _) => e
+      case (_, e: ErrorValue) => e
+      case (a, b) => f(a.getIntValue(), b.getIntValue())
     }
   }
 

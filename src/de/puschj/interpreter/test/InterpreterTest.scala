@@ -17,7 +17,6 @@ import de.puschj.interpreter.Program
 
 class InterpreterTest {
   
-  var NL: String = "\n"
   var store: Store = null
   val parser: WhileParser = new WhileParser()
   

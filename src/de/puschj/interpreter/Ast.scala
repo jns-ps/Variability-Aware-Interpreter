@@ -16,7 +16,7 @@ case class Program(stmts: List[Opt[Statement]]) {
     for(stm <- stmts) Interpreter.execute(stm.entry, stm.feature, store)
     return store
   }
-  def print() = println(stmts)
+  def print() = println(ASTPrettyPrinter.prettyPrint(this))
 }
 
 sealed abstract class Statement extends ASTNode
@@ -72,12 +72,17 @@ case class BoolValue(b: Boolean) extends Value {
   }
 }
 
-case class UndefinedValue(s: String) extends Value {
+sealed case class ErrorValue(s: String) extends Value {
+  def name() = getClass().getCanonicalName();
+  
   def getIntValue(): Int = {
-    throw new Exception("called getIntValue on UndefinedValue: "+s)
+    throw new Exception("called getIntValue on "+name()+": "+s)
   }
   def getBoolValue(): Boolean = {
-    throw new Exception("called getBoolValue on UndefinedValue: "+s)
+    throw new Exception("called getBoolValue on "+name()+": "+s)
   }
 }
+
+case class UndefinedValue(override val s: String) extends ErrorValue(s)
+case class NotANumberValue(override val s: String) extends ErrorValue(s)
 

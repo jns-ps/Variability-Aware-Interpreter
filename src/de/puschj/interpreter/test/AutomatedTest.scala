@@ -15,7 +15,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   // FeatureExpressions
   val featureNames = List("A","B","C","D","E","F")
   val genAtomicFeatureExpression =
-        oneOf(True :: False :: featureNames.map(createDefinedExternal(_)))
+        oneOf(featureNames.map(createDefinedExternal(_)))
             
   def genCompoundFeatureExpr(size: Int) = oneOf(
     for {
@@ -33,7 +33,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
     if (size <= 0) genAtomicFeatureExpression
-    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)) )
+    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)), (2, True) )
   }
   
   def genFeatureExpr() = Gen.sized(size => genFeatureExprSized(size))
@@ -44,11 +44,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
 
   // === Expressions === 
-  val gstorearName = oneOf("a", "b", "c", "d", "e")
+  val genStoreVarName = oneOf("a", "b", "c", "d", "e")
         
   def genAtomicExpression() = {
     val genId = for {
-      name <- gstorearName
+      name <- genStoreVarName
     } yield Id(name)
   
     val genNum = for {
@@ -119,7 +119,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   // === Statements ===
   val genAssignment = for {
-    name <- gstorearName
+    name <- genStoreVarName
     value <- genExpression
   } yield Assignment(name, value)
   
@@ -128,7 +128,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     stmt <- genStatement
   } yield While(cond, stmt)
   
-  val genStatement: Gen[Statement] = oneOf(genAssignment, genWhile)
+  val genStatement: Gen[Statement] = Gen.frequency( (3, genAssignment), (1, genWhile) )
   
   def genOptStatement: Gen[Opt[Statement]] = for {
     feat <- genFeatureExpr
