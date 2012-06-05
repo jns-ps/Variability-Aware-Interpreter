@@ -8,7 +8,8 @@ import de.fosd.typechef.conditional.One
 
 class Store {
   
-  val entries: Map[String,Conditional[Value]] = new HashMap[String,Conditional[Value]]()
+  private val entries: Map[String,Conditional[Value]] = new HashMap[String,Conditional[Value]]()
+  private var loopCanceled = false
 
   def print(headline: String = "") {
     val s: String = if (headline.isEmpty()) "Store" else headline
@@ -27,4 +28,10 @@ class Store {
       return One(UndefinedValue(key+" not yet initialized."))
     return entries.get(key).get
   }
+  
+  def setLoopCanceled(b: Boolean) = {
+    loopCanceled = b;
+  }
+  
+  def isLoopCanceled() = loopCanceled 
 }
