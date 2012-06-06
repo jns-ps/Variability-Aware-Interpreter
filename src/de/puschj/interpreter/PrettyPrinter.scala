@@ -33,8 +33,8 @@ object ASTPrettyPrinter {
       case Block(stmts) => {
         if (stmts.isEmpty) Empty
         else {
-	       var doc: Doc = stmts(0).entry
-	       for (optStmt <- stmts.tail) {
+	       var doc: Doc = Empty
+	       for (optStmt <- stmts) {
 	         doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
 	       }
 	       doc
