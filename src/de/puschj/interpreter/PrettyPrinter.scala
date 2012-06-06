@@ -9,12 +9,20 @@ object ASTPrettyPrinter {
   private implicit def string(s: String): Doc = Text(s)
   
   def prettyPrint(prgm: Program): String = {
-    if (prgm.stmts.isEmpty) return ""
-    var doc: Doc = prgm.stmts(0).entry
-    for (optStmt <- prgm.stmts.tail) {
-      doc = doc <~ prettyPrintNode(optStmt.entry) ~~ prettyPrintFeatureExpr(optStmt.feature)
+    if (prgm.isEmpty) return ""
+    var doc: Doc = Empty
+    
+    prgm match {
+      case p: VariableProgram => 
+        for (optStmt <- p.getStatements()) {
+	      doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+	    }
+      case p: ConfiguredProgram =>
+	    for (stmt <- p.getStatements()) {
+	      doc = doc <~ prettyPrintNode(stmt)
+	    }
     }
-    layout("begin" ~ Line ~ doc ~ Line ~"end")
+    layout("begin" ~ doc <~ "end")
   }    
   
   private def prettyPrintNode(node: ASTNode): Doc = {
@@ -27,7 +35,7 @@ object ASTPrettyPrinter {
         else {
 	       var doc: Doc = stmts(0).entry
 	       for (optStmt <- stmts.tail) {
-	         doc = doc <~ prettyPrintNode(optStmt.entry) ~~ prettyPrintFeatureExpr(optStmt.feature)
+	         doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
 	       }
 	       doc
         }
@@ -60,9 +68,11 @@ object ASTPrettyPrinter {
   }
   
   def prettyPrintFeatureExpr(feature: FeatureExpr): Doc = {
-    feature match {
-      case fe => if (fe.isTautology()) Empty else "#" ~ fe.toString()
-    }
+    if (feature.isTautology()) Empty else Line ~ "//#ifdef " ~ feature.toString()
+  }
+  
+  def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
+    if (feature.isTautology()) Empty else Line ~ "//#endif "
   }
   
   def layout(d: Doc): String = d match {

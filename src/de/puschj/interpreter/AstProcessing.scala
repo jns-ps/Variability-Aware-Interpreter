@@ -28,6 +28,7 @@ object Interpreter {
             }
             n += 1
         }
+        store.setLoopCanceled( (n>= 100) || store.isLoopCanceled() );
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = whenTrue(c, store)

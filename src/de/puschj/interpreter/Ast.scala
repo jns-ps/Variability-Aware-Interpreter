@@ -3,21 +3,7 @@ package de.puschj.interpreter
 import de.fosd.typechef.conditional._
 
 
-trait Visitor {
-  def visit(node: ASTNode)
-}
-
-abstract class ASTNode {
-  def accept(visitor: Visitor) = visitor.visit(this)
-}
-
-case class Program(stmts: List[Opt[Statement]]) {
-  def run(store: Store): Store = {
-    for(stm <- stmts) Interpreter.execute(stm.entry, stm.feature, store)
-    return store
-  }
-  def print() = println(ASTPrettyPrinter.prettyPrint(this))
-}
+sealed abstract class ASTNode
 
 sealed abstract class Statement extends ASTNode
 case class Assignment(name: String, value: Expression) extends Statement
