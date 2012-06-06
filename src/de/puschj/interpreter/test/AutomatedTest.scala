@@ -1,7 +1,7 @@
 package de.puschj.interpreter.test
 
 import org.scalacheck._
-import scala.collection.mutable.Set
+import scala.collection.mutable.{Set => MSet}
 import Gen._
 import Arbitrary.arbitrary
 import de.puschj.interpreter._
@@ -9,8 +9,12 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Opt
 import de.puschj.interpreter.Store
+import de.fosd.typechef.featureexpr.FeatureExprFactory
+import java.io.File
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
+  
+    FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
   
   // FeatureExpressions
   val featureNames = List("A","B","C","D","E","F")
@@ -33,7 +37,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
     if (size <= 0) genAtomicFeatureExpression
-    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)), (2, True) )
+    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)), (1, True) )
   }
   
   def genFeatureExpr() = Gen.sized(size => genFeatureExprSized(size))
@@ -128,30 +132,56 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     stmt <- genStatement
   } yield While(cond, stmt)
   
-  val genStatement: Gen[Statement] = Gen.frequency( (3, genAssignment), (1, genWhile) )
+  val genIf = for {
+    cond <- genCondition
+    ifbranch <- genStatement
+    stmt <- genStatement
+    elsebranch <- oneOf(None, Some(stmt))
+  } yield If(cond, ifbranch, elsebranch)
+  
+  val genStatement: Gen[Statement] = Gen.frequency( (2, genAssignment), (1, genWhile), (1, genIf) )
   
   def genOptStatement: Gen[Opt[Statement]] = for {
     feat <- genFeatureExpr
     stmt <- genStatement
   } yield Opt(feat, stmt)
   
-  def genProgram: Gen[Program] = Gen.sized( size => for {
+  def genProgram: Gen[VariableProgram] = Gen.sized( size => for {
     stmts <- listOfN(size, genOptStatement)
-  } yield Program(stmts) )
+  } yield VariableProgram(stmts) )
   
-  implicit def arbProgram: Arbitrary[Program] = Arbitrary {
-    genProgram
+//  implicit def arbProgram: Arbitrary[VariableProgram] = Arbitrary {
+//    genProgram
+//  }
+  
+  implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
+    genProgram suchThat (_.run(new Store()).isLoopCanceled() == false)
   }
     
-  property("test") = 
-    Prop.forAll( (p: Program) => {
-    val store = new Store()
-    p.print()
+  var n = 0
+  
+  def saveProgramToFile(p: VariableProgram) = {
+    val pw = new java.io.PrintWriter(new File("testprograms\\t"+(if (n<10) "0" else "")+n+".txt"))
     try {
-      p.run(store).print()
-    } catch {
-      case e: Exception => e.printStackTrace()
+      pw.println(p)
+    } 
+    finally { 
+      pw.close()
+      n += 1
     }
+  }
+  
+  property("createTestCases") = 
+    Prop.forAll( (p: VariableProgram) => {
+    
+//    saveProgramToFile(p)
+    println("=== VARIABLE ===")
+    p.print()
+    println("================")
+    println("== CONFIGURED ==")
+    val c = p.configured(Set("A"))
+    c.print()
+    println("================")
     true
   })
 
