@@ -1,9 +1,99 @@
 package de.puschj.interpreter
 import scala.text.Document
 import de.fosd.typechef.featureexpr.FeatureExpr
-import de.fosd.typechef.featureexpr.sat.True
+import de.fosd.typechef.featureexpr.FeatureExprFactory.True
 
-object ASTPrettyPrinter {
+//object ASTPrettyPrinter {
+//  
+//  private implicit def toDoc(node: ASTNode): Doc = prettyPrintNode(node)
+//  private implicit def string(s: String): Doc = Text(s)
+//  
+//  def prettyPrint(prgm: Program): String = {
+//    if (prgm.isEmpty) return ""
+//    var doc: Doc = Empty
+//    
+//    prgm match {
+//      case p: VariableProgram => 
+//        for (optStmt <- p.getStatements()) {
+//	      doc = doc <~ prettyPrintStatement(optStmt.entry, optStmt.feature)
+//	    }
+//      case p: ConfiguredProgram =>
+//	    for (stmt <- p.getStatements()) {
+//	      doc = doc <~ prettyPrintStatement(stmt, null)
+//	    }
+//    }
+//    doc = "Program" ~~> doc
+//    doc.mkString
+//  }    
+//  
+//  def prettyPrintStatement(statement: Statement, feature: FeatureExpr): Doc = {
+//     var doc: Doc = Empty
+//     var stmtDoc: Doc =      
+//         statement match {
+//            case While(cond, stmt) => prettyPrintNode(cond) ~ prettyPrintStatement(stmt)
+//         }
+//     
+//     if (feature != null) 
+//       doc = doc ~ "Opt(" ~ feature.toString() ~ ")" /~ stmtDoc
+//     else 
+//       doc = stmtDoc
+//
+//    statement.getClass().getCanonicalName() ~~> doc  
+//  }
+//  
+//  private def prettyPrintNode(node: ASTNode): Doc = {
+//    node match {
+//      // Statements
+//      case Assignment(name, expr) => name ~~ "=" ~~ expr ~ ";"
+//      case While(cond, stmt) => "while" ~ "(" ~cond ~ ")" ~> stmt
+//      case Block(stmts) => {
+//        if (stmts.isEmpty) Empty
+//        else {
+//	       var doc: Doc = Empty
+//	       for (optStmt <- stmts) {
+//	         doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+//	       }
+//	       doc
+//        }
+//      }
+//      case If(cond, s1, s2) => "if" ~ "(" ~ cond ~ ")" ~> s1 ~ (
+//                                  if(s2.isDefined) Line ~ "else" ~> s2.get
+//                                  else Empty
+//                                )
+//      case Assert(cond) => "assert" ~ "(" ~ cond ~ ")" ~ ";"
+//
+//      // Expressions                          
+//      case Num(x) => x.toString()
+//      case Id(varname) => varname
+//      case Add(e1, e2) => e1 ~~ "+" ~~ e2
+//      case Sub(e1, e2) => e1 ~~ "-" ~~ e2
+//      case Mul(e1, e2) => e1 ~~ "*" ~~ e2
+//      case Div(e1, e2) => e1 ~~ "/" ~~ e2
+//      case Parens(expr) => "(" ~ expr ~ ")"
+//      
+//      //Conditions
+//      case Equal(e1, e2) => e1 ~~ "==" ~~ e2
+//      case GreaterThan(e1, e2) => e1 ~~ ">" ~~ e2
+//      case GreaterOE(e1, e2) => e1 ~~ ">=" ~~ e2
+//      case LessThan(e1, e2) => e1 ~~ "<" ~~ e2
+//      case LessOE(e1, e2) => e1 ~~ "<=" ~~ e2
+//      case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
+//      
+//      case node => node.toString()
+//    }
+//  }
+//  
+//  private def prettyPrintFeatureExpr(feature: FeatureExpr): Doc = {
+//    if (feature.isTautology()) Empty else Line ~ "//#ifdef " ~ feature.toString()
+//  }
+//  
+//  private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
+//    if (feature.isTautology()) Empty else Line ~ "//#endif "
+//  }
+//}
+
+
+object SourceCodePrettyPrinter {
   
   private implicit def toDoc(node: ASTNode): Doc = prettyPrintNode(node)
   private implicit def string(s: String): Doc = Text(s)
@@ -15,29 +105,36 @@ object ASTPrettyPrinter {
     prgm match {
       case p: VariableProgram => 
         for (optStmt <- p.getStatements()) {
-	      doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
-	    }
+          doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+        }
       case p: ConfiguredProgram =>
-	    for (stmt <- p.getStatements()) {
-	      doc = doc <~ prettyPrintNode(stmt)
-	    }
+        for (stmt <- p.getStatements()) {
+          doc = doc <~ prettyPrintNode(stmt)
+        }
     }
-    layout("begin" ~ doc <~ "end")
+    doc = "begin" ~ doc <~ "end"
+    doc.mkString
   }    
   
   private def prettyPrintNode(node: ASTNode): Doc = {
     node match {
       // Statements
       case Assignment(name, expr) => name ~~ "=" ~~ expr ~ ";"
-      case While(cond, stmt) => "while" ~ "(" ~cond ~ ")" ~> stmt
+      case While(cond, stmt) => {
+        var doc: Doc = "while" ~ "(" ~cond ~ ")"
+        stmt match {
+          case b: Block => doc ~~ stmt
+          case s => doc ~> stmt
+        }
+      } 
       case Block(stmts) => {
         if (stmts.isEmpty) Empty
         else {
-	       var doc: Doc = Empty
-	       for (optStmt <- stmts) {
-	         doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
-	       }
-	       doc
+           var doc: Doc = Empty
+           for (optStmt <- stmts) {
+             doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+           }
+           "{" ~ Nest(2, doc) <~ "}"
         }
       }
       case If(cond, s1, s2) => "if" ~ "(" ~ cond ~ ")" ~> s1 ~ (
@@ -67,25 +164,12 @@ object ASTPrettyPrinter {
     }
   }
   
-  def prettyPrintFeatureExpr(feature: FeatureExpr): Doc = {
+  private def prettyPrintFeatureExpr(feature: FeatureExpr): Doc = {
     if (feature.isTautology()) Empty else Line ~ "//#ifdef " ~ feature.toString()
   }
   
-  def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
+  private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
     if (feature.isTautology()) Empty else Line ~ "//#endif "
-  }
-  
-  def layout(d: Doc): String = d match {
-    case Empty => ""
-    case Line => "\n"
-    case Text(s) => s
-    case Cons(l, r) => layout(l) + layout(r)
-    
-    case Nest(n, Empty) => layout(Empty)
-    case Nest(n, Line) => "\n" + (" " * n)
-    case Nest(n, Text(s)) => layout(Text(s))
-    case Nest(n, Cons(l, r)) => layout(Cons(Nest(n, l), Nest(n, r)))
-    case Nest(i, Nest(j, x)) => layout(Nest(i+j, x))
   }
 }
 
@@ -93,6 +177,7 @@ object ASTPrettyPrinter {
 sealed abstract class Doc {
   def ~(that: Doc) = Cons(this, that)
   def ~~(that: Doc) = this ~ space ~ that
+  def /~(that: Doc) = this ~ Text(",") <~ that
   def <~(that: Doc) = this ~ Line ~ that
   def ~>(that: Doc) = this ~ nest(2, Line ~ that)
   def ~~>(that: Doc) = this ~ block(that)
@@ -100,7 +185,23 @@ sealed abstract class Doc {
   def space = Text(" ")
   def nest(n: Int, d: Doc) = Nest(n, d)
   def block(d: Doc): Doc = Text("(") ~> d <~ Text(")")
+  
+  def mkString: String = this match {
+    case Empty => ""
+    case Line => "\n"
+    case Text(s) => s
+    case Cons(l, r) => l.mkString + r.mkString
+    
+    case Nest(n, Empty) => Empty.mkString
+    case Nest(n, Line) => "\n" + (" " * n)
+    case Nest(n, Text(s)) => (Text(s)).mkString
+    case Nest(n, Cons(l, r)) => (Cons(Nest(n, l), Nest(n, r))).mkString
+    case Nest(i, Nest(j, x)) => (Nest(i+j, x)).mkString
+  }
 }
+
+
+
 
 case object Empty                         extends Doc
 case object Line                          extends Doc

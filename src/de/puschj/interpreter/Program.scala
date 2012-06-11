@@ -11,9 +11,11 @@ sealed abstract class Program {
   
   def run(store: Store): Store
   
-  def print() = println(ASTPrettyPrinter.prettyPrint(this))
+  def print() = println(SourceCodePrettyPrinter.prettyPrint(this))
   
-  override def toString() = ASTPrettyPrinter.prettyPrint(this)
+  def printAST();
+  
+  override def toString() = SourceCodePrettyPrinter.prettyPrint(this)
 }
 
 case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Program {
@@ -27,7 +29,7 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     return store
   }
   
-  def configured(selectedFeatures: Set[String]): Program = {
+  def configured(selectedFeatures: Set[String]): ConfiguredProgram = {
     var filtered: ListBuffer[Statement] = ListBuffer.empty[Statement]
     for(stm <- stmts) {
       if (stm.feature.evaluate(selectedFeatures))
@@ -35,6 +37,8 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     }
     ConfiguredProgram(filtered.toList)
   }
+  
+  def printAST() = println(stmts) //println(ASTPrettyPrinter.prettyPrint(this))
 }
 
 case class ConfiguredProgram(private val stmts: List[Statement]) extends Program {
@@ -47,4 +51,6 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
     for(stm <- stmts) Interpreter.execute(stm, True, store)
     return store
   }
+  
+  def printAST() = println(stmts) //println(ASTPrettyPrinter.prettyPrint(this))
 }
