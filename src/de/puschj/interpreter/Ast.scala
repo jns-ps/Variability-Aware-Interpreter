@@ -15,21 +15,25 @@ case class Assert(cond: Condition) extends Statement
 
 sealed abstract class Expression extends ASTNode
 case class Num(n: Int) extends Expression
-case class Add(e1: Expression, e2: Expression) extends Expression
-case class Sub(e1: Expression, e2: Expression) extends Expression
-case class Mul(e1: Expression, e2: Expression) extends Expression
-case class Div(e1: Expression, e2: Expression) extends Expression
 case class Id(x: String) extends Expression
 case class Parens(e: Expression) extends Expression
+abstract case class BinaryExpression(e1: Expression, e2: Expression) extends Expression
+case class Add(override val e1: Expression, override val e2: Expression) extends BinaryExpression(e1, e2)
+case class Sub(override val e1: Expression, override val e2: Expression) extends BinaryExpression(e1, e2)
+case class Mul(override val e1: Expression, override val e2: Expression) extends BinaryExpression(e1, e2)
+case class Div(override val e1: Expression, override val e2: Expression) extends BinaryExpression(e1, e2)
+
 
 
 sealed abstract class Condition extends Expression
-case class Equal(e1: Expression, e2: Expression) extends Condition
-case class GreaterThan(e1: Expression, e2: Expression) extends Condition
-case class LessThan(e1: Expression, e2: Expression) extends Condition
-case class GreaterOE(e1: Expression, e2: Expression) extends Condition
-case class LessOE(e1: Expression, e2: Expression) extends Condition
 case class Neg(c: Condition) extends Condition
+abstract case class BinaryCondition(e1: Expression, e2: Expression) extends Condition
+case class Equal(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
+case class GreaterThan(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
+case class LessThan(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
+case class GreaterOE(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
+case class LessOE(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
+
 
 
 sealed trait Value {
