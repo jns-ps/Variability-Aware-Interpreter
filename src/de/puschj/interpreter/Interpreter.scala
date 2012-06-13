@@ -8,16 +8,13 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
 object Interpreter {
   
-  def execute(s: Statement, context: FeatureExpr, store: Store): Store = {
-    if (context.isContradiction()) return store
-
+  @throws(classOf[LoopExceededException])
+  def execute(s: Statement, context: FeatureExpr, store: Store): Unit = {
+    if (context.isContradiction()) return
     s match {
-      case Assignment(key, exp) => {
-          store.put(key, Choice(context, eval(exp, store), store.get(key)).simplify)
-//          store.print()
-      }
+      case Assignment(key, exp) => store.put(key, Choice(context, eval(exp, store), store.get(key)).simplify)
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, store)
-      case While(c, s) => {
+      case w@While(c, s) => {
         var isSat: Boolean = true
         var n = 0
         while(isSat && (n < 100)) {
@@ -28,7 +25,10 @@ object Interpreter {
             }
             n += 1
         }
-        store.setLoopCanceled( (n>= 100) || store.isLoopCanceled() );
+        if ( n >= 100 ) {
+           throw new LoopExceededException("Exceeded Loop in Statement: " + w)
+        }
+         
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = whenTrue(c, store)
@@ -48,7 +48,6 @@ object Interpreter {
         } 
       }
     }
-    return store;
   }
   
   def renameFeatureExpectation(fe: FeatureExpr): String = {
