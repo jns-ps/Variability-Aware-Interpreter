@@ -12,7 +12,7 @@ import org.junit._
 import Assert._
 import de.fosd.typechef.conditional.ConditionalLib
 import de.puschj.parser.WhileParser
-import de.puschj.interpreter.Program
+import de.puschj.interpreter.VariableProgram
 
 
 class InterpreterTest {
@@ -27,7 +27,7 @@ class InterpreterTest {
     
   @Test
   def testAssignments() {
-    val program: Program = parser.parseFile("program_assignments.txt")
+    val program: VariableProgram = parser.parseFile("program_assignments.txt")
     program.run(store).print("Assignments")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
@@ -44,7 +44,7 @@ class InterpreterTest {
   
   @Test
   def testExpressions() {
-    val program: Program = parser.parseFile("program_expression.txt")
+    val program: VariableProgram = parser.parseFile("program_expression.txt")
     program.run(store).print("Expressions")
     
 
@@ -55,7 +55,7 @@ class InterpreterTest {
   
   @Test
   def testIf() {
-    val program: Program = parser.parseFile("program_if.txt")
+    val program: VariableProgram = parser.parseFile("program_if.txt")
     program.run(store).print("If")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
@@ -71,7 +71,7 @@ class InterpreterTest {
 
   @Test
   def testWhile() {
-    val program: Program = parser.parseFile("program_while.txt")
+    val program: VariableProgram = parser.parseFile("program_while.txt")
     program.run(store).print("While")
     
     val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
@@ -86,7 +86,7 @@ class InterpreterTest {
   
   @Test
   def testAssertions() {
-    val program: Program = parser.parseFile("program_assertions.txt")
+    val program: VariableProgram = parser.parseFile("program_assertions.txt")
     program.run(store).print("Assertions")
     
     // no exception thrown = test successful
@@ -95,7 +95,7 @@ class InterpreterTest {
   
   @Test
   def testChoiceExplotion() {
-    val program: Program = parser.parseFile("program_choiceExplotion.txt")
+    val program: VariableProgram = parser.parseFile("program_choiceExplotion.txt")
     program.run(store).print("Choice Explotion")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
@@ -111,7 +111,7 @@ class InterpreterTest {
   
   @Test
   def testContextImportance() {
-    val program: Program = parser.parseFile("program_contextImportance.txt")
+    val program: VariableProgram = parser.parseFile("program_contextImportance.txt")
     program.run(store).print("Context Importance")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
@@ -122,15 +122,4 @@ class InterpreterTest {
         store.get("y")
     ))
   }
-  
-//  @Test
-//  def testMapping() {
-//    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
-//    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
-//    
-//    var x: Conditional[Int] = One(IntValue(1).mapfr(fA, (fexpr, a) => Choice(fA.and(fexpr), One(IntValue(a+10), One(IntValue(a)))
-////    var x: Conditional[Int] = Choice(fB, One(IntValue(1), One(IntValue(2)).mapfr(fA, (fexpr, a) => Choice(fA.and(fexpr), One(IntValue(a+10), One(IntValue(a)))
-//    
-//    println(x.simplify)
-//  }
 }
