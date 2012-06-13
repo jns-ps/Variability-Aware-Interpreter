@@ -3,13 +3,14 @@ package de.puschj.interpreter
 import scala.collection.mutable.Map
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Conditional
+import de.fosd.typechef.conditional.ConditionalLib.findSubtree
 import scala.collection.mutable.HashMap
 import de.fosd.typechef.conditional.One
 
 class Store {
   
   private val entries: Map[String,Conditional[Value]] = new HashMap[String,Conditional[Value]]()
-  private var loopCanceled = false
+//  private var loopCanceled = false
 
   def print(headline: String = "") {
     val s: String = if (headline.isEmpty()) "Store" else headline
@@ -23,15 +24,19 @@ class Store {
     entries.put(key, value)
   }
   
-  def get(key: String): Conditional[Value] = {
+  def get(key: String) = {
     if (!entries.contains(key))
-      return One(UndefinedValue(key+" not yet initialized."))
-    return entries.get(key).get
+      One(UndefinedValue(key+" not initialized."))
+    else
+      entries.get(key).get
   }
   
-  def setLoopCanceled(b: Boolean) = {
-    loopCanceled = b;
+  def getByContext(key: String, context: FeatureExpr) = {
+    if (!entries.contains(key))
+      One(UndefinedValue(key+" not initialized."))
+    else
+      findSubtree(context, entries.get(key).get)
   }
   
-  def isLoopCanceled() = loopCanceled 
+  def getStoredVariables() = entries.keySet
 }
