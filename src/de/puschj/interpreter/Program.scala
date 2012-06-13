@@ -25,8 +25,27 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   def getStatements() = stmts
   
   def run(store: Store): Store = {
-    for(stm <- stmts) Interpreter.execute(stm.entry, stm.feature, store)
+    for(stm <- stmts) 
+      try {
+        Interpreter.execute(stm.entry, stm.feature, store)
+      }
+      catch {
+        case e: LoopExceededException => println(e.toString)
+      }
+      
     return store
+  }
+  
+  def runLoopCheck(store: Store): Boolean = {
+    var s: Store = store
+    for(stm <- stmts)
+      try {
+        Interpreter.execute(stm.entry, stm.feature, s)
+      }
+      catch {
+        case e: LoopExceededException => return false
+      }
+    return true
   }
   
   def configured(selectedFeatures: Set[String]): ConfiguredProgram = {

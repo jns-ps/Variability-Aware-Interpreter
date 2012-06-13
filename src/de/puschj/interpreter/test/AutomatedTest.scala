@@ -14,12 +14,16 @@ import java.io.File
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
   
-    FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
+//    FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
+  
+  // constraints
+  final val FEATURENAMES = List("A","B","C","D","E","F")
+  final val VARNAMES = List("a", "b", "c", "d", "e")
+  
   
   // FeatureExpressions
-  val featureNames = List("A","B","C","D","E","F")
   val genAtomicFeatureExpression =
-        oneOf(featureNames.map(createDefinedExternal(_)))
+        oneOf(FEATURENAMES.map(createDefinedExternal(_)))
             
   def genCompoundFeatureExpr(size: Int) = oneOf(
     for {
@@ -37,10 +41,10 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
     if (size <= 0) genAtomicFeatureExpression
-    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2)), (1, True) )
+    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2) ) )
   }
   
-  def genFeatureExpr() = Gen.sized(size => genFeatureExprSized(size))
+  def genFeatureExpr() = Gen.sized(size => Gen.frequency( (1, genFeatureExprSized(size)), (2, True) )) suchThat ( _ != False )
   
   implicit def arbFeatureExpression: Arbitrary[FeatureExpr] = Arbitrary {
     genFeatureExpr
@@ -48,7 +52,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
 
   // === Expressions === 
-  val genStoreVarName = oneOf("a", "b", "c", "d", "e")
+  val genStoreVarName = oneOf(VARNAMES)
         
   def genAtomicExpression() = {
     val genId = for {
@@ -88,7 +92,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genExpressionSized(size: Int): Gen[Expression] = {
     if (size <= 0) genAtomicExpression
-    else Gen.frequency( (2, genAtomicExpression), (1, genCompoundExpression(size / 2)))
+    else Gen.frequency( (1, genAtomicExpression), (1, genCompoundExpression(size / 2)))
   }
   
   def genExpression = Gen.sized(size => genExpressionSized(size))
@@ -155,13 +159,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //  }
   
   implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.run(new Store()).isLoopCanceled() == false)
+    genProgram suchThat (_.runLoopCheck(new Store()))
   }
-    
-  var n = 0
   
   def saveProgramToFile(p: VariableProgram) = {
-    val pw = new java.io.PrintWriter(new File("testprograms\\t"+(if (n<10) "0" else "")+n+".txt"))
+    val pw = new java.io.PrintWriter(new File("testprograms\\test"+(if (n<10) "0"+n else n)+".txt"))
     try {
       pw.println(p)
     } 
@@ -171,19 +173,22 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     }
   }
   
-  property("createTestCases") = 
-    Prop.forAll( (p: VariableProgram) => {
-    
-//    saveProgramToFile(p)
-    println("=== VARIABLE ===")
-    p.print()
-    println("================")
-    println("== CONFIGURED ==")
-    val c = p.configured(Set("A"))
-    c.print()
-    println("================")
+  var n = 0
+  
+  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
+    saveProgramToFile(p)
+//    println("=== VARIABLE ===")
+//    p.print()
+//    println("================")
     true
   })
+  
+//  property("FeatureExpressions") = Prop.forAll( (f: FeatureExpr) => {
+//    println(f)
+//    true
+//  })
+  
+//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) )
 
   
 }
