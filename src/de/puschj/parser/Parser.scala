@@ -91,12 +91,12 @@ class WhileParser extends MultiFeatureParser() {
       case "/" => Div(l, r._2)
     }
 
-    def parse(code:String): Program = {
+    def parse(code:String): VariableProgram = {
       val parser = new WhileParser()
       val y = parser.start(JavaLexer.lex(code), FeatureExprFactory.True)
       y match{
         case parser.Success(v,_) => {
-            val p = new Program(v)
+            val p = new VariableProgram(v)
 //            println(p)
             return p
         }
@@ -105,7 +105,7 @@ class WhileParser extends MultiFeatureParser() {
       }
     }
     
-    def parseFile(filename: String): Program = {
+    def parseFile(filename: String): VariableProgram = {
       val source = scala.io.Source.fromFile(filename)
       val input = source.mkString
       source.close()
