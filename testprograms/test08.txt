@@ -1,0 +1,34 @@
+begin
+e = b + c + 23 / 33 - c * a - d + 79 * a / b - a;
+if(36 < 58)
+  if(d <= 57)
+    d = e / 65;
+  else
+    a = 44;
+while(63 == 81)
+  while(14 / a - a * b - 50 + 45 - e / 18 - d >= a)
+    if(a + 41 - b < 34 - 7 / 91 - a - 71 / d - a / 81 + 4)
+      a = d;
+    else
+      e = 11 - a / 6 / 98 * 87 - 74;
+e = a;
+if(100 - 5 / 97 * d >= d)
+  d = 83;
+else
+  while(78 * 63 * d / 50 + d / 6 / 59 < c - 1)
+    e = b;
+while(38 > 45 / 49 / e + 82 * 36 / 68 * c - b + 59 - b * 73)
+  while(d - c - c / a / c * 33 > d * b + 46 / 43 - d)
+    e = 72;
+if(44 == 22 * e)
+  b = b;
+else
+  if(b == 9)
+    d = 87 - a + 62;
+  else
+    while(d + e > e * 45 - 37 / 52 + 47)
+      a = 71;
+//#if E
+b = e / 39 * 91 / d + d + b;
+//#endif 
+end

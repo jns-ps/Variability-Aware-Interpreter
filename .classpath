@@ -5,6 +5,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/workspace/scala/libraries/scalacheck_2.9.0-1-1.9.jar"/>
-	<classpathentry kind="lib" path="D:/workspace/scala/libraries/TypeChef-0.3.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FeatureExprLib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ConditionalLib"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/JavaParser"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ParserFramework"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

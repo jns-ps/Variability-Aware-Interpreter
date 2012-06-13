@@ -1,0 +1,69 @@
+begin
+while(68 < e - 61 * 17 + 92)
+  while(4 == c / 74 / a)
+    c = e / 52 - e - c;
+while(c < c)
+  if(d == d - c - c * 64 - 14 * c - 70)
+    b = 67 + 69 * b;
+//#if B
+c = 37;
+//#endif 
+while(a == b)
+  while(d * 78 * a + 91 + c + 85 + a * c - c * b - 27 / a - e + a * 85 - b * 60 >= e)
+    while(86 / e / d + 52 - 4 - b - 62 + a - b + 26 + d * e >= e + a - b * a / a * e + c + 59 / a - e / d / e * 44 * e / 60)
+      d = d;
+while(97 < c * 3 * e - 25 / c)
+  while(37 / b < a)
+    if(d / 15 / e / 16 + 24 + b - 49 - 70 / b / c > c / 76 * 41 - 31)
+      while(5 >= e)
+        while(20 - 59 - 55 * 38 + e / a - d / 36 - b / c / 39 + 98 == 54 * 75)
+          e = 55;
+    else
+      d = 89 - 89 * b - 33 * c * d - 14;
+while(e - a + b - a * 3 + c == 22)
+  d = 40 / 38;
+//#if B
+while(45 <= b / 85 * d + a)
+  b = a * a + c;
+//#endif 
+//#if E
+if(b <= d - 3 / 100 * d * 72 + a + 77 + d)
+  if(e * 60 == 71)
+    while(c <= 88 + 75 - e)
+      e = a;
+  else
+    while(c / 37 * 33 + e - d - 95 > e)
+      c = b + e;
+//#endif 
+//#if A
+if(44 / a + 78 - 11 + d + 10 >= 16 - 51 + 97 * 15 * c / 24 * b - 93 * 84)
+  a = 37 * 28 * 81 / 1 * d / 88 * 98 * e;
+//#endif 
+if(d - 15 * a - c + 26 / 37 - a < 57)
+  while(71 * 99 == 14)
+    a = 72 - 46 - e - 82 - 85 + 45 * 60 - c + d;
+a = 43;
+if(15 * d - c + 55 * a + 49 / 11 * 91 - 58 / c + 98 >= e)
+  a = a;
+else
+  while(b / 61 / 39 / e * 41 + c - a / b > 36 - 56 - 42 / 50 / 8 / 53 + 50)
+    while(33 < 80 - b / a)
+      if(a + 12 * 69 * d / 49 + 90 == d)
+        while(24 + e >= 37 - b / a * 50 - d * 84 / e)
+          if(9 * d * e / 90 * b - d / e == 13)
+            if(65 >= 52)
+              d = 45 / b + 63 + 8 + c * 99 * a / b;
+          else
+            e = e * 29 + e;
+e = b + 100 + d * 48 - 80 / 70 + 46 + d / 74 / c - a / e;
+if(b / d / 48 - b - a - a * d > 97 * 6)
+  while(68 - 14 + 46 * 100 / 24 / e / e * c / 88 * 39 / 62 < c * 34 - 32 * b * d + 66)
+    e = d;
+while(93 == b - e)
+  if(13 * 80 / d / 79 + 99 - c <= 64 / 85)
+    c = 30 / a * d - a + 60 + e;
+//#if C
+while(99 + d * a + 15 / 65 >= 20 + 33 / d * a - b + e - b)
+  d = 10;
+//#endif 
+end

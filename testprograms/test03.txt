@@ -1,0 +1,9 @@
+begin
+//#if C
+if(a * 26 * e > e + e * 60)
+  b = a;
+//#endif 
+e = 33 - 26 * d;
+while(c >= e)
+  c = 38 - 56 + b - e;
+end

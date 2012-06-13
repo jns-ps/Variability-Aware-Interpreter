@@ -1,0 +1,39 @@
+begin
+//#if B
+a = 49 - 30 - b + 9 - 11 - 49;
+//#endif 
+e = 21 + 94;
+while(a + 70 - a / 43 - e < 12)
+  if(e == 71)
+    e = b;
+  else
+    e = d;
+//#if E
+b = a;
+//#endif 
+//#if B
+e = 100;
+//#endif 
+if(c > 63 * 73 / c * 94 + a * c * 66 + b - 12)
+  b = 15 * e * 95 / 6 + d;
+else
+  e = e;
+//#if !D
+d = d;
+//#endif 
+while(a > e * d)
+  while(c < 24)
+    if(b - 56 == 82)
+      while(80 / 33 * e - d - a * 20 * b / 82 + e >= 47)
+        e = d;
+    else
+      a = 70;
+//#if !B
+e = a * 13 + 92;
+//#endif 
+//#if !F
+while(c * b - 34 + d + b + 79 * c > 46)
+  if(d * d + 68 / b / c <= 65 / b)
+    e = 49;
+//#endif 
+end
