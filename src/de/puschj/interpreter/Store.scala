@@ -9,7 +9,7 @@ import de.fosd.typechef.conditional.One
 
 class Store {
   
-  private val entries: Map[String,Conditional[Value]] = new HashMap[String,Conditional[Value]]()
+  private val entries: Map[String,Conditional[Value]] = Map.empty[String,Conditional[Value]]
 
   def print(headline: String = "") {
     val s: String = if (headline.isEmpty()) "Store" else headline
@@ -19,9 +19,7 @@ class Store {
     println()
   }
   
-  def put(key: String, value: Conditional[Value]): Unit = {
-    entries.put(key, value)
-  }
+  def put(key: String, value: Conditional[Value]) = entries.put(key, value)
   
   def get(key: String) = {
     if (!entries.contains(key))
@@ -38,4 +36,21 @@ class Store {
   }
   
   def getStoredVariables() = entries.keySet
+}
+
+
+class FuncStore {
+  
+  private val functions: Map[String, FunctionDef] = Map.empty[String, FunctionDef]
+  
+  def put(funcName: String, funcDef: FunctionDef) = functions.put(funcName, funcDef)
+  
+  @throws(classOf[NoSuchMethodException])
+  def get(funcName: String) = {
+    if (!functions.contains(funcName))
+      throw new NoSuchMethodException("No method with name: "+funcName)
+    else
+      functions.get(funcName).get
+  }
+  
 }

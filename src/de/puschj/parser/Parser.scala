@@ -25,7 +25,7 @@ class WhileParser extends MultiFeatureParser() {
     def intToken : MultiParser[Elem] =
       token("integer", x=>x.getText().matches("""([1-9][0-9]*)|0"""))
     
-    lazy val start: MultiParser[List[Opt[Statement]]] = textToken("begin") ~> repOpt(statement) <~ textToken("end")
+    lazy val start: MultiParser[List[Opt[Statement]]] = textToken("begin") ~> repOpt(statement | funcDeclaration) <~ textToken("end")
   
     // Statement
     lazy val statement: MultiParser[Statement] = assignStatement | whileStatement | blockStatement | ifStatement | assertStatement
@@ -43,7 +43,10 @@ class WhileParser extends MultiFeatureParser() {
       case c~thn~els => If(c,thn,els)
     } 
     lazy val assertStatement : MultiParser[Statement] = textToken("assert") ~> textToken("(") ~> condition  <~ textToken(")") <~ textToken(";") ^^ {
-      c => Assert(c)
+      case c => Assert(c)
+    }
+    lazy val funcDeclaration : MultiParser[Statement] = textToken("proc") ~> identifier ~ (textToken("(") ~> repPlain((identifier ^^ { x => x.getText}) <~ opt(textToken(",")) ) <~ textToken(")")) ~ blockStatement ^^ {
+      case funcName~funcArgs~funcBody => FuncDef(funcName.getText, funcArgs, funcBody.asInstanceOf[Block])
     }
 
     // Condition
@@ -68,8 +71,13 @@ class WhileParser extends MultiFeatureParser() {
     lazy val condition : MultiParser[Condition] = equal | greater | less | greaterOrEqual | lessOrEqual
 
     // Expression
+    lazy val call : MultiParser[Expression] = identifier ~ (textToken("(") ~> repPlain(expression <~ opt(textToken(","))) <~ textToken(")"))  ^^ {
+      case name~args => Call(name.getText, args)
+    }
+    
     lazy val factor: MultiParser[Expression] = 
       parenthesis |
+      call |
       intToken ^^ { x => new Num(Integer.parseInt(x.getText()))} |
       identifier ^^ { x => new Id(x.getText()) }
       

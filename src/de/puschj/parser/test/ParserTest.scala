@@ -34,4 +34,9 @@ class ParserTest {
   def testParseAssertions() {
       parser.parseFile("program_assertions.txt")
   }
+  
+  @Test
+  def testParseFunctions() {
+      parser.parseFile("program_functions.txt").printAST
+  }
 }

@@ -32,11 +32,11 @@ object ProgramUtils {
     }
     
     def compareProgramVariants(program: VariableProgram, availableFeatures: Set[String], comparedVariables: Set[String]): Boolean = {
-      val variableStore = program.run(new Store())
+      val variableStore = program.run(new Store, new FuncStore)
       val configuredStores = MMap.empty[Store, List[Set[String]]]
       
       for (programVariant <- allProgramVariants(program, availableFeatures)) {
-        val configuredStore = programVariant._1.run(new Store())
+        val configuredStore = programVariant._1.run(new Store, new FuncStore)
         for (selectedFeatures <- programVariant._2) {
            var context = True
            context = selectedFeatures.foldLeft(context)( (f, s) => f and createDefinedExternal(s))

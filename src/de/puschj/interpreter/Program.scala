@@ -9,7 +9,7 @@ sealed abstract class Program {
   
   def isEmpty(): Boolean
   
-  def run(store: Store): Store
+  def run(store: Store, funcStore: FuncStore): Store
   
   def print() = println(SourceCodePrettyPrinter.prettyPrint(this))
   
@@ -24,10 +24,10 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   
   def getStatements() = stmts
   
-  def run(store: Store): Store = {
+  def run(store: Store, funcStore: FuncStore): Store = {
     for(stm <- stmts) 
       try {
-        Interpreter.execute(stm.entry, stm.feature, store)
+        Interpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => println(e.toString)
@@ -36,11 +36,11 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     return store
   }
   
-  def runLoopCheck(store: Store): Boolean = {
-    var s: Store = store
+  def runLoopCheck(store: Store, funcStore: FuncStore): Boolean = {
+    var sto: Store = store
     for(stm <- stmts)
       try {
-        Interpreter.execute(stm.entry, stm.feature, s)
+        Interpreter.execute(stm.entry, stm.feature, sto, funcStore)
       }
       catch {
         case e: LoopExceededException => return false
@@ -66,8 +66,8 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
   
   def getStatements() = stmts
   
-  def run(store: Store): Store = {
-    for(stm <- stmts) Interpreter.execute(stm, True, store)
+  def run(store: Store, funcStore: FuncStore): Store = {
+    for(stm <- stmts) Interpreter.execute(stm, True, store, funcStore)
     return store
   }
   

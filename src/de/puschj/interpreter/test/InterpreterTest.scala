@@ -13,22 +13,27 @@ import Assert._
 import de.fosd.typechef.conditional.ConditionalLib
 import de.puschj.parser.WhileParser
 import de.puschj.interpreter.VariableProgram
+import de.puschj.interpreter.FuncStore
+import de.puschj.interpreter.UndefinedValue
+import de.puschj.interpreter.UndefinedValue
 
 
 class InterpreterTest {
   
   var store: Store = null
+  var funcStore: FuncStore = null
   val parser: WhileParser = new WhileParser()
   
   @Before
   def setUp() = {
      store = new Store()
+     funcStore = new FuncStore()
   }
     
   @Test
   def testAssignments() {
     val program: VariableProgram = parser.parseFile("program_assignments.txt")
-    program.run(store).print("Assignments")
+    program.run(store, funcStore).print("Assignments")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
     val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
@@ -45,7 +50,7 @@ class InterpreterTest {
   @Test
   def testExpressions() {
     val program: VariableProgram = parser.parseFile("program_expression.txt")
-    program.run(store).print("Expressions")
+    program.run(store, funcStore).print("Expressions")
     
 
     assertEquals("calculating 'x' failed", One(IntValue(2)), store.get("x"))
@@ -56,7 +61,7 @@ class InterpreterTest {
   @Test
   def testIf() {
     val program: VariableProgram = parser.parseFile("program_if.txt")
-    program.run(store).print("If")
+    program.run(store, funcStore).print("If")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
@@ -72,7 +77,7 @@ class InterpreterTest {
   @Test
   def testWhile() {
     val program: VariableProgram = parser.parseFile("program_while.txt")
-    program.run(store).print("While")
+    program.run(store, funcStore).print("While")
     
     val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
     
@@ -87,7 +92,7 @@ class InterpreterTest {
   @Test
   def testAssertions() {
     val program: VariableProgram = parser.parseFile("program_assertions.txt")
-    program.run(store).print("Assertions")
+    program.run(store, funcStore).print("Assertions")
     
     // no exception thrown = test successful
     assertTrue(true)
@@ -96,30 +101,39 @@ class InterpreterTest {
   @Test
   def testChoiceExplotion() {
     val program: VariableProgram = parser.parseFile("program_choiceExplotion.txt")
-    program.run(store).print("Choice Explotion")
+    program.run(store, funcStore).print("Choice Explotion")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
     val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
     val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
     
+    println(store.get("x"))
     assertEquals("unexpected value for 'a'", 
-      Choice(fA or fC, One(IntValue(1)), One(IntValue(0))),
-      store.get("a")
+      Choice(fA or fC, One(IntValue(1)), One(UndefinedValue("x not initialized."))),
+      store.get("x")
     )
   }
   
   @Test
   def testContextImportance() {
     val program: VariableProgram = parser.parseFile("program_contextImportance.txt")
-    program.run(store).print("Context Importance")
+    program.run(store, funcStore).print("Context Importance")
     
     val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
     
     assertTrue("unexpected value for 'y'", ConditionalLib.equals(
-        Choice(fB.not(), One(IntValue(0)), Choice(fA.not(), One(IntValue(1)), One(IntValue(2)))),
+        Choice(fB.not(), One(UndefinedValue("y not initialized.")), Choice(fA.not(), One(IntValue(1)), One(IntValue(2)))),
         store.get("y")
     ))
+  }
+  
+  @Test
+  def testFunctions() {
+    val program: VariableProgram = parser.parseFile("program_functions.txt")
+    program.run(store, funcStore).print("Functions")
+    
+    // TODO: add proper assertion
   }
 }

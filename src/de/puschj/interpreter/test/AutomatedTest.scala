@@ -159,7 +159,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //  }
   
   implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.runLoopCheck(new Store()))
+    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore))
   }
   
   def saveProgramToFile(p: VariableProgram) = {
