@@ -10,12 +10,14 @@ sealed abstract class Program {
   def isEmpty(): Boolean
   
   def run(store: Store, funcStore: FuncStore): Store
-  
-  def print() = println(SourceCodePrettyPrinter.prettyPrint(this))
-  
-  def printAST();
-  
+ 
   override def toString() = SourceCodePrettyPrinter.prettyPrint(this)
+  
+  def print() = println(toString)
+  
+  def toStringAST() : String
+  
+  def printAST() = println(toStringAST)
 }
 
 case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Program {
@@ -37,10 +39,9 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   }
   
   def runLoopCheck(store: Store, funcStore: FuncStore): Boolean = {
-    var sto: Store = store
     for(stm <- stmts)
       try {
-        Interpreter.execute(stm.entry, stm.feature, sto, funcStore)
+        Interpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => return false
@@ -57,7 +58,7 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     ConfiguredProgram(filtered.toList)
   }
   
-  def printAST() = println(stmts) //println(ASTPrettyPrinter.prettyPrint(this))
+  def toStringAST() = stmts.toString //println(ASTPrettyPrinter.prettyPrint(this))
 }
 
 case class ConfiguredProgram(private val stmts: List[Statement]) extends Program {
@@ -71,5 +72,5 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
     return store
   }
   
-  def printAST() = println(stmts) //println(ASTPrettyPrinter.prettyPrint(this))
+  def toStringAST() = stmts.toString //println(ASTPrettyPrinter.prettyPrint(this))
 }

@@ -136,6 +136,7 @@ class GeneratedInterpreterTest {
   @Test
   def testCase19 = {
     val program = parser.parseFile("testprograms\\test19.txt")
+    program.printAST
     assertTrue(ProgramUtils.compareProgramVariants(program, FEATURENAMES.toSet, VARNAMES.toSet))
   }
 

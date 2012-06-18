@@ -1,0 +1,9 @@
+begin
+proc fac(i) { 
+  if (i <= 0) 
+    res = 1;
+  else
+    res = i * fac(i-1);
+}
+a = fac(6);
+end

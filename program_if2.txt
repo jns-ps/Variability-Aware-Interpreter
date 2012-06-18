@@ -1,0 +1,7 @@
+begin
+i = 20;
+if (i <= 10)
+  a = 5;
+else
+  a = 10;
+end

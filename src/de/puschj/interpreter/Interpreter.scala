@@ -19,29 +19,28 @@ object Interpreter {
         var n = 0
         while(isSat && (n < 100)) {
             val x: FeatureExpr = whenTrue(c, store, funcStore)
-            isSat = (context and x).isSatisfiable()
-            if (isSat) {
+            isSat = (context and x).isSatisfiable
+            if (isSat)
               execute(s, context and x, store, funcStore)
-            }
             n += 1
         }
         if ( n >= 100 ) {
            throw new LoopExceededException("Exceeded Loop in Statement: " + w)
         }
-         
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = whenTrue(c, store, funcStore)
-        if ((context and x).isSatisfiable()) {
-          execute(s1, context and x, store, funcStore)
-          if (s2.isDefined)
-            execute(s2.get, context and x.not(), store, funcStore)
+        if (context.isSatisfiable) {
+            if (x.isSatisfiable)
+                execute(s1, context and x, store, funcStore)
+            if (s2.isDefined)
+                execute(s2.get, context andNot x, store, funcStore)
         }
       }
       case Assert(cnd) => {
         val whentrue: FeatureExpr = whenTrue(cnd, store, funcStore)
         val equivToContext: Boolean = whentrue.equivalentTo(context)
-        if ( !(whentrue.isTautology() || equivToContext) ) {
+        if ( !(whentrue.isTautology || equivToContext) ) {
           throw new AssertionError("violation of " + cnd +
                                    "\nexpected to be true when: " + renameFeatureExpectation(context) +
                                    "\nactually was true when: " + renameFeatureExpectation(whentrue))
@@ -109,7 +108,7 @@ object Interpreter {
   
   private def calculateValue(a: Value, b: Value, f: (Int, Int) => Value) = {
     (a, b) match {
-      case (ErrorValue(s1), ErrorValue(s2)) => ErrorValue(s1+";"+s2) 
+      case (ErrorValue(s1), ErrorValue(s2)) => ErrorValue("multiple errors") //(s1+";"+s2) 
       case (e: ErrorValue, _) => e
       case (_, e: ErrorValue) => e
       case (a, b) => f(a.getIntValue(), b.getIntValue())

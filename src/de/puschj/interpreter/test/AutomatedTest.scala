@@ -159,7 +159,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //  }
   
   implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore))
+    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore) != false)
   }
   
   def saveProgramToFile(p: VariableProgram) = {
@@ -173,10 +173,22 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     }
   }
   
+  def saveAST_toFile(p: VariableProgram) = {
+    val pw = new java.io.PrintWriter(new File("testprograms\\ast"+(if (n<10) "0"+n else n)+".txt"))
+    try {
+      pw.println(p.toStringAST)
+    } 
+    finally { 
+      pw.close()
+    }
+  }
+  
   var n = 0
   
   property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
+    saveAST_toFile(p)
     saveProgramToFile(p)
+    
 //    println("=== VARIABLE ===")
 //    p.print()
 //    println("================")

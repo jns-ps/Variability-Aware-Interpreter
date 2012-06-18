@@ -73,6 +73,16 @@ class InterpreterTest {
         Choice(fA.not(), One(IntValue(2)), Choice(fB, One(IntValue(1)), One(IntValue(3)))),
         store.get("x") ))
   }
+  
+  @Test
+  def testIf2() {
+    val program: VariableProgram = parser.parseFile("program_if2.txt")
+    program.run(store, funcStore).print("If")
+    
+    assertEquals("unexpected value for 'a'", 
+        One(IntValue(10)),
+        store.get("a") )
+  }
 
   @Test
   def testWhile() {
@@ -108,7 +118,6 @@ class InterpreterTest {
     val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
     val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
     
-    println(store.get("x"))
     assertEquals("unexpected value for 'a'", 
       Choice(fA or fC, One(IntValue(1)), One(UndefinedValue("x not initialized."))),
       store.get("x")
@@ -135,5 +144,22 @@ class InterpreterTest {
     program.run(store, funcStore).print("Functions")
     
     // TODO: add proper assertion
+  }
+  
+  @Test
+  def testFunctions2() {
+    val program: VariableProgram = parser.parseFile("program_functions2.txt")
+    program.run(store, funcStore).print("Functions 2")
+    
+    // TODO: add proper assertion
+  }
+  
+  @Test
+  def testFunctionsRecursion() {
+    val program: VariableProgram = parser.parseFile("program_functions_recursion.txt")
+    program.printAST
+    program.run(store, funcStore).print("Functions Recursion")
+    
+    assertEquals("faculty recursion not working", One(IntValue(720)), store.get("a"))
   }
 }
