@@ -29,7 +29,7 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   def run(store: Store, funcStore: FuncStore): Store = {
     for(stm <- stmts) 
       try {
-        Interpreter.execute(stm.entry, stm.feature, store, funcStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => println(e.toString)
@@ -41,7 +41,7 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   def runLoopCheck(store: Store, funcStore: FuncStore): Boolean = {
     for(stm <- stmts)
       try {
-        Interpreter.execute(stm.entry, stm.feature, store, funcStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => return false
@@ -51,15 +51,41 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   
   def configured(selectedFeatures: Set[String]): ConfiguredProgram = {
     var filtered: ListBuffer[Statement] = ListBuffer.empty[Statement]
-    for(stm <- stmts) {
-      if (stm.feature.evaluate(selectedFeatures))
-        filtered.append(stm.entry)
+    for(stm <- filterStatements(stmts, selectedFeatures)) {
+      assert(stm.feature == True)
+      filtered += stm.entry
     }
     ConfiguredProgram(filtered.toList)
   }
   
+  private def filterStatements(stmts: List[Opt[Statement]], selectedFeatures: Set[String]): List[Opt[Statement]] = {
+    var filtered: ListBuffer[Opt[Statement]] = ListBuffer.empty[Opt[Statement]]
+    for(optstm <- stmts) {
+      val feature = optstm.feature
+      val stm = optstm.entry
+      if (feature.evaluate(selectedFeatures))
+          stm match {
+            case Block(stmlist) =>
+              filtered += Opt(True, Block(filterStatements(stmlist, selectedFeatures)))
+            case If(cond, thenB, elseB) => 
+              filtered += Opt(True, If(cond, Block(filterStatements(thenB.stmts, selectedFeatures)), 
+                                         if (elseB.isDefined)
+                                           Some(Block(filterStatements(elseB.get.stmts, selectedFeatures))) 
+                                         else None))
+            case While(cond, body) =>
+              filtered += Opt(True, While(cond, Block(filterStatements(body.stmts, selectedFeatures))))
+                
+            case s =>
+              filtered += Opt(True, s)
+          }
+    }
+    filtered.toList
+  }
+  
   def toStringAST() = stmts.toString //println(ASTPrettyPrinter.prettyPrint(this))
 }
+
+
 
 case class ConfiguredProgram(private val stmts: List[Statement]) extends Program {
   
@@ -68,7 +94,7 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
   def getStatements() = stmts
   
   def run(store: Store, funcStore: FuncStore): Store = {
-    for(stm <- stmts) Interpreter.execute(stm, True, store, funcStore)
+    for(stm <- stmts) VAInterpreter.execute(stm, True, store, funcStore)
     return store
   }
   

@@ -6,7 +6,7 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False }
 
 
-object Interpreter {
+object VAInterpreter {
   
   @throws(classOf[LoopExceededException])
   def execute(s: Statement, context: FeatureExpr, store: Store, funcStore: FuncStore): Unit = {
@@ -42,8 +42,8 @@ object Interpreter {
         val equivToContext: Boolean = whentrue.equivalentTo(context)
         if ( !(whentrue.isTautology || equivToContext) ) {
           throw new AssertionError("violation of " + cnd +
-                                   "\nexpected to be true when: " + renameFeatureExpectation(context) +
-                                   "\nactually was true when: " + renameFeatureExpectation(whentrue))
+                                   "\nexpected to be true when: " + context +
+                                   "\nactually was true when: " + whentrue)
         } 
       }
       case FuncDef(name, args, body) => {
@@ -52,15 +52,7 @@ object Interpreter {
     }
   }
   
-  def renameFeatureExpectation(fe: FeatureExpr): String = {
-    if (fe.equivalentTo(FeatureExprFactory.True))
-      return "ever"
-    if (fe.equivalentTo(FeatureExprFactory.False))
-      return "never"
-    fe.toString()
-  }
-
-  def eval(exp: Expression, store: Store, funcStore: FuncStore): Conditional[Value] =
+  private def eval(exp: Expression, store: Store, funcStore: FuncStore): Conditional[Value] =
     exp match {
       // arithmetic
       case Num(n) => One(IntValue(n))
@@ -115,7 +107,7 @@ object Interpreter {
     }
   }
 
-  def whenTrue(c: Condition, store: Store, funcStore: FuncStore): FeatureExpr = whenTrueRek(True, eval(c, store, funcStore))
+  private def whenTrue(c: Condition, store: Store, funcStore: FuncStore): FeatureExpr = whenTrueRek(True, eval(c, store, funcStore))
 
   private def whenTrueRek(fe: FeatureExpr, c: Conditional[Value]): FeatureExpr = {
     c match {

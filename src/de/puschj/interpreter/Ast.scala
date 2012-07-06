@@ -25,12 +25,14 @@ case class LessThan(override val e1: Expression, override val e2: Expression) ex
 case class GreaterOE(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
 case class LessOE(override val e1: Expression, override val e2: Expression) extends BinaryCondition(e1, e2)
 
-sealed abstract class Statement extends ASTNode
+sealed abstract class Statement extends ASTNode 
 case class Assignment(name: String, value: Expression) extends Statement
 case class Block(stmts: List[Opt[Statement]]) extends Statement
-case class While(cond: Condition, stmt: Statement) extends Statement
-case class If(cond: Condition, s1: Statement, s2: Option[Statement]) extends Statement
+case class While(cond: Condition, body: Block) extends Statement
+case class If(cond: Condition, s1: Block, s2: Option[Block]) extends Statement
 case class Assert(cond: Condition) extends Statement
 case class FuncDef(name: String, args: List[String], body: Block) extends Statement
 
 case class FunctionDef(args: List[String], body: Block)
+
+

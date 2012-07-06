@@ -93,6 +93,7 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory.True
 //}
 
 
+
 object SourceCodePrettyPrinter {
   
   private implicit def toDoc(node: ASTNode): Doc = prettyPrintNode(node)
@@ -112,7 +113,7 @@ object SourceCodePrettyPrinter {
           doc = doc <~ prettyPrintNode(stmt)
         }
     }
-    doc = "begin" ~ doc <~ "end"
+    doc = "begin" ~ doc <~ "end" 
     doc.mkString
   }
   
@@ -137,10 +138,17 @@ object SourceCodePrettyPrinter {
            "{" ~ Nest(2, doc) <~ "}"
         }
       }
-      case If(cond, s1, s2) => "if" ~ "(" ~ cond ~ ")" ~> s1 ~ (
-                                  if(s2.isDefined) Line ~ "else" ~> s2.get
-                                  else Empty
-                                )
+      case If(cond, s1, s2) => {
+        var doc: Doc = "if" ~ "(" ~ cond ~ ")"
+        s1 match {
+          case b: Block => doc = doc ~~ s1
+          case s => doc = doc ~> s1
+        }
+        s2 match {
+          case Some(b: Block) => doc ~~ "else" ~~ b
+          case None => doc
+        }      
+      }
       case Assert(cond) => "assert" ~ "(" ~ cond ~ ")" ~ ";"
 
       // Expressions                          
@@ -165,7 +173,7 @@ object SourceCodePrettyPrinter {
   }
   
   private def prettyPrintFeatureExprOpen(feature: FeatureExpr): Doc = {
-    if (feature.isTautology()) Empty else Line ~ "//#if " ~ feature.toString
+    if (feature.isTautology()) Empty else Line ~ "//#if " ~ feature.toTextExpr
   }
   
   private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
