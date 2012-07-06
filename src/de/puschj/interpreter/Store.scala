@@ -3,6 +3,7 @@ package de.puschj.interpreter
 import scala.collection.mutable.Map
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Conditional
+import de.fosd.typechef.conditional.ConditionalLib
 import de.fosd.typechef.conditional.ConditionalLib.findSubtree
 import scala.collection.mutable.HashMap
 import de.fosd.typechef.conditional.One
@@ -36,6 +37,18 @@ class Store {
   }
   
   def getStoredVariables() = entries.keySet
+  
+  override def equals(that: Any): Boolean = {
+    if (!that.isInstanceOf[Store])
+        return false
+    val s = that.asInstanceOf[Store]
+    if (!getStoredVariables().equals(s.getStoredVariables()))
+        return false
+    for (variable <- getStoredVariables())
+        if (!ConditionalLib.equals(entries.get(variable).get, s.entries.get(variable).get))
+            return false
+    true
+  }
 }
 
 
