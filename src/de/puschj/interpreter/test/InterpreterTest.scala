@@ -77,13 +77,14 @@ class InterpreterTest {
   @Test
   def testIf2() {
     val program: VariableProgram = parser.parseFile("program_if2.txt")
-    program.run(store, funcStore).print("If")
+    program.run(store, funcStore).print("If 2")
+    program.printAST
     
     assertEquals("unexpected value for 'a'", 
         One(IntValue(10)),
         store.get("a") )
   }
-
+  
   @Test
   def testWhile() {
     val program: VariableProgram = parser.parseFile("program_while.txt")
@@ -108,21 +109,21 @@ class InterpreterTest {
     assertTrue(true)
   }
   
-  @Test
-  def testChoiceExplotion() {
-    val program: VariableProgram = parser.parseFile("program_choiceExplotion.txt")
-    program.run(store, funcStore).print("Choice Explotion")
-    
-    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
-    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
-    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
-    val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
-    
-    assertEquals("unexpected value for 'a'", 
-      Choice(fA or fC, One(IntValue(1)), One(UndefinedValue("x not initialized."))),
-      store.get("x")
-    )
-  }
+//  @Test
+//  def testChoiceExplotion() {
+//    val program: VariableProgram = parser.parseFile("program_choiceExplotion.txt")
+//    program.run(store, funcStore).print("Choice Explotion")
+//    
+//    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+//    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+//    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
+//    val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
+//    
+//    assertEquals("unexpected value for 'a'", 
+//      Choice(fA or fC, One(IntValue(1)), One(UndefinedValue("x not initialized."))),
+//      store.get("x")
+//    )
+//  }
   
   @Test
   def testContextImportance() {
@@ -157,9 +158,16 @@ class InterpreterTest {
   @Test
   def testFunctionsRecursion() {
     val program: VariableProgram = parser.parseFile("program_functions_recursion.txt")
-    program.printAST
     program.run(store, funcStore).print("Functions Recursion")
     
     assertEquals("faculty recursion not working", One(IntValue(720)), store.get("a"))
+  }
+  
+  @Test
+  def testFosd12Figure9() {
+    val program: VariableProgram = parser.parseFile("program_fosd12_figure9.txt")
+    program.run(store, funcStore).print("FOSD 12 figure 9")
+    
+    // TODO: add proper assertion
   }
 }

@@ -1,13 +1,5 @@
 begin
-if(52 > 66)
-  a = c;
-else
-  a = a;
-c = 57 / a * 88 * 7;
-//#if B
-a = 82;
+//#if (F || D)
+b = (b * d);
 //#endif 
-d = a * e / 79;
-while(51 + 28 >= d)
-  a = 34;
 end

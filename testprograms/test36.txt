@@ -1,0 +1,45 @@
+begin
+while(39 > 90) {
+  c = d;
+  //#if B
+  d = 15;
+  //#endif 
+}
+while((39 - (50 / (9 / (b + 99)))) > (e / 12)) {
+  c = (((c / 38) * (c * b)) - (25 * (33 - (35 * b))));
+  b = b;
+}
+//#if A
+if(b < c) {
+  //#if (C && D && (!E))
+  e = 64;
+  //#endif 
+}
+//#endif 
+c = c;
+a = 82;
+while((31 * a) > (d + d)) {
+  //#if (E || B)
+  b = b;
+  //#endif 
+  e = 86;
+}
+if(a >= c) {
+  a = 12;
+  c = 74;
+}
+//#if B
+e = b;
+//#endif 
+//#if F
+if((31 + (e - ((a / e) / (59 + c)))) < 84) {
+  //#if D
+  if((68 - b) < e) {
+    e = b;
+    e = ((((a / e) + d) / c) + 36);
+  }
+  //#endif 
+  e = 58;
+}
+//#endif 
+end

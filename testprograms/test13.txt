@@ -1,43 +1,5 @@
 begin
-e = a + 99 / e * 11 + 22 - e * b + 52 / d;
-d = 54;
-a = d;
-//#if C
-d = e - 56 - 11 * a - 19 / 99 + 92;
-//#endif 
-//#if (D||F)
-while(d + c / d - e > a - c)
-  while(45 * a * 79 <= a)
-    while(1 > 91)
-      c = a / e;
-//#endif 
-c = d * 47 + 20;
-//#if C
-e = 99;
-//#endif 
-if(29 + 42 <= e - 56)
-  while(43 >= 70 / b * a + a * 99 / d)
-    d = c + 94 + b;
-else
-  a = c;
-d = b + c + d + 92 - 45;
-c = 60 - b - d - 40 * d;
-//#if !C
-if(37 / 35 + 24 - 82 + 15 > a * a)
-  while(50 == 91 * e)
-    e = 15 * 70 + 8 - a + 5 - b / c - d / c * 26;
-else
-  b = 31;
-//#endif 
-a = 43;
-//#if (E&&D)
-if(69 == 15 + 67)
-  d = 4;
-//#endif 
-//#if A
-if(d - 75 + 92 + 64 / 7 - 76 + 59 / d * b + a <= e / 73)
-  while(e + 66 * b * 20 / 70 / e * b + 17 * 58 >= 70 - 9)
-    while(48 * 11 + 62 + 41 / 21 + d - a + e * e * c * 20 >= 96 / c)
-      a = 39;
-//#endif 
+d = d;
+b = d;
+d = (56 / b);
 end

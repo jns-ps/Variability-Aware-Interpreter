@@ -1,6 +1,7 @@
 package de.puschj.interpreter.test
 
 import de.puschj.interpreter.Store
+import de.puschj.interpreter.test.TestConstraints._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import org.junit._
 import Assert._
@@ -11,10 +12,6 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 
 
 class GeneratedInterpreterTest {
-  
-  // constraints
-  final val FEATURENAMES = List("A","B","C","D","E","F")
-  final val VARNAMES = List("a", "b", "c", "d", "e")
   
   FeatureExprFactory.setDefault(FeatureExprFactory.bdd)
   val parser: WhileParser = new WhileParser()
@@ -136,7 +133,6 @@ class GeneratedInterpreterTest {
   @Test
   def testCase19 = {
     val program = parser.parseFile("testprograms\\test19.txt")
-    program.printAST
     assertTrue(ProgramUtils.compareProgramVariants(program, FEATURENAMES.toSet, VARNAMES.toSet))
   }
 

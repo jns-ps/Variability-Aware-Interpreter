@@ -1,9 +1,10 @@
 begin
 proc fac(i) { 
-  if (i <= 0) 
+  if (i <= 0) {
     res = 1;
-  else
+  } else {
     res = i * fac(i-1);
+  }
 }
 a = fac(6);
 end

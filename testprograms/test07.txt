@@ -1,26 +1,6 @@
 begin
-while(97 + d / e * 30 / d >= d * 71 - 51 - 88 * b)
-  e = e / a;
-if(98 * e + a / 63 + 18 * 85 <= c)
-  if(74 == 11 * 50 / 33 * b)
-    e = a * b / 60 / 69;
-  else
-    while(a <= a / 7 + 60 / c)
-      while(e - b + a * a * b - 36 <= a)
-        if(e >= a * d + b - 79 + a * a * d)
-          c = 77;
-        else
-          e = c;
-if(58 > 70 + c + 96 - 58 + d)
-  e = 18;
-b = c - 41 / 90 + 87 + 57;
-if(e < a * e)
-  c = c;
-else
-  b = b;
-while(b + e - b * b < 44)
-  c = d / 14 / 3 * d - b;
-//#if (!E&&C&&B&&(A||C))
-a = a - c;
-//#endif 
+if(e <= 84) {
+  e = 71;
+  e = (c + a);
+}
 end

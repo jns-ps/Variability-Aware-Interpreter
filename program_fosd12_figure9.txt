@@ -1,0 +1,15 @@
+begin
+a = 2;
+//#ifdef FOO
+a = 3;
+//#endif
+
+c = 1;
+res = 1;
+
+while (c < a) {
+  c = c + 1;
+  res = res * c;
+}
+assert(res < 10);
+end

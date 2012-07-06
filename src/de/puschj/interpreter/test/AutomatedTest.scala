@@ -5,21 +5,19 @@ import scala.collection.mutable.{Set => MSet}
 import Gen._
 import Arbitrary.arbitrary
 import de.puschj.interpreter._
+import de.puschj.interpreter.test.TestConstraints._
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Opt
 import de.puschj.interpreter.Store
+import de.puschj.interpreter.FileUtils._
 import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.puschj.parser.WhileParser
 import java.io.File
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
   
-//    FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
-  
-  // constraints
-  final val FEATURENAMES = List("A","B","C","D","E","F")
-  final val VARNAMES = List("a", "b", "c", "d", "e")
-  
+  FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
   
   // FeatureExpressions
   val genAtomicFeatureExpression =
@@ -44,7 +42,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2) ) )
   }
   
-  def genFeatureExpr() = Gen.sized(size => Gen.frequency( (1, genFeatureExprSized(size)), (2, True) )) suchThat ( _ != False )
+  def genFeatureExpr() = Gen.sized(size => Gen.frequency( (1, genFeatureExprSized(size)), (2, True) ))
   
   implicit def arbFeatureExpression: Arbitrary[FeatureExpr] = Arbitrary {
     genFeatureExpr
@@ -70,22 +68,22 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 	  val genAdd = for {
 	    left <- lzy(genExpressionSized(size))
 	    right <- genExpressionSized(size)
-	  } yield Add(left,right)
+	  } yield Parens(Add(left,right))
 	  
 	  val genSub = for {
 	    left <- lzy(genExpressionSized(size))
 	    right <- genExpressionSized(size)
-	  } yield Sub(left,right)
+	  } yield Parens(Sub(left,right))
 	    
 	  val genMul = for {
 	    left <- lzy(genExpressionSized(size))
 	    right <- genExpressionSized(size)
-	  } yield Mul(left,right)
+	  } yield Parens(Mul(left,right))
 	    
 	  val genDiv = for {
 	    left <- lzy(genExpressionSized(size))
 	    right <- genExpressionSized(size)
-	  } yield Div(left,right)
+	  } yield Parens(Div(left,right))
     
 	  Gen.oneOf(genAdd, genSub, genMul, genDiv) 
   }
@@ -131,23 +129,32 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     value <- genExpression
   } yield Assignment(name, value)
   
-  val genWhile = for {
-    cond <- genCondition
-    stmt <- genStatement
-  } yield While(cond, stmt)
+  def genBlock: Gen[Block] = for {
+    n <- Gen.choose(1, 3)
+    stmts <- listOfN(n, genOptStatementLessLoops)
+  } yield Block(stmts)
   
-  val genIf = for {
+  def genWhile: Gen[While] = for {
     cond <- genCondition
-    ifbranch <- genStatement
-    stmt <- genStatement
+    block <- genBlock
+  } yield While(cond, block)
+  
+  def genIf: Gen[If] = for {
+    cond <- genCondition
+    ifbranch <- genBlock
+    stmt <- genBlock
     elsebranch <- oneOf(None, Some(stmt))
   } yield If(cond, ifbranch, elsebranch)
   
-  val genStatement: Gen[Statement] = Gen.frequency( (2, genAssignment), (1, genWhile), (1, genIf) )
-  
   def genOptStatement: Gen[Opt[Statement]] = for {
     feat <- genFeatureExpr
-    stmt <- genStatement
+    stmt <- Gen.frequency( (3, genAssignment), (1, genWhile), (1, genIf) )
+  } yield Opt(feat, stmt)
+  
+  // for generating less nested loops
+  def genOptStatementLessLoops: Gen[Opt[Statement]] = for {
+    feat <- genFeatureExpr
+    stmt <- Gen.frequency( (10, genAssignment), (1, genWhile), (1, genIf) )
   } yield Opt(feat, stmt)
   
   def genProgram: Gen[VariableProgram] = Gen.sized( size => for {
@@ -159,48 +166,44 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //  }
   
   implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore) != false)
-  }
-  
-  def saveProgramToFile(p: VariableProgram) = {
-    val pw = new java.io.PrintWriter(new File("testprograms\\test"+(if (n<10) "0"+n else n)+".txt"))
-    try {
-      pw.println(p)
-    } 
-    finally { 
-      pw.close()
-      n += 1
-    }
-  }
-  
-  def saveAST_toFile(p: VariableProgram) = {
-    val pw = new java.io.PrintWriter(new File("testprograms\\ast"+(if (n<10) "0"+n else n)+".txt"))
-    try {
-      pw.println(p.toStringAST)
-    } 
-    finally { 
-      pw.close()
-    }
+    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore))
   }
   
   var n = 0
   
+  val parser = new WhileParser()
+  
   property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
-    saveAST_toFile(p)
-    saveProgramToFile(p)
-    
-//    println("=== VARIABLE ===")
-//    p.print()
-//    println("================")
+    if (n == 0)
+        for (file <- new File("testprograms").listFiles)
+            file.delete
+    saveProgramAST(p, "testprograms\\ast"+(if (n<10) "0"+n else n)+".txt")
+    saveProgram(p, "testprograms\\test"+(if (n<10) "0"+n else n)+".txt")
+    println("TestCase "+ n +" created.")
+    n += 1
     true
   })
   
-//  property("FeatureExpressions") = Prop.forAll( (f: FeatureExpr) => {
-//    println(f)
-//    true
+//  property("checkPrettyPrinter") = Prop.forAll( (p: VariableProgram) => {
+//    val parsed = parser.parse(p.toString)
+//    val gStore = p.run(new Store(), new FuncStore())
+//    val pStore = parsed.run(new Store(), new FuncStore())
+//    
+//    if (!gStore.equals(pStore)) {
+//      p.printAST
+//      parsed.printAST
+//      gStore.print("Generated Store")
+//      pStore.print("Parsed Store")
+//      false
+//    } else
+//      true
 //  })
   
-//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) )
+//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
+//    println("testing variable program "+n)
+//    n += 1
+//    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
+//  })
 
   
 }

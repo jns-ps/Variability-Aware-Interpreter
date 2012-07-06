@@ -1,118 +1,22 @@
 begin
-while(d * 76 < 81 / 74 * 2 / 30 + c / b - b / a * e + b - 39 - 75 / 51)
-  e = 80;
-if(b * d + 94 >= c)
-  a = b * 21 + e - 38 + d + e / c + c + 73;
-d = e;
-//#if B
-while(c + 33 - 19 - 87 * 30 * 5 / e / b >= d)
-  d = a + 11 - 7 * 37;
+b = 3;
+//#if ((!E) || (!B) || (!A))
+while(c >= ((e - a) * ((c * 17) * (d / 76)))) {
+  d = d;
+  //#if F
+  if((d / b) <= (67 * (93 - (c * 45)))) {
+    d = (5 - ((44 - a) + (c * 76)));
+  }
+  //#endif 
+  b = 54;
+}
 //#endif 
-if(54 / a + 16 / 14 * c + b - d + c * c - c - 30 == 83 / 69 * a * e + a - a * b + 95 * 13 - e)
-  while(e > 26 / c)
-    a = a;
-else
-  if(e == 87)
-    if(b == e)
-      if(15 / d + 48 + c / c <= d)
-        e = b + 96;
-      else
-        if(b - d - e + d - 40 * 97 * 35 <= 5 * d / d - 91 * a - 38)
-          d = e;
-        else
-          e = a;
-    else
-      while(b == c - c - 64 + a * 44 - c + 68 + c / c / 6 + 10 * 72 + d)
-        while(13 == 18)
-          b = 26;
-e = 7;
-//#if F
-d = 54 * 45 + 95 * a - 87 / b / d + a / c + c;
+//#if (C && (A || D))
+if((((58 / 98) / (e + 74)) * 57) >= d) {
+  e = (66 - 54);
+} else {
+  e = (e + a);
+}
 //#endif 
-//#if C
-while(a * 49 > 13 * 36 * c + 76 / 61 * a + 96 * c + 40 * b)
-  c = c;
-//#endif 
-//#if !F
-if(e < 42)
-  b = 97 - 53 - a / d + a + d + 48;
-else
-  if(5 < b - c + 72)
-    while(63 - a * 32 * 18 + d / 9 - 85 * 27 * b - a > d - e)
-      if(63 <= c - b + 26 + 90 + a * 31)
-        c = a * c + 68 - e;
-  else
-    b = b;
-//#endif 
-e = c;
-//#if D
-while(1 / b + d - b + e * d * c * d * 77 <= 61 * 39 * 86 * d - c - 52 / d / b - 53 - 57)
-  while(c / 41 + b * e > 72 / 89 / 96 / e - a * b + 55 / 14 + b)
-    e = 39 / 63;
-//#endif 
-while(e >= a / 69 * 100 + 58 + 77 / 89 * e)
-  while(a > d)
-    while(41 - e >= a / 15 - a - 43 / 2 + a - a)
-      d = a;
-//#if C
-while(c + 63 <= b)
-  c = 52 * 87;
-//#endif 
-//#if (B&&E)
-while(e <= a * 85 / 31)
-  if(23 == 25 + b + e - 2)
-    if(60 * b >= e)
-      d = 94 - 93 + 50 + a * 94 * d / b;
-  else
-    while(75 > 95)
-      d = 25 / 45 * b / b / b;
-//#endif 
-while(54 == d * c * d * 30)
-  if(d < 4 + 77 * 64 * b - 52)
-    if(46 - 56 * 58 / d - d - e - b * c - 10 / 11 - 88 == 8 * c)
-      b = 49;
-b = 71 * 21;
-//#if (D||C)
-while(60 == 99)
-  if(e <= 18)
-    if(a > e * a + 66 / e - b * 31 - 53 + e - 90 - d - 93 + 90 * 72 / b * c + 37)
-      if(41 == 11 * d)
-        c = 11;
-  else
-    while(b >= e * 2 + a - 6 / e)
-      while(d >= 80 * 45)
-        if(e + 83 * 64 * 40 - 72 + 9 - c + d * 26 > c)
-          while(88 >= 97)
-            if(97 / 82 / d + 96 * a == 41 + b - e + 5 + 14 - d - e - 56 * 75 / e)
-              if(41 + a - d + b - c * e < c)
-                if(52 > d / 97 / 69 / c)
-                  c = e;
-//#endif 
-//#if B
-if(45 == a * 8 - a + a / e * 8 + b + b - 58 - 83 / 58 - 7)
-  if(79 - 33 / 54 - e / a * 17 + 43 > 1)
-    if(b <= e)
-      while(d < 21)
-        a = 13 / e / 49 - d * 35 * b - 46 + 90;
-    else
-      b = 25;
-  else
-    d = d / a / 9 - 59 - a + d * 28;
-else
-  e = 50;
-//#endif 
-while(84 >= b - 34 + 59 * 14 - 48 / e * a / c - c)
-  while(16 * 7 <= 9)
-    b = 34 - 84 - 53;
-//#if (E&&(C||B))
-while(11 <= b + 100 * e - 20 + 84 - 8 / 60 + d)
-  c = c / b * 92 + a + 41 + b * a * 35 * 2 + 53 + c + 38;
-//#endif 
-if(b < 76 - 37 - d * d)
-  if(e >= 6 / 65)
-    b = b + 19 + d * 28 / 2 - e + d;
-else
-  while(a >= 16 / 25 / 76 + 83 * 26 * b)
-    while(80 + 55 * 87 - e - a + 19 - 20 / b / a / c + 18 - e + c > a)
-      b = a - b * b - e * b * d * a * 70 + 38 * d * d + e + 58;
+a = (a + ((a - 92) / (73 - d)));
 end

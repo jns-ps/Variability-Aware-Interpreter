@@ -1,5 +1,3 @@
 begin
-//#if E
-d = d / d;
-//#endif 
+c = (e / a);
 end

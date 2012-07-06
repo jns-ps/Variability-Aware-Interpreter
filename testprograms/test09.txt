@@ -1,22 +1,9 @@
 begin
-while(b < 52 / e)
-  if(e - a > 39 * a + 99)
-    b = 62;
-  else
-    e = 52;
-while(b / 89 * c / 46 * 73 + 27 >= e)
-  a = d;
-e = 10 - 54 / e;
-//#if E
-c = c;
+//#if (E && B)
+b = a;
 //#endif 
-d = 59;
-d = 1 * a * 75 / 90 - 31 + b * e;
-d = 43;
-if(e == c)
-  if(67 < d / 64 / b + 49 / 87 + e * 86 - c + a)
-    b = c;
-//#if (A||(!F&&!E)||!C)
-e = a + d * 73 - a / e / b;
-//#endif 
+while(52 <= e) {
+  a = (a + (c * 86));
+  b = ((48 - a) - a);
+}
 end
