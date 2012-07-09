@@ -1,6 +1,5 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.Store
 import de.puschj.interpreter.test.TestConstraints._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import org.junit._

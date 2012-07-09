@@ -9,7 +9,9 @@ sealed abstract class Program {
   
   def isEmpty(): Boolean
   
-  def run(store: Store, funcStore: FuncStore): Store
+  // TODO: Make returned FuncStore accessable
+  // TODO: add possibility to run on an existing store
+  def run(): Store
  
   override def toString() = SourceCodePrettyPrinter.prettyPrint(this)
   
@@ -26,7 +28,10 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   
   def getStatements() = stmts
   
-  def run(store: Store, funcStore: FuncStore): Store = {
+  def run(): VAStore = {
+    val store = new VAStore
+    val funcStore = new FuncStore
+    
     for(stm <- stmts) 
       try {
         VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
@@ -38,7 +43,7 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     return store
   }
   
-  def runLoopCheck(store: Store, funcStore: FuncStore): Boolean = {
+  def runLoopCheck(store: VAStore, funcStore: FuncStore): Boolean = {
     for(stm <- stmts)
       try {
         VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
@@ -93,8 +98,11 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
   
   def getStatements() = stmts
   
-  def run(store: Store, funcStore: FuncStore): Store = {
-    for(stm <- stmts) VAInterpreter.execute(stm, True, store, funcStore)
+  def run(): PlainStore = {
+    val store = new PlainStore
+    val funcStore = new FuncStore
+    
+    for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore)
     return store
   }
   

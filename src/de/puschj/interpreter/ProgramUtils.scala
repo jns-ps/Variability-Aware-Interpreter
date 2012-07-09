@@ -11,6 +11,7 @@ import de.fosd.typechef.conditional.ConditionalLib
 import java.text.SimpleDateFormat
 import de.puschj.interpreter.benchmark.BenchmarkResult
 import de.fosd.typechef.conditional.Opt
+import de.fosd.typechef.conditional.One
 
 
 object ProgramUtils {
@@ -97,17 +98,17 @@ object ProgramUtils {
     }
     
     def compareProgramVariants(program: VariableProgram, availableFeatures: Set[String], comparedVariables: Set[String]): Boolean = {
-      val variableStore = program.run(new Store, new FuncStore)
+      val variableStore = program.run()
       val allVariantsMap = allProgramVariants(program, availableFeatures)
       for (programVariant <- allVariantsMap) {
-        val configuredStore = programVariant._1.run(new Store, new FuncStore)
+        val configuredStore = programVariant._1.run()
         for (selectedFeatures <- programVariant._2) {
            var context = True
            context = selectedFeatures.foldLeft(context)( (f, s) => f and createDefinedExternal(s))
            context = (availableFeatures -- selectedFeatures).foldLeft(context)( (f, s) => f andNot createDefinedExternal(s))
            for (variable <- comparedVariables) {
              val varStoreValue = variableStore.getByContext(variable, context)
-             val cnfStoreValue = configuredStore.get(variable)
+             val cnfStoreValue = One(configuredStore.get(variable))
              if (!ConditionalLib.equals(varStoreValue, cnfStoreValue)) {
                System.err.println("Different Values for \""+variable+"\" - expected: "+cnfStoreValue+" result: "+varStoreValue);
 //               System.err.println("==== Variable Program: ====\n"+program.toString+"\n");

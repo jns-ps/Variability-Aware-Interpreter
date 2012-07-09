@@ -8,7 +8,9 @@ import de.fosd.typechef.conditional.ConditionalLib.findSubtree
 import scala.collection.mutable.HashMap
 import de.fosd.typechef.conditional.One
 
-class Store {
+abstract class Store
+
+class VAStore extends Store {
   
   private val entries: Map[String,Conditional[Value]] = Map.empty[String,Conditional[Value]]
 
@@ -39,13 +41,41 @@ class Store {
   def getStoredVariables() = entries.keySet
   
   override def equals(that: Any): Boolean = {
-    if (!that.isInstanceOf[Store])
+    if (!that.isInstanceOf[VAStore])
         return false
-    val s = that.asInstanceOf[Store]
+    val s = that.asInstanceOf[VAStore]
     if (!getStoredVariables().equals(s.getStoredVariables()))
         return false
     for (variable <- getStoredVariables())
         if (!ConditionalLib.equals(entries.get(variable).get, s.entries.get(variable).get))
+            return false
+    true
+  }
+}
+
+class PlainStore extends Store {
+  
+  private val entries: Map[String,Value] = Map.empty[String,Value]
+  
+  def put(key: String, value: Value) = entries.put(key, value)
+  
+  def get(key: String) = {
+    if (!entries.contains(key))
+      UndefinedValue(key+" not initialized.")
+    else
+      entries.get(key).get
+  }
+  
+  def getStoredVariables() = entries.keySet
+  
+  override def equals(that: Any): Boolean = {
+    if (!that.isInstanceOf[PlainStore])
+        return false
+    val s = that.asInstanceOf[PlainStore]
+    if (!getStoredVariables().equals(s.getStoredVariables()))
+        return false
+    for (variable <- getStoredVariables())
+        if (!entries.get(variable).equals(s.entries.get(variable).get))
             return false
     true
   }

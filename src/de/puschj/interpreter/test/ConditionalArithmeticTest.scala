@@ -1,6 +1,6 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.{Store,Assignment,Statement,Mul,Num}
+import de.puschj.interpreter.{VAStore,Assignment,Statement,Mul,Num}
 import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
@@ -15,7 +15,7 @@ import de.fosd.typechef.conditional.ConditionalLib
 
 class ConditionalArithmeticTest {
   
-  val store: Store = new Store()
+  val store: VAStore = new VAStore()
   val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
   val fY: FeatureExpr = FeatureExprFactory.createDefinedExternal("Y")
   

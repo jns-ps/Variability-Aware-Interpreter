@@ -9,7 +9,7 @@ import de.puschj.interpreter.test.TestConstraints._
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.conditional.Opt
-import de.puschj.interpreter.Store
+import de.puschj.interpreter.VAStore
 import de.puschj.interpreter.FileUtils._
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.puschj.parser.WhileParser
@@ -166,23 +166,23 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //  }
   
   implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.runLoopCheck(new Store, new FuncStore))
+    genProgram suchThat (_.runLoopCheck(new VAStore, new FuncStore))
   }
   
   var n = 0
   
   val parser = new WhileParser()
   
-  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
-    if (n == 0)
-        for (file <- new File("testprograms").listFiles)
-            file.delete
-    saveProgramAST(p, "testprograms\\ast"+(if (n<10) "0"+n else n)+".txt")
-    saveProgram(p, "testprograms\\test"+(if (n<10) "0"+n else n)+".txt")
-    println("TestCase "+ n +" created.")
-    n += 1
-    true
-  })
+//  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
+//    if (n == 0)
+//        for (file <- new File("testprograms").listFiles)
+//            file.delete
+//    saveProgramAST(p, "testprograms\\ast"+(if (n<10) "0"+n else n)+".txt")
+//    saveProgram(p, "testprograms\\test"+(if (n<10) "0"+n else n)+".txt")
+//    println("TestCase "+ n +" created.")
+//    n += 1
+//    true
+//  })
   
 //  property("checkPrettyPrinter") = Prop.forAll( (p: VariableProgram) => {
 //    val parsed = parser.parse(p.toString)
@@ -199,11 +199,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //      true
 //  })
   
-//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
-//    println("testing variable program "+n)
-//    n += 1
-//    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
-//  })
+  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
+    println("testing variable program "+n)
+    n += 1
+    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
+  })
 
   
 }
