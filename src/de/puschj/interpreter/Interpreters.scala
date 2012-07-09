@@ -155,8 +155,9 @@ object PlainInterpreter {
                 execute(s2.get, store, funcStore)
         
       }
-      case Assert(cnd) => {
-          if (cnd.isInstanceOf[ErrorValue] || !eval(cnd, store, funcStore).getBoolValue)
+      case Assert(c) => {
+          val cnd = eval(c, store, funcStore)
+          if (cnd.isInstanceOf[ErrorValue] || !cnd.getBoolValue)
               throw new AssertionError("violation of " + cnd)
       }
       case FuncDef(name, args, body) => {
