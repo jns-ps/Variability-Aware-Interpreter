@@ -65,7 +65,7 @@ object ProgramUtils {
       features
     }
     
-    def countProgramFeatureExpressions(program: VariableProgram) = countFeatures(program.getStatements)
+    def countProgramFeatureExpressions(program: VariableProgram) = countFeatureExpressions(program.getStatements)
     
     private def countFeatureExpressions(stmts: List[Opt[Statement]]): Int = {
       var features = 0
