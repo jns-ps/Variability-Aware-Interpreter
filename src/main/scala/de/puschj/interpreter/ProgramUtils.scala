@@ -9,7 +9,6 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.conditional.ConditionalLib
 import java.text.SimpleDateFormat
-import de.puschj.interpreter.benchmark.BenchmarkResult
 import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.conditional.One
 

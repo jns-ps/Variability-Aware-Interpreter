@@ -2,13 +2,13 @@ package de.puschj.interpreter.benchmark
 
 import de.puschj.interpreter._
 import de.puschj.interpreter.ProgramUtils._
-import de.puschj.interpreter.test.TestConstraints._
 import de.puschj.parser.WhileParser
 import scala.collection.mutable.{Map => MMap}
 import de.fosd.typechef.conditional.ConditionalLib
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import scala.collection.mutable.ListBuffer
+import de.puschj.interpreter.test.TestConstraints._
 
 case class BenchmarkResult(nFeatures: Int, nFeatureExpressions: Int, nVariants: Int, nStatements: Int, tVAInterpreter: Long, tBFInterpreter: Long)
 
