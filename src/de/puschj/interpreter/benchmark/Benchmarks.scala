@@ -51,7 +51,7 @@ class CompoundResultSeries() {
     def saveToFile() = {
        val time = new java.util.Date().getTime
        val sb = new StringBuilder()
-       sb.append("Features;Variants;Statements;VAInterpreter;BruteForce\n")
+       sb.append("Features;FeatureExpressions;Variants;Statements;VAInterpreter;BruteForce\n")
        
        var nResults = 0
        if (!resultseries.isEmpty) nResults = resultseries(0).getResults.size
@@ -109,14 +109,14 @@ object Benchmarks {
       var bf_bench = 0L
       
       start = System.nanoTime
-      val variableStore = program.run(new Store, new FuncStore)
+      val variableStore = program.run()
       stop = System.nanoTime
       va_bench = (stop - start)
       
       val allVariantsMap = allProgramVariants(program, availableFeatures)
       for (programVariant <- allVariantsMap) {
         start = System.nanoTime
-        val configuredStore = programVariant._1.run(new Store, new FuncStore)
+        val configuredStore = programVariant._1.run()
         stop = System.nanoTime
         bf_bench += (stop - start)
       }
