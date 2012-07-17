@@ -1,6 +1,6 @@
 begin
 a = 2;
-proc test(i) { res = i + 10; }
+def test(i) { res = i + 10; }
 b = a;
 b = test(b);
 end

@@ -45,8 +45,8 @@ class WhileParser extends MultiFeatureParser() {
     lazy val assertStatement : MultiParser[Assert] = "assert" ~> "(" ~> condition  <~ ")" <~ ";" ^^ {
       case c => Assert(c)
     }
-    lazy val funcDeclaration : MultiParser[FuncDef] = "proc" ~> identifier ~ ("(" ~> repPlain((identifier ^^ { x => x.getText}) <~ opt(",") ) <~ ")") ~ blockStatement ^^ {
-      case funcName~funcArgs~funcBody => FuncDef(funcName.getText, funcArgs, funcBody.asInstanceOf[Block])
+    lazy val funcDeclaration : MultiParser[FuncDef] = "def" ~> identifier ~ ("(" ~> repPlain((identifier ^^ { x => x.getText}) <~ opt(",") ) <~ ")") ~ blockStatement ^^ {
+      case funcName~funcArgs~funcBody => FuncDef(funcName.getText, funcArgs, funcBody)
     }
 
     // Condition

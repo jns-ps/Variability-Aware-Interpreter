@@ -32,7 +32,3 @@ case class While(cond: Condition, body: Block) extends Statement
 case class If(cond: Condition, s1: Block, s2: Option[Block]) extends Statement
 case class Assert(cond: Condition) extends Statement
 case class FuncDef(name: String, args: List[String], body: Block) extends Statement
-
-case class FunctionDef(args: List[String], body: Block)
-
-

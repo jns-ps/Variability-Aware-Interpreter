@@ -8,10 +8,8 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False}
 sealed abstract class Program {
   
   def isEmpty(): Boolean
-  
-  // TODO: Make returned FuncStore accessable
-  // TODO: add possibility to run on an existing store
-  def run(): Store
+
+  def run(): Store[_]
  
   override def toString() = SourceCodePrettyPrinter.prettyPrint(this)
   
@@ -28,10 +26,9 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   
   def getStatements() = stmts
   
-  def run(): VAStore = {
-    val store = new VAStore
-    val funcStore = new FuncStore
-    
+  def run(): VAStore = run(new VAStore, new VAFuncStore)
+  
+  def run(store: VAStore, funcStore: VAFuncStore): VAStore = {
     for(stm <- stmts) 
       try {
         VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
@@ -39,11 +36,12 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
       catch {
         case e: LoopExceededException => println(e.toString)
       }
-      
     return store
   }
   
-  def runLoopCheck(store: VAStore, funcStore: FuncStore): Boolean = {
+  def runLoopCheck(): Boolean = runLoopCheck(new VAStore, new VAFuncStore)
+  
+  def runLoopCheck(store: VAStore, funcStore: VAFuncStore): Boolean = {
     for(stm <- stmts)
       try {
         VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
@@ -98,10 +96,9 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
   
   def getStatements() = stmts
   
-  def run(): PlainStore = {
-    val store = new PlainStore
-    val funcStore = new FuncStore
-    
+  def run(): PlainStore = run(new PlainStore, new PlainFuncStore)
+  
+  def run(store: PlainStore, funcStore: PlainFuncStore): PlainStore = {
     for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore)
     return store
   }

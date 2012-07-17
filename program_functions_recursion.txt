@@ -1,5 +1,5 @@
 begin
-proc fac(i) { 
+def fac(i) { 
   if (i <= 0) {
     res = 1;
   } else {

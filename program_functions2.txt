@@ -1,5 +1,5 @@
 begin
-proc pow(i) { res = i * i; }
-proc div(a,b) { res = a / b; }
+def pow(i) { res = i * i; }
+def div(a,b) { res = a / b; }
 a = pow(div(10,2));
 end
