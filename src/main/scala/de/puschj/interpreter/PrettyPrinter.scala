@@ -2,6 +2,7 @@ package de.puschj.interpreter
 import scala.text.Document
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
+import de.fosd.typechef.featureexpr.FeatureExprFactory
 
 //object ASTPrettyPrinter {
 //  
@@ -150,6 +151,16 @@ object SourceCodePrettyPrinter {
         }      
       }
       case Assert(cond) => "assert" ~ "(" ~ cond ~ ")" ~ ";"
+      case FuncDef(name, args, body) => {
+        var doc = "def" ~~ name ~ "("
+        for (i <- 0 until args.size) {
+          doc = doc ~ args(i)
+          if (i < args.size - 1) {
+            doc = doc ~ ", "
+          }
+        }
+        doc ~ ")" ~~ body
+      }
 
       // Expressions                          
       case Num(x) => x.toString()
@@ -159,6 +170,16 @@ object SourceCodePrettyPrinter {
       case Mul(e1, e2) => e1 ~~ "*" ~~ e2
       case Div(e1, e2) => e1 ~~ "/" ~~ e2
       case Parens(expr) => "(" ~ expr ~ ")"
+      case Call(fname, args) => {
+        var doc: Doc = fname ~ "("
+         for (i <- 0 until args.size) {
+          doc = doc ~ args(i)
+          if (i < args.size - 1) {
+            doc = doc ~ ", "
+          }
+        }
+        doc ~ ")"
+      } 
       
       //Conditions
       case Equal(e1, e2) => e1 ~~ "==" ~~ e2
@@ -173,7 +194,20 @@ object SourceCodePrettyPrinter {
   }
   
   private def prettyPrintFeatureExprOpen(feature: FeatureExpr): Doc = {
-    if (feature.isTautology()) Empty else Line ~ "//#if " ~ feature.toTextExpr
+    if (feature.isTautology()) 
+      Empty
+    else 
+      Line ~ "//#if " ~ (
+          if (FeatureExprFactory.default == FeatureExprFactory.sat)
+            feature.toTextExpr
+              .replace("!definedEx(", "(!")
+              .replace("definedEx", "")
+              .replace("0", "(A && !A)")
+          else
+            feature.toTextExpr
+//              .replace("!definedEx(", "(!")
+//              .replace("definedEx", "")
+        )
   }
   
   private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {

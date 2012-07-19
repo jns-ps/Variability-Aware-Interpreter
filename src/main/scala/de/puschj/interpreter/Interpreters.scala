@@ -47,7 +47,7 @@ object VAInterpreter {
         } 
       }
       case FuncDef(name, args, body) => {
-        funcStore.put(name, Opt(context, FunctionDef(args, body)))
+        funcStore.put(name, Choice(context, One(FDef(args, body)), funcStore.get(name)).simplify)
       }
     }
   }
@@ -86,23 +86,23 @@ object VAInterpreter {
           (a: Value, b: Value) => calculateValue(a, b, (a,b) => BoolValue(a<=b)))
       // functions
       case Call(name, args) => {
-        val fdefOpt = funcStore.get(name)
-        val fdefCtx = fdefOpt.feature
-        val fdef = fdefOpt.entry
         
-        val nArgs = fdef.args.size
-        if (nArgs != args.size) 
-          throw new RuntimeException("Illegal number of arguments.")
-        val vals = args.map(eval(_, store, funcStore))
-        
-        val staticScopeStore = new VAStore()
-        for (i <- 0 until nArgs)
-          staticScopeStore.put(fdef.args(i), vals(i))
-          
-        execute(fdef.body, fdefCtx, staticScopeStore, funcStore)
-        return Choice(fdefCtx, staticScopeStore.get("res"), One(UndefinedValue("func \""+name+"\" not declared")))
+        funcStore.get(name).mapr( fdef => fdef match {
+          case FErr(msg) => One(UndefinedValue(msg))
+          case FDef(fargs, fbody) => {
+            val nArgs = fargs.size
+            if (nArgs != args.size) 
+              throw new RuntimeException("Illegal number of arguments.")
+            val vals = args.map(eval(_, store, funcStore))
+            val staticScopeStore = new VAStore()
+            for (i <- 0 until nArgs)
+              staticScopeStore.put(fargs(i), vals(i))
+            execute(fbody, True, staticScopeStore, funcStore)
+            staticScopeStore.get("res")
+          }
+        })
       }
-    }
+  }
   
   private def calculateValue(a: Value, b: Value, f: (Int, Int) => Value) = {
     (a, b) match {
@@ -113,20 +113,11 @@ object VAInterpreter {
     }
   }
 
-  private def whenTrue(c: Condition, store: VAStore, funcStore: VAFuncStore): FeatureExpr = whenTrueRek(True, eval(c, store, funcStore))
-
-  private def whenTrueRek(fe: FeatureExpr, c: Conditional[Value]): FeatureExpr = {
-    c match {
-      case One(value) => {
-        value match {
-          case ErrorValue(_) => False
-          case x => if (x.getBoolValue()) fe else False
-        }
-      }
-      case Choice(feature, thn, els) =>
-        whenTrueRek(feature and fe, thn) or whenTrueRek(feature.not() and fe, els)
-    }
-  }
+  private def whenTrue(c: Condition, store: VAStore, funcStore: VAFuncStore): FeatureExpr = 
+      eval(c, store, funcStore).when( _ match {
+        case ErrorValue(_) => false
+        case value => value.getBoolValue
+      })
 }
 
 object PlainInterpreter {
@@ -167,7 +158,7 @@ object PlainInterpreter {
               throw new AssertionError("violation of " + cnd)
       }
       case FuncDef(name, args, body) => {
-        funcStore.put(name, FunctionDef(args, body))
+        funcStore.put(name, FDef(args, body))
       }
     }
   }
@@ -200,17 +191,20 @@ object PlainInterpreter {
       case Call(name, args) => {
         val fdef = funcStore.get(name)
         
-        val nArgs = fdef.args.size
-        if (nArgs != args.size) 
-          throw new RuntimeException("Illegal number of arguments.")
-        val vals = args.map(eval(_, store, funcStore))
-        
-        val staticScopeStore = new PlainStore()
-        for (i <- 0 until nArgs)
-          staticScopeStore.put(fdef.args(i), vals(i))
-          
-        execute(fdef.body, staticScopeStore, funcStore)
-        return staticScopeStore.get("res")
+        fdef match {
+          case FErr(msg) => UndefinedValue(msg)
+          case FDef(fargs, fbody) => {
+            val nArgs = fargs.size
+            if (nArgs != args.size) 
+              throw new RuntimeException("Illegal number of arguments.")
+            val vals = args.map(eval(_, store, funcStore))
+            val staticScopeStore = new PlainStore()
+            for (i <- 0 until nArgs)
+              staticScopeStore.put(fargs(i), vals(i))
+            execute(fbody, staticScopeStore, funcStore)
+            staticScopeStore.get("res")
+          }
+        }
       }
     }
   

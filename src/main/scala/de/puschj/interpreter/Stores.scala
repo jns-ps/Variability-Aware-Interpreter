@@ -2,6 +2,7 @@ package de.puschj.interpreter
 
 import scala.collection.mutable.Map
 import de.fosd.typechef.featureexpr.FeatureExpr
+import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False}
 import de.fosd.typechef.conditional.Conditional
 import de.fosd.typechef.conditional.ConditionalLib
 import de.fosd.typechef.conditional.ConditionalLib.findSubtree
@@ -12,7 +13,7 @@ import de.fosd.typechef.conditional.Opt
 
 // === stores for variables ===
 
-abstract class Store[T] {
+sealed abstract class Store[T] {
   
   protected val entries: Map[String, T] = Map.empty[String, T]
   
@@ -83,34 +84,39 @@ class VAStore extends Store[Conditional[Value]] {
 
 // === function stores ===
 
-case class FunctionDef(args: List[String], body: Block)
+sealed abstract class FunctionDef
+case class FDef(args: List[String], body: Block) extends FunctionDef
+case class FErr(msg: String) extends FunctionDef
 
 
-class PlainFuncStore {
+sealed abstract class FuncStore[T] {
   
-  private val functions: Map[String, FunctionDef] = Map.empty[String, FunctionDef]
+  protected val functions: Map[String, T] = Map.empty[String, T]
   
-  def put(funcName: String, funcDef: FunctionDef) = functions.put(funcName, funcDef)
+  def put(funcName: String, funcDef: T) = functions.put(funcName, funcDef)
   
-  @throws(classOf[NoSuchMethodException])
-  def get(funcName: String) = {
+  protected def undefined(s: String): T
+  
+  def get(funcName: String): T = {
     if (!functions.contains(funcName))
-      throw new NoSuchMethodException("No method with name: "+funcName)
+      undefined("func \""+funcName+"\" not declared")
     else
       functions.get(funcName).get
+  }
+  
+  def print(headline: String = "") {
+    val s: String = if (headline.isEmpty()) "FuncStore" else headline
+    println("====== " + s + " =======")
+    println(functions.toString)
+    println("=======" + ("=" * s.length()) + "========")
+    println()
   }
 }
 
-class VAFuncStore {
-  private val functions: Map[String, Opt[FunctionDef]] = Map.empty[String, Opt[FunctionDef]]
-  
-  def put(key: String, funcDef: Opt[FunctionDef]) = functions.put(key, funcDef)
-  
-  @throws(classOf[NoSuchMethodException])
-  def get(funcName: String) = {
-    if (!functions.contains(funcName))
-      throw new NoSuchMethodException("No method with name: "+funcName)
-    else
-      functions.get(funcName).get
-  }
+class PlainFuncStore extends FuncStore[FunctionDef] {
+    def undefined(s: String) = FErr(s)
+}
+
+class VAFuncStore extends FuncStore[Conditional[FunctionDef]] {
+    def undefined(s: String) = One(FErr(s))
 }
