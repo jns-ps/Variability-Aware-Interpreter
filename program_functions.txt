@@ -1,6 +1,5 @@
 begin
 a = 2;
 def test(i) { res = i + 10; }
-b = a;
-b = test(b);
+b = test(a);
 end

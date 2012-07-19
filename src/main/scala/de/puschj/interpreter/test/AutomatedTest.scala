@@ -14,10 +14,14 @@ import de.puschj.interpreter.FileUtils._
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.puschj.parser.WhileParser
 import java.io.File
+import scala.collection.mutable.ListBuffer
 
 object InterpreterAutoCheck extends Properties("Interpreter") {
   
   FeatureExprFactory.setDefault(FeatureExprFactory.bdd);
+  
+  val parser = new WhileParser()
+  
   
   // FeatureExpressions
   val genAtomicFeatureExpression =
@@ -50,144 +54,198 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
 
   // === Expressions === 
-  val genStoreVarName = oneOf(VARNAMES)
+  def genStoreVarName = oneOf(VARNAMES)
         
   def genAtomicExpression() = {
-    val genId = for {
+    def genId = for {
       name <- genStoreVarName
     } yield Id(name)
   
-    val genNum = for {
+    def genNum = for {
       n <- Gen.choose(1, 100)
     } yield Num(n)
     
     oneOf(genId, genNum)
   } 
   
-  def genCompoundExpression(size: Int) = {
+  def genCall(size: Int, funcNames: Seq[String]) = for {
+    funcName <- oneOf(funcNames)
+    arg1 <- genExpressionSized(size, funcNames)
+    arg2 <- genExpressionSized(size, funcNames)
+  } yield {
+    val args = ListBuffer.empty[Expression]
+    args += arg1
+    if (predefFuncDefs.find(x => x.name equals funcName).get.args.size == 2)
+      args += arg2
+    Call(funcName, args.toList)
+  }
+  
+  def genCompoundExpression(size: Int, funcNames: Seq[String]) = {
 	  val genAdd = for {
-	    left <- lzy(genExpressionSized(size))
-	    right <- genExpressionSized(size)
+	    left <- lzy(genExpressionSized(size, funcNames))
+	    right <- genExpressionSized(size, funcNames)
 	  } yield Parens(Add(left,right))
 	  
 	  val genSub = for {
-	    left <- lzy(genExpressionSized(size))
-	    right <- genExpressionSized(size)
+	    left <- lzy(genExpressionSized(size, funcNames))
+	    right <- genExpressionSized(size, funcNames)
 	  } yield Parens(Sub(left,right))
 	    
 	  val genMul = for {
-	    left <- lzy(genExpressionSized(size))
-	    right <- genExpressionSized(size)
+	    left <- lzy(genExpressionSized(size, funcNames))
+	    right <- genExpressionSized(size, funcNames)
 	  } yield Parens(Mul(left,right))
 	    
 	  val genDiv = for {
-	    left <- lzy(genExpressionSized(size))
-	    right <- genExpressionSized(size)
+	    left <- lzy(genExpressionSized(size, funcNames))
+	    right <- genExpressionSized(size, funcNames)
 	  } yield Parens(Div(left,right))
     
 	  Gen.oneOf(genAdd, genSub, genMul, genDiv) 
   }
   
-  def genExpressionSized(size: Int): Gen[Expression] = {
+  def genExpressionSized(size: Int, funcNames: Seq[String]): Gen[Expression] = {
     if (size <= 0) genAtomicExpression
-    else Gen.frequency( (1, genAtomicExpression), (1, genCompoundExpression(size / 2)))
+    else Gen.frequency( (10, genAtomicExpression), (5, genCompoundExpression(size / 2, funcNames)), (1, genCall(size / 2, funcNames)))
   }
   
-  def genExpression = Gen.sized(size => genExpressionSized(size))
+  def genExpression(funcNames: Seq[String]) = Gen.sized(size => genExpressionSized(size, funcNames))
   
   // === Conditions ===
-  val genEQ = for {
-    left <- lzy(genExpression)
-    right <- genExpression
+  def genEQ(funcNames: Seq[String]) = for {
+    left <- lzy(genExpression(funcNames))
+    right <- genExpression(funcNames)
   } yield Equal(left, right)
   
-  val genGT = for {
-    left <- lzy(genExpression)
-    right <- genExpression
+  def genGT(funcNames: Seq[String]) = for {
+    left <- lzy(genExpression(funcNames))
+    right <- genExpression(funcNames)
   } yield GreaterThan(left, right)
   
- val genGOE = for {
-    left <- lzy(genExpression)
-    right <- genExpression
+ def genGOE(funcNames: Seq[String]) = for {
+    left <- lzy(genExpression(funcNames))
+    right <- genExpression(funcNames)
   } yield GreaterOE(left, right)
   
- val genLT = for {
-    left <- lzy(genExpression)
-    right <- genExpression
+ def genLT(funcNames: Seq[String]) = for {
+    left <- lzy(genExpression(funcNames))
+    right <- genExpression(funcNames)
   } yield LessThan(left, right)
   
-  val genLOE = for {
-    left <- lzy(genExpression)
-    right <- genExpression
+  def genLOE(funcNames: Seq[String]) = for {
+    left <- lzy(genExpression(funcNames))
+    right <- genExpression(funcNames)
   } yield LessOE(left, right)
   
-  def genCondition = oneOf(genEQ, genGT, genGOE, genLT, genLOE)
+  def genCondition(funcNames: Seq[String]) = oneOf(genEQ(funcNames), genGT(funcNames), genGOE(funcNames), genLT(funcNames), genLOE(funcNames))
   
+  // === Functions ===
+  val predefFuncDefs = {
+    val functionDeclarations = 
+      "begin " +
+      "def inc(x) { res = x + 1; } " +
+      "def dec(x) { res = x - 1; } " +
+      "def sqr(x) { res = x * x; } " +
+      "def abs(x) { if (x < 0) { res = 0 - x; } }" +
+      "def plusten(x) { res = x + 10; } " +
+      "def sum(a,b) { res = a + b; } " +
+      "def sub(a,b) { res = a - b; } " +
+      "def mod(a,b) { k = 0; while(a - k * b >= b) { k = k + 1; } res = a - k * b; } " +
+//      "def pow(a,b) { if (b == 0) { res = 1; } else { res = a * pow(a, b - 1); } } " +
+      "def min(a,b) { if (a <= b) { res = a; } else { res = b; } } " +
+      "def max(a,b) { if (a >= b) { res = a; } else { res = b; } } " +
+      "end"
+    val program = parser.parse(functionDeclarations)
+    val funcDefs = ListBuffer.empty[FuncDef]
+    for (stmtOpt <- program.getStatements)
+      funcDefs += stmtOpt.entry.asInstanceOf[FuncDef]
+    funcDefs.toList
+  }
+  
+  def genOptFuncDefs(nDecs: Int): Gen[Seq[Opt[FuncDef]]] = for { 
+    count <- choose(0, scala.math.min(nDecs, 10))
+    funcDefs <- pick(count, predefFuncDefs)
+    featExpressions <- listOfN(count, genFeatureExpr)
+  } yield (featExpressions, funcDefs).zipped map (Opt(_,_))
+    
   // === Statements ===
-  val genAssignment = for {
+  def genAssignment(funcNames: Seq[String]) = for {
     name <- genStoreVarName
-    value <- genExpression
+    value <- genExpression(funcNames)
   } yield Assignment(name, value)
   
-  def genBlock: Gen[Block] = for {
+  def genBlock(nested: Int, funcNames: Seq[String]): Gen[Block] = for {
     n <- Gen.choose(1, 3)
-    stmts <- listOfN(n, genOptStatementLessLoops)
+    stmts <- listOfN(n, genOptStatementNested(nested, funcNames))
   } yield Block(stmts)
   
-  def genWhile: Gen[While] = for {
-    cond <- genCondition
-    block <- genBlock
+  def genWhile(nested: Int, funcNames: Seq[String]): Gen[While] = for {
+    cond <- genCondition(funcNames)
+    block <- genBlock(nested + 1, funcNames)
   } yield While(cond, block)
   
-  def genIf: Gen[If] = for {
-    cond <- genCondition
-    ifbranch <- genBlock
-    stmt <- genBlock
+  def genIf(nested: Int, funcNames: Seq[String]): Gen[If] = for {
+    cond <- genCondition(funcNames)
+    ifbranch <- genBlock(nested, funcNames)
+    stmt <- genBlock(nested, funcNames)
     elsebranch <- oneOf(None, Some(stmt))
   } yield If(cond, ifbranch, elsebranch)
   
-  def genOptStatement: Gen[Opt[Statement]] = for {
+  def genOptStatementTopLevel(funcNames: Seq[String]): Gen[Opt[Statement]] = for {
     feat <- genFeatureExpr
-    stmt <- Gen.frequency( (3, genAssignment), (1, genWhile), (1, genIf) )
+    stmt <- Gen.frequency( (3, genAssignment(funcNames)), (1, genWhile(0, funcNames)), (1, genIf(0, funcNames)) )
   } yield Opt(feat, stmt)
   
-  // for generating less nested loops
-  def genOptStatementLessLoops: Gen[Opt[Statement]] = for {
-    feat <- genFeatureExpr
-    stmt <- Gen.frequency( (10, genAssignment), (1, genWhile), (1, genIf) )
-  } yield Opt(feat, stmt)
-  
-  def genProgram: Gen[VariableProgram] = Gen.sized( size => for {
-    stmts <- listOfN(size, genOptStatement)
-  } yield VariableProgram(stmts) )
-  
-//  implicit def arbProgram: Arbitrary[VariableProgram] = Arbitrary {
-//    genProgram
-//  }
-  
-  implicit def arbNonExceedingProgram: Arbitrary[VariableProgram] = Arbitrary {
-    genProgram suchThat (_.runLoopCheck(new VAStore, new FuncStore))
+  def genStatementNested(nested: Int, funcNames: Seq[String]): Gen[Statement] = {
+    if (nested > 2) 
+      Gen.frequency( (10, genAssignment(funcNames)), (1, genIf(nested, funcNames)) )
+    else
+      Gen.frequency( (10, genAssignment(funcNames)), (1, genWhile(nested, funcNames)), (1, genIf(nested, funcNames)) )
   }
   
-  var n = 0
+  def genOptStatementNested(nested: Int, funcNames: Seq[String]): Gen[Opt[Statement]] = for {
+    feat <- genFeatureExpr
+    stmt <- genStatementNested(nested, funcNames)
+  } yield Opt(feat, stmt)
   
-  val parser = new WhileParser()
+  def genProgram(size: Int): Gen[VariableProgram] = {
+    println("generating program with size "+size)
+    def nonExceeding = (  for {
+                       decls <- genOptFuncDefs( size / 10 )
+                       stmts <- listOfN(size, genOptStatementTopLevel(decls.map(x => x.entry.name)))
+                     } yield VariableProgram(decls ++: stmts)
+                  ) suchThat (_.runLoopCheck)
+    val program = nonExceeding.sample
+    if (!program.isDefined)
+      genProgram(size)
+    else
+      program.get
+  }
+  
+  implicit def arbProgram: Arbitrary[VariableProgram] = Arbitrary {
+    sized( size => genProgram(size) )
+  }
+  
+  var tcCount = 0
   
 //  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
-//    if (n == 0)
+//    if (tcCount == 0)
 //        for (file <- new File("testprograms").listFiles)
 //            file.delete
-//    saveProgramAST(p, "testprograms\\ast"+(if (n<10) "0"+n else n)+".txt")
-//    saveProgram(p, "testprograms\\test"+(if (n<10) "0"+n else n)+".txt")
-//    println("TestCase "+ n +" created.")
-//    n += 1
+////    saveProgramAST(p, "testprograms\\ast"+(if (tcCount<10) "0"+tcCount else tcCount)+".txt")
+//            
+//    saveProgram(p, "testprograms\\test%02d.txt".format(tcCount))
+//    
+//    p.print
+//    println("TestCase "+ tcCount +" created.")
+//    tcCount += 1
 //    true
 //  })
   
 //  property("checkPrettyPrinter") = Prop.forAll( (p: VariableProgram) => {
 //    val parsed = parser.parse(p.toString)
-//    val gStore = p.run(new Store(), new FuncStore())
-//    val pStore = parsed.run(new Store(), new FuncStore())
+//    val gStore = p.run()
+//    val pStore = parsed.run()
 //    
 //    if (!gStore.equals(pStore)) {
 //      p.printAST
@@ -195,13 +253,16 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //      gStore.print("Generated Store")
 //      pStore.print("Parsed Store")
 //      false
-//    } else
+//    } else {
+//      println("PrettyPrinter check "+tcCount+" passed.")
+//      tcCount += 1
 //      true
+//    }
 //  })
   
   property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
-    println("testing variable program "+n)
-    n += 1
+    println("testing variable program "+tcCount)
+    tcCount += 1
     ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
   })
 

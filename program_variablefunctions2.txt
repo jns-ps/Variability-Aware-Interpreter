@@ -1,0 +1,16 @@
+begin
+//#if A
+x = 1;
+//#else
+x = 2;
+//#endif
+
+//#if B
+def sum(a,b) { res = a + b; }
+//#endif
+//#if C
+def sum(a,b) { res = a + b + 1; }
+//#endif
+
+x = sum(x,2);
+end

@@ -20,6 +20,8 @@ import de.puschj.interpreter.UndefinedValue
 class InterpreterTest {
   
   val parser: WhileParser = new WhileParser()
+  
+  implicit def singleIntValue(value: Int) = One(IntValue(value))
     
   @Test
   def testAssignments() {
@@ -31,11 +33,10 @@ class InterpreterTest {
     val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
     val fY: FeatureExpr = FeatureExprFactory.createDefinedExternal("Y")
     
-    assertTrue("assigning 'a' failed", ConditionalLib.equals(Choice(fA, One(IntValue(1)), One(IntValue(2))), store.get("a")))
+    assertTrue("assigning 'a' failed", ConditionalLib.equals(Choice(fA, 1, 2), store.get("a")))
     assertEquals("assigning 'b' failed", One(IntValue(0)), store.get("b"))
     assertTrue("assigning 'c' failed", ConditionalLib.equals(
-        Choice(fX, Choice(fY, One(IntValue(2)), One(IntValue(1))), One(IntValue(0))), 
-        store.get("c") ))
+        Choice(fX, Choice(fY, 2, 1), 0), store.get("c") ))
   }
   
   @Test
@@ -60,11 +61,9 @@ class InterpreterTest {
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
     
     assertTrue("'c' incorrectly assigned", ConditionalLib.equals(
-        Choice(fA, One(IntValue(1)), One(IntValue(0))), 
-        store.get("c") ))
+        Choice(fA, 1, 0), store.get("c") ))
     assertTrue("unexpected value for 'x'", ConditionalLib.equals(
-        Choice(fA.not(), One(IntValue(2)), Choice(fB, One(IntValue(1)), One(IntValue(3)))),
-        store.get("x") ))
+        Choice(fA.not(), 2, Choice(fB, 1, 3)), store.get("x") ))
   }
   
   @Test
@@ -73,9 +72,7 @@ class InterpreterTest {
     val store = program.run()
     store.print("If 2")
     
-    assertEquals("unexpected value for 'a'", 
-        One(IntValue(10)),
-        store.get("a") )
+    assertEquals("unexpected value for 'a'", One(IntValue(10)), store.get("a") )
   }
   
   @Test
@@ -87,11 +84,9 @@ class InterpreterTest {
     val fX: FeatureExpr = FeatureExprFactory.createDefinedExternal("X")
     
     assertTrue("unexpected value for 'a'", ConditionalLib.equals(
-        Choice(fX, One(IntValue(5)), One(IntValue(3))), 
-        store.get("a") ))
+        Choice(fX, 5, 3), store.get("a") ))
     assertTrue("unexpected value for 'b'", ConditionalLib.equals(
-        Choice(fX, One(IntValue(4)), One(IntValue(3))), 
-        store.get("b") ))
+        Choice(fX, 4, 3), store.get("b") ))
   }
   
   @Test
@@ -115,7 +110,7 @@ class InterpreterTest {
 //    val fD: FeatureExpr = FeatureExprFactory.createDefinedExternal("D")
 //    
 //    assertEquals("unexpected value for 'a'", 
-//      Choice(fA or fC, One(IntValue(1)), One(UndefinedValue("x not initialized."))),
+//      Choice(fA or fC, 1)), One(UndefinedValue("x not initialized."))),
 //      store.get("x")
 //    )
 //  }
@@ -130,7 +125,7 @@ class InterpreterTest {
     val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
     
     assertTrue("unexpected value for 'y'", ConditionalLib.equals(
-        Choice(fB.not(), One(UndefinedValue("y not initialized.")), Choice(fA.not(), One(IntValue(1)), One(IntValue(2)))),
+        Choice(fB.not(), One(UndefinedValue("y not initialized.")), Choice(fA.not(), 1, 2)),
         store.get("y")
     ))
   }
@@ -141,7 +136,7 @@ class InterpreterTest {
     val store = program.run()
     store.print("Functions")
     
-    // TODO: add proper assertion
+    assertEquals("unexpected function return value", One(IntValue(12)), store.get("b"))
   }
   
   @Test
@@ -150,7 +145,7 @@ class InterpreterTest {
     val store = program.run()
     store.print("Functions 2")
     
-    // TODO: add proper assertion
+    assertEquals("inner function application failed", One(IntValue(25)), store.get("a"))
   }
   
   @Test
@@ -159,7 +154,7 @@ class InterpreterTest {
     val store = program.run()
     store.print("Functions Recursion")
     
-    assertEquals("faculty recursion not working", One(IntValue(720)), store.get("a"))
+    assertEquals("faculty recursion failed", One(IntValue(720)), store.get("a"))
   }
   
   @Test
@@ -168,16 +163,44 @@ class InterpreterTest {
     val store = program.run()
     store.print("FOSD 12 figure 9")
     
-    // TODO: add proper assertion
+    val fFOO: FeatureExpr = FeatureExprFactory.createDefinedExternal("FOO")
+    
+    assertTrue("unexpected value for 'res'", ConditionalLib.equals(
+        Choice(fFOO, 6, 2),
+        store.get("res")
+    ))
   }
   
   @Test
   def testVariableFunctions() {
     val program: VariableProgram = parser.parseFile("program_variablefunctions.txt")
-        program.printAST
     val store = program.run()
     store.print("Variable Functions")
     
-    // TODO: add proper assertion
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
+    val fS: FeatureExpr = FeatureExprFactory.createDefinedExternal("S")
+
+    assertTrue("unexpected value for 'c'", ConditionalLib.equals(
+        Choice(fC, Choice(fS, Choice(fA, 5, 4), One(UndefinedValue("func \"sum\" not declared"))), 
+                   One(UndefinedValue("c not initialized."))),
+        store.get("c")
+    ))
+  }
+  
+  @Test
+  def testVariableFunctions2() {
+    val program: VariableProgram = parser.parseFile("program_variablefunctions2.txt")
+    val store = program.run()
+    store.print("Variable Functions 2")
+    
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C")
+    
+    assertTrue("unexpected value for 'x'", ConditionalLib.equals(
+        Choice(fC, Choice(fA, 4, 5), Choice(fB, Choice(fA, 3, 4), One(UndefinedValue("func \"sum\" not declared")))),
+        store.get("x")
+    ))
   }
 }
