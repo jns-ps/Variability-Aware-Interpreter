@@ -96,10 +96,10 @@ case class ConfiguredProgram(private val stmts: List[Statement]) extends Program
   
   def getStatements() = stmts
   
-  def run(): PlainStore = run(new PlainStore, new PlainFuncStore)
+  def run(): PlainStore = run(new PlainStore, new PlainFuncStore, new PlainClassStore)
   
-  def run(store: PlainStore, funcStore: PlainFuncStore): PlainStore = {
-    for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore)
+  def run(store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): PlainStore = {
+    for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore, classStore)
     return store
   }
   

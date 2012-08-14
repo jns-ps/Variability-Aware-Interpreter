@@ -84,11 +84,6 @@ class VAStore extends Store[Conditional[Value]] {
 
 // === function stores ===
 
-sealed abstract class FunctionDef
-case class FDef(args: List[String], body: Block) extends FunctionDef
-case class FErr(msg: String) extends FunctionDef
-
-
 sealed abstract class FuncStore[T] {
   
   protected val functions: Map[String, T] = Map.empty[String, T]
@@ -113,10 +108,48 @@ sealed abstract class FuncStore[T] {
   }
 }
 
-class PlainFuncStore extends FuncStore[FunctionDef] {
+class PlainFuncStore extends FuncStore[FuncDef] {
     def undefined(s: String) = FErr(s)
 }
 
-class VAFuncStore extends FuncStore[Conditional[FunctionDef]] {
+class VAFuncStore extends FuncStore[Conditional[FuncDef]] {
     def undefined(s: String) = One(FErr(s))
+}
+
+// === stores for classes ===
+
+sealed abstract class ClassStore[T] {
+  
+  protected val classes: Map[String, T] = Map.empty[String, T]
+  
+  def put(funcName: String, funcDef: T) = classes.put(funcName, funcDef)
+  
+  def get(funcName: String): T = {
+    if (!classes.contains(funcName))
+      undefined("func \""+funcName+"\" not declared")
+    else
+      classes.get(funcName).get
+  }
+  
+  protected def undefined(s: String): T
+  
+  def print(headline: String = "") {
+    val s: String = if (headline.isEmpty()) "ClassStore" else headline
+    println("====== " + s + " =======")
+    println(classes.toString)
+    println("=======" + ("=" * s.length()) + "========")
+    println()
+  }
+}
+
+class PlainClassStore extends ClassStore[ClassDef] {
+    classes.put("Object", CDef("", List.empty[String], List.empty[FuncDec]))
+  
+    def undefined(s: String) = CErr(s)
+}
+
+class VAClassStore extends ClassStore[Conditional[ClassDef]] {
+    classes.put("Object", One(CDef("", List.empty[String], List.empty[FuncDec])))
+  
+    def undefined(s: String) = One(CErr(s))
 }

@@ -1,6 +1,7 @@
 package de.puschj.parser.test
 
 import de.puschj.parser.WhileParser
+import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import org.junit._
 import Assert._
 
@@ -37,6 +38,22 @@ class ParserTest {
   
   @Test
   def testParseFunctions() {
-      parser.parseFile("program_functions.txt").printAST
+      parser.parseFile("program_functions.txt")
+  }
+  
+  @Test
+  def testParseBDDs() {
+      setDefault(bdd)
+    
+      val fA = createDefinedExternal("A")
+      val fB = createDefinedExternal("B")
+      
+      val fe1 = (fA.not and fB) or fA
+      println(fe1)
+      
+      val fe2 = (fA and fB).not or fA
+      println(fe2)
+      
+//      parser.parseFile("program_functions.txt")
   }
 }

@@ -27,26 +27,30 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   val genAtomicFeatureExpression =
         oneOf(FEATURENAMES.map(createDefinedExternal(_)))
             
-  def genCompoundFeatureExpr(size: Int) = oneOf(
-    for {
-        a <- genFeatureExprSized(size)
-        b <- genFeatureExprSized(size)
-    } yield a and b,
-    for {
-        a <- genFeatureExprSized(size)
-        b <- genFeatureExprSized(size)
-    } yield a or b,
-    for {
-        a <- genFeatureExprSized(size)
-    } yield a.not
-  )
   
-  def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
-    if (size <= 0) genAtomicFeatureExpression
-    else Gen.frequency( (1, genAtomicFeatureExpression), (1, genCompoundFeatureExpr(size/2) ) )
+  def genFeatureExpr() = {
+      def genCompoundFeatureExpr(size: Int) = oneOf(
+        for {
+            a <- genFeatureExprSized(size)
+            b <- genFeatureExprSized(size)
+        } yield a and b,
+        for {
+            a <- genFeatureExprSized(size)
+            b <- genFeatureExprSized(size)
+        } yield a or b,
+        for {
+            a <- genFeatureExprSized(size)
+        } yield a.not
+      )
+      
+      def genFeatureExprSized(size: Int): Gen[FeatureExpr] = {
+        if (size <= 0) genAtomicFeatureExpression
+        else Gen.frequency( (1, genAtomicFeatureExpression), (2, genCompoundFeatureExpr(size/2)), (1, True) )
+      }
+      sized( sz => {
+        genFeatureExprSized(sz) 
+      })
   }
-  
-  def genFeatureExpr() = Gen.sized(size => Gen.frequency( (1, genFeatureExprSized(size)), (2, True) ))
   
   implicit def arbFeatureExpression: Arbitrary[FeatureExpr] = Arbitrary {
     genFeatureExpr
@@ -106,7 +110,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   def genExpressionSized(size: Int, funcNames: Seq[String]): Gen[Expression] = {
     if (size <= 0) genAtomicExpression
-    else Gen.frequency( (10, genAtomicExpression), (5, genCompoundExpression(size / 2, funcNames)), (1, genCall(size / 2, funcNames)))
+    else Gen.frequency( (5, genAtomicExpression), (1, genCompoundExpression(size / 2, funcNames)), (1, genCall(size / 2, funcNames)))
   }
   
   def genExpression(funcNames: Seq[String]) = Gen.sized(size => genExpressionSized(size, funcNames))
@@ -145,24 +149,23 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
       "begin " +
       "def inc(x) { res = x + 1; } " +
       "def dec(x) { res = x - 1; } " +
-      "def sqr(x) { res = x * x; } " +
+      "def inv(x) { res = 0 - x; } " +
       "def abs(x) { if (x < 0) { res = 0 - x; } }" +
-      "def plusten(x) { res = x + 10; } " +
-      "def sum(a,b) { res = a + b; } " +
-      "def sub(a,b) { res = a - b; } " +
-      "def mod(a,b) { k = 0; while(a - k * b >= b) { k = k + 1; } res = a - k * b; } " +
-//      "def pow(a,b) { if (b == 0) { res = 1; } else { res = a * pow(a, b - 1); } } " +
-      "def min(a,b) { if (a <= b) { res = a; } else { res = b; } } " +
-      "def max(a,b) { if (a >= b) { res = a; } else { res = b; } } " +
+      "def mean(a,b) { res = (a + b) / 2; } " +
+      "def sum(a,b)  { res = a + b; } " +
+      "def sub(a,b)  { res = a - b; } " +
+      "def mod(a,b)  { k = 0; while(a - k * b >= b) { k = k + 1; } res = a - k * b; } " +
+      "def min(a,b)  { if (a <= b) { res = a; } else { res = b; } } " +
+      "def max(a,b)  { if (a >= b) { res = a; } else { res = b; } } " +
       "end"
     val program = parser.parse(functionDeclarations)
-    val funcDefs = ListBuffer.empty[FuncDef]
+    val funcDefs = ListBuffer.empty[FuncDec]
     for (stmtOpt <- program.getStatements)
-      funcDefs += stmtOpt.entry.asInstanceOf[FuncDef]
+      funcDefs += stmtOpt.entry.asInstanceOf[FuncDec]
     funcDefs.toList
   }
   
-  def genOptFuncDefs(nDecs: Int): Gen[Seq[Opt[FuncDef]]] = for { 
+  def genOptFuncDefs(nDecs: Int): Gen[Seq[Opt[FuncDec]]] = for { 
     count <- choose(0, scala.math.min(nDecs, 10))
     funcDefs <- pick(count, predefFuncDefs)
     featExpressions <- listOfN(count, genFeatureExpr)
@@ -228,19 +231,16 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   var tcCount = 0
   
-//  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
-//    if (tcCount == 0)
-//        for (file <- new File("testprograms").listFiles)
-//            file.delete
-////    saveProgramAST(p, "testprograms\\ast"+(if (tcCount<10) "0"+tcCount else tcCount)+".txt")
-//            
-//    saveProgram(p, "testprograms\\test%02d.txt".format(tcCount))
-//    
-//    p.print
-//    println("TestCase "+ tcCount +" created.")
-//    tcCount += 1
-//    true
-//  })
+  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
+    if (tcCount == 0)
+        for (file <- new File("testprograms").listFiles)
+            file.delete
+//    saveProgramAST(p, "testprograms\\ast"+(if (tcCount<10) "0"+tcCount else tcCount)+".txt")
+    saveProgram(p, "testprograms\\test%02d.txt".format(tcCount))
+    println("TestCase "+ tcCount +" created.")
+    tcCount += 1
+    true
+  })
   
 //  property("checkPrettyPrinter") = Prop.forAll( (p: VariableProgram) => {
 //    val parsed = parser.parse(p.toString)
@@ -260,11 +260,11 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //    }
 //  })
   
-  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
-    println("testing variable program "+tcCount)
-    tcCount += 1
-    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
-  })
+//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
+//    println("testing variable program "+tcCount)
+//    tcCount += 1
+//    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
+//  })
 
   
 }

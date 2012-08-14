@@ -151,7 +151,7 @@ object SourceCodePrettyPrinter {
         }      
       }
       case Assert(cond) => "assert" ~ "(" ~ cond ~ ")" ~ ";"
-      case FuncDef(name, args, body) => {
+      case FuncDec(name, args, body) => {
         var doc = "def" ~~ name ~ "("
         for (i <- 0 until args.size) {
           doc = doc ~ args(i)
@@ -204,9 +204,13 @@ object SourceCodePrettyPrinter {
               .replace("definedEx", "")
               .replace("0", "(A && !A)")
           else
+            "("+
             feature.toTextExpr
-//              .replace("!definedEx(", "(!")
-//              .replace("definedEx", "")
+              .replace("!definedEx(", "(!")
+              .replace("definedEx", "")
+              .replace("||", ") || (")
+              .replace("0", "(A && (!A))")
+              +")"
         )
   }
   
