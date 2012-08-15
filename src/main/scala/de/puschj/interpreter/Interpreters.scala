@@ -156,7 +156,7 @@ object PlainInterpreter {
           throw new AssertionError("violation of " + cnd)
       }
       case FuncDec(name, args, body) => {
-        funcStore.put(name, FDef(args, body))
+          funcStore.put(name, FDef(args, body))
       }
       case ClassDec(name, superClass, fields, methods) => {
           classStore.put(name, CDef(superClass, fields, methods))
@@ -168,6 +168,7 @@ object PlainInterpreter {
     exp match {
       // arithmetic
       case Num(n) => IntValue(n)
+      case Null => UndefinedValue("null")
       case Id(x) => store.get(x)
       case Add(e1, e2) => calculateValue(eval(e1, store, funcStore, classStore), eval(e2, store, funcStore, classStore), (a, b) => IntValue(a + b))
       case Sub(e1, e2) => calculateValue(eval(e1, store, funcStore, classStore), eval(e2, store, funcStore, classStore), (a, b) => IntValue(a - b))
