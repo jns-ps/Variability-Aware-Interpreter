@@ -7,6 +7,7 @@ sealed abstract class ASTNode
 
 sealed abstract class Expression extends ASTNode
 case class Num(n: Int) extends Expression
+case object Null extends Expression
 case class Id(x: String) extends Expression
 case class Parens(e: Expression) extends Expression
 abstract case class BinaryExpression(e1: Expression, e2: Expression) extends Expression
@@ -38,6 +39,7 @@ case class While(cond: Condition, body: Block) extends Statement
 case class If(cond: Condition, s1: Block, s2: Option[Block]) extends Statement
 case class Assert(cond: Condition) extends Statement
 
+
 // functions
 case class FuncDec(name: String, args: List[String], body: Block) extends Statement
 sealed abstract class FuncDef
@@ -45,7 +47,10 @@ case class FDef(args: List[String], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
 // classes
-case class ClassDec(name: String, superClass: String, fields: List[String], methods: List[FuncDec]) extends Statement
+case class ClassDec(name: String, superClass: String, fields: List[Opt[Assignment]], methods: List[Opt[FuncDec]]) extends Statement
 sealed abstract class ClassDef
-case class CDef(superClass: String, fields: List[String], methods: List[FuncDec]) extends ClassDef
+case class CDef(superClass: String, fields: List[Opt[Assignment]], methods: List[Opt[FuncDec]]) extends ClassDef
 case class CErr(msg: String) extends ClassDef
+
+
+

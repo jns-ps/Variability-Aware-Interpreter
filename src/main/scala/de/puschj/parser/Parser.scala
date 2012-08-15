@@ -49,9 +49,13 @@ class WhileParser extends MultiFeatureParser() {
     lazy val funcDeclaration : MultiParser[FuncDec] = "def" ~> identifier ~ ("(" ~> repPlain((identifier ^^ { x => x.getText}) <~ opt(",") ) <~ ")") ~ blockStatement ^^ {
       case funcName~funcArgs~funcBody => FuncDec(funcName.getText, funcArgs, funcBody)
     }
-    lazy val classDeclaration : MultiParser[ClassDec] = "class" ~> identifier ~ (("extends" ~> identifier)?) ~ ("{" ~> repPlain("var" ~> identifier <~ ";")) ~ repPlain(funcDeclaration) <~ "}" ^^ {
-      case cName~Some(superClass)~vars~funcs => ClassDec(cName.getText, superClass.getText,  vars.map(v => v.getText), funcs)
-      case cName~None~vars~funcs => ClassDec(cName.getText, "Object",  vars.map(v => v.getText), funcs)
+    lazy val classDeclaration : MultiParser[ClassDec] = "class" ~> identifier ~ (("extends" ~> identifier)?) ~ 
+                                                       ("{" ~> repOpt( (("var" ~> identifier) ~ (("=" ~> expression <~ ";")?)) ^^ { 
+                                                         case varName~Some(value) => Assignment(varName.getText, value) 
+                                                         case varName~None => Assignment(varName.getText, Null) 
+                                                       })) ~ repOpt(funcDeclaration) <~ "}" ^^ {
+      case cName~Some(superClass)~vars~funcs => ClassDec(cName.getText, superClass.getText,  vars, funcs)
+      case cName~None~vars~funcs => ClassDec(cName.getText, "Object",  vars, funcs)
     }
 
     // Condition
