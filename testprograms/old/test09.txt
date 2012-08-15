@@ -1,0 +1,9 @@
+begin
+//#if (E && B)
+b = a;
+//#endif 
+while(52 <= e) {
+  a = (a + (c * 86));
+  b = ((48 - a) - a);
+}
+end

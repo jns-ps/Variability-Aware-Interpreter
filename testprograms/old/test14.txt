@@ -1,0 +1,27 @@
+begin
+//#if (C && D && F)
+while(((a * b) * b) > 100) {
+  if((69 / (c + c)) >= (46 * c)) {
+    //#if (A && (!E))
+    if(45 > 92) {
+      a = b;
+    }
+    //#endif 
+  } else {
+    while((e - 80) < 99) {
+      //#if (F || A)
+      b = 31;
+      //#endif 
+      c = 76;
+      a = d;
+    }
+    while(d == ((42 / b) / (65 / d))) {
+      e = ((b - 11) * d);
+      e = b;
+    }
+  }
+}
+//#endif 
+d = 2;
+e = ((e - 16) * b);
+end

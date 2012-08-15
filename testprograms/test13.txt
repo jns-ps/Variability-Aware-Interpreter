@@ -1,5 +1,57 @@
 begin
-d = d;
-b = d;
-d = (56 / b);
+//#if ((B))
+def inc(x) {
+  res = x + 1;
+}
+//#endif 
+//#if ((B))
+d = inc(b);
+//#endif 
+//#if ((F))
+if(inc((58 / inc(a))) > 31) {
+  e = d;
+} else {
+  a = 86;
+}
+//#endif 
+//#if ((!A) ) || ( (A) && (!B) && (!C) && (!F) ) || ( (A) && (!B) && (C) && (!E) && (!F) ) || ( (A) && (!B) && (C) && (E) ) || ( (A) && (B))
+if(48 <= e) {
+  e = 99;
+  a = 94;
+} else {
+  //#if ((B))
+  b = 1;
+  //#endif 
+}
+//#endif 
+a = d;
+c = c;
+//#if ((!A) && (D) ) || ( (A))
+e = 59;
+//#endif 
+//#if ((C))
+if(66 >= d) {
+  a = e;
+  a = a;
+}
+//#endif 
+c = inc(inc(e));
+//#if ((F))
+c = (inc(49) * 73);
+//#endif 
+//#if ((E))
+d = b;
+//#endif 
+c = 71;
+//#if ((B) && (D))
+while(e <= a) {
+  b = ((e - 60) - (46 - 46));
+  //#if ((!A) ) || ( (A) && (!D))
+  c = inc(c);
+  //#endif 
+}
+//#endif 
+//#if ((F))
+e = c;
+//#endif 
 end

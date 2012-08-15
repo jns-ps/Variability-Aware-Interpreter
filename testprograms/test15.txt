@@ -1,7 +1,93 @@
 begin
-c = (92 - (56 + d));
-b = ((78 * 6) - (a - d));
-//#if E
-a = ((69 / a) * (16 * b));
+//#if ((!C))
+def sub(a, b) {
+  res = a - b;
+}
+//#endif 
+//#if ((!B) ) || ( (B) && (E))
+e = 44;
+//#endif 
+//#if ((C))
+d = d;
+//#endif 
+//#if ((C))
+if(b > b) {
+  //#if ((A && (!A)))
+  d = 47;
+  //#endif 
+} else {
+  b = 97;
+}
+//#endif 
+//#if ((!A) && (!F) ) || ( (A))
+if(d >= (sub(18, a) - e)) {
+  //#if ((!A) && (!E) && (!F) ) || ( (A))
+  e = d;
+  //#endif 
+  //#if ((E))
+  e = c;
+  //#endif 
+  //#if ((D))
+  c = (14 * 34);
+  //#endif 
+}
+//#endif 
+while(78 > (a / 43)) {
+  a = 92;
+  //#if ((F))
+  e = sub(c, a);
+  //#endif 
+  //#if ((E))
+  d = 65;
+  //#endif 
+}
+//#if ((A && (!A)))
+e = e;
+//#endif 
+while(d == a) {
+  //#if ((!A) && (B) && (D) && (!F))
+  c = d;
+  //#endif 
+}
+while(47 == 72) {
+  d = 4;
+}
+//#if ((!A) && (!C) ) || ( (A) && (!B) && (!C) && (E) ) || ( (A) && (B) && (!C))
+if(88 > a) {
+  //#if ((!C) && (!E) && (F) ) || ( (C))
+  c = sub(c, b);
+  //#endif 
+  b = 51;
+} else {
+  //#if ((C))
+  c = (b / c);
+  //#endif 
+  a = 33;
+  d = 41;
+}
+//#endif 
+d = c;
+//#if ((C))
+d = sub(34, sub(24, 31));
+//#endif 
+while(16 < d) {
+  b = 10;
+  //#if ((!A))
+  a = 1;
+  //#endif 
+  e = e;
+}
+a = 41;
+//#if ((C))
+while(d >= c) {
+  //#if ((A) && (B))
+  d = d;
+  //#endif 
+}
+//#endif 
+//#if ((!A) && (!C) ) || ( (!A) && (C) && (!D) && (F) ) || ( (A) && (!C) ) || ( (A) && (C) && (!D))
+if(b >= c) {
+  c = a;
+}
 //#endif 
 end

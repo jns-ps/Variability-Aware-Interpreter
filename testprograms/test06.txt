@@ -1,4 +1,26 @@
 begin
-b = 92;
-b = (c / e);
+//#if ((A && (!A)))
+e = 76;
+//#endif 
+d = a;
+e = e;
+//#if ((A && (!A)))
+c = b;
+//#endif 
+//#if ((C))
+while(b >= (74 / a)) {
+  //#if ((B))
+  a = 49;
+  //#endif 
+  //#if ((F))
+  d = 90;
+  //#endif 
+  //#if ((!B))
+  d = 99;
+  //#endif 
+}
+//#endif 
+//#if ((!C) && (E) ) || ( (C) && (E) && (F))
+c = d;
+//#endif 
 end

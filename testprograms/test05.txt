@@ -1,5 +1,17 @@
 begin
-//#if (F || D)
-b = (b * d);
+//#if ((C))
+e = 7;
+//#endif 
+//#if ((A && (!A)))
+e = 67;
+//#endif 
+//#if ((A && (!A)))
+e = d;
+//#endif 
+//#if ((!A) && (!E))
+b = 21;
+//#endif 
+//#if ((E))
+c = 45;
 //#endif 
 end

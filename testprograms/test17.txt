@@ -1,16 +1,86 @@
 begin
-while(((b / (24 / a)) + b) <= 17) {
-  //#if B
-  a = e;
-  //#endif 
-  //#if A
-  c = (((21 - a) * 74) * (e - (61 / 79)));
-  //#endif 
-  a = 25;
+//#if ((A && (!A)))
+def inc(x) {
+  res = x + 1;
 }
-e = (((d - b) - (77 / b)) - d);
-b = b;
-//#if F
-d = (c * ((26 / b) * (71 * 40)));
 //#endif 
+if(71 < (((71 / a) / (inc(b) / inc(34))) - inc(17))) {
+  d = 3;
+  d = inc((46 / d));
+} else {
+  e = 18;
+  //#if ((D))
+  b = inc(15);
+  //#endif 
+}
+//#if ((!E))
+d = 18;
+//#endif 
+//#if ((!F))
+a = inc(c);
+//#endif 
+while(89 == 15) {
+  //#if ((C))
+  c = (d / ((c / c) * inc(inc(31))));
+  //#endif 
+  d = a;
+  //#if ((C))
+  d = inc(b);
+  //#endif 
+}
+d = c;
+e = a;
+//#if ((!A) ) || ( (A) && (!B) && (!E) ) || ( (A) && (B))
+e = c;
+//#endif 
+if(a >= e) {
+  //#if ((C))
+  e = 46;
+  //#endif 
+  //#if ((!D))
+  d = (11 - d);
+  //#endif 
+  e = 93;
+} else {
+  //#if ((D))
+  d = b;
+  //#endif 
+}
+c = 58;
+//#if ((A))
+e = (e * b);
+//#endif 
+d = a;
+//#if ((A && (!A)))
+while(d == 64) {
+  //#if ((A && (!A)))
+  b = 10;
+  //#endif 
+}
+//#endif 
+while(inc(b) < a) {
+  //#if ((B))
+  b = e;
+  //#endif 
+}
+//#if ((C))
+while(d < (66 + inc((d - 37)))) {
+  while(84 <= 48) {
+    //#if ((A))
+    a = c;
+    //#endif 
+    //#if ((F))
+    d = 90;
+    //#endif 
+  }
+  //#if ((C))
+  d = (b - (27 / inc(90)));
+  //#endif 
+}
+//#endif 
+e = a;
+//#if ((A && (!A)))
+c = e;
+//#endif 
+e = 88;
 end

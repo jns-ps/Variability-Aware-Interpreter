@@ -1,3 +1,12 @@
 begin
-e = (21 / a);
+//#if ((E))
+while(59 == (b - 78)) {
+  b = (35 - a);
+  d = c;
+}
+//#endif 
+while(51 > b) {
+  b = 84;
+}
+e = c;
 end

@@ -1,0 +1,21 @@
+begin
+e = c;
+if(a > a) {
+  e = (a + ((46 - 41) * (3 * 11)));
+  b = ((a / d) + d);
+} else {
+  c = b;
+}
+//#if (!B)
+c = (25 * (78 - 54));
+//#endif 
+//#if B
+d = (c / (60 / a));
+//#endif 
+//#if D
+d = (((a + 34) * a) + (a / (8 / 28)));
+//#endif 
+//#if (F || A)
+e = ((a * (b * 31)) + e);
+//#endif 
+end

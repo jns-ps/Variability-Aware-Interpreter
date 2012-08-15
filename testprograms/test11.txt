@@ -1,4 +1,81 @@
 begin
+//#if ((!A) && (!B) && (E) && (F) ) || ( (!A) && (B) && (F) ) || ( (A))
+def inv(x) {
+  res = 0 - x;
+}
+//#endif 
+//#if ((A) && (D) && (F))
+a = b;
+//#endif 
+//#if ((A))
 b = c;
-e = ((47 + a) + (c + 3));
+//#endif 
+//#if ((!C) && (!D) && (F) ) || ( (!C) && (D) ) || ( (C) && (D))
+a = (e - (((a - 34) * inv(b)) - 9));
+//#endif 
+//#if ((F))
+a = e;
+//#endif 
+//#if ((!D))
+if(e <= b) {
+  //#if ((E))
+  a = 16;
+  //#endif 
+} else {
+  //#if ((A && (!A)))
+  a = 52;
+  //#endif 
+}
+//#endif 
+//#if ((C))
+while(c == (b - inv((a + 60)))) {
+  while(c < (d * (25 / ((b / 21) / inv(41))))) {
+    e = inv(34);
+    //#if ((E))
+    d = 72;
+    //#endif 
+  }
+  //#if ((!B))
+  b = (d + c);
+  //#endif 
+}
+//#endif 
+b = (25 / inv(inv(d)));
+c = ((inv(15) / a) * 51);
+//#if ((E))
+if((73 + inv(62)) >= 16) {
+  c = ((inv((a + 1)) + 72) - d);
+  e = b;
+}
+//#endif 
+//#if ((E))
+if(62 < 11) {
+  //#if ((A && (!A)))
+  if(inv(b) == c) {
+    //#if ((F))
+    while(43 <= 22) {
+      //#if ((A))
+      b = 40;
+      //#endif 
+      //#if ((B))
+      a = 92;
+      //#endif 
+      d = c;
+    }
+    //#endif 
+  } else {
+    //#if ((!A) && (B) ) || ( (A) && (B) && (!C))
+    e = 14;
+    //#endif 
+    //#if ((A))
+    b = 61;
+    //#endif 
+  }
+  //#endif 
+  b = (inv((a * inv(c))) / inv(c));
+}
+//#endif 
+//#if ((A) && (D))
+c = b;
+//#endif 
 end

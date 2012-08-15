@@ -1,42 +1,256 @@
 begin
-while(c >= ((c - (b * (67 - b))) / (d - ((d * c) - 37)))) {
-  b = d;
+def inc(x) {
+  res = x + 1;
 }
-if(57 < (59 / (d - d))) {
-  d = (29 * (17 / ((24 + 37) * 86)));
+def min(a, b) {
+  if(a <= b) {
+    res = a;
+  } else {
+    res = b;
+  }
 }
-while(a >= 34) {
-  //#if E
-  c = 71;
+def max(a, b) {
+  if(a >= b) {
+    res = a;
+  } else {
+    res = b;
+  }
+}
+c = b;
+//#if ((!A) && (!B) && (!C) && (F) ) || ( (!A) && (!B) && (C) ) || ( (!A) && (B) ) || ( (A))
+a = e;
+//#endif 
+//#if ((B))
+d = 2;
+//#endif 
+if(c >= 74) {
+  //#if ((A && (!A)))
+  e = 12;
+  //#endif 
+  //#if ((D))
+  while(29 >= 36) {
+    e = (a + a);
+  }
+  //#endif 
+  if(10 >= ((a / e) - 69)) {
+    //#if ((!D))
+    e = (70 - 85);
+    //#endif 
+  } else {
+    //#if ((A && (!A)))
+    c = (((e / d) / c) + d);
+    //#endif 
+  }
+}
+e = d;
+//#if ((B))
+a = 19;
+//#endif 
+//#if ((D))
+d = c;
+//#endif 
+//#if ((!D) && (!E) && (F) ) || ( (D) && (!E))
+while(76 <= d) {
+  //#if ((!A) && (E) ) || ( (A))
+  a = e;
+  //#endif 
+  //#if ((A && (!A)))
+  e = b;
+  //#endif 
+  //#if ((C))
+  c = b;
   //#endif 
 }
-b = (16 * d);
-e = 48;
-c = ((22 / 77) + (82 - (c + (d * c))));
-if((c - ((18 - a) + ((b + 70) * (d - a)))) < e) {
-  //#if C
-  d = (39 - (((73 * 94) - (b + 23)) - (17 - 97)));
+//#endif 
+//#if ((A && (!A)))
+a = 80;
+//#endif 
+a = (a * b);
+//#if ((A))
+a = (23 / b);
+//#endif 
+//#if ((C) && (F))
+a = max(71, b);
+//#endif 
+a = (36 - c);
+//#if ((!B) && (C) ) || ( (B))
+while(90 <= (26 + c)) {
+  e = 31;
+  //#if ((E))
+  a = b;
   //#endif 
-  d = 1;
-  c = ((((c + 63) / b) + (51 + (51 + c))) / (((a * c) - (64 - 72)) + (66 / 48)));
+}
+//#endif 
+//#if ((E))
+a = 85;
+//#endif 
+while(5 >= 14) {
+  //#if ((A) && (E))
+  d = a;
+  //#endif 
+  b = 58;
+  //#if ((C))
+  c = 61;
+  //#endif 
+}
+//#if ((B))
+d = 17;
+//#endif 
+a = e;
+//#if ((A && (!A)))
+a = b;
+//#endif 
+while((b / min(c, 82)) >= inc(50)) {
+  //#if ((!A) && (!B) && (C) && (!D) ) || ( (!A) && (B) && (!D) ) || ( (A) && (!D))
+  while(e > inc(42)) {
+    c = d;
+  }
+  //#endif 
+  //#if ((B))
+  c = 75;
+  //#endif 
+  //#if ((B))
+  c = a;
+  //#endif 
+}
+//#if ((A && (!A)))
+if(b >= 67) {
+  d = b;
 } else {
-  //#if (E || (D && (F || C) && C))
+  //#if ((F))
+  while(c >= 83) {
+    //#if ((A && (!A)))
+    d = c;
+    //#endif 
+    c = a;
+    b = d;
+  }
+  //#endif 
+  //#if ((A))
+  b = 84;
+  //#endif 
+  //#if ((B))
+  if(a == a) {
+    b = e;
+  } else {
+    d = a;
+  }
+  //#endif 
+}
+//#endif 
+e = ((d + min(82, 26)) + 39);
+//#if ((A && (!A)))
+b = 39;
+//#endif 
+//#if ((!A) && (!B) && (!E) ) || ( (A) && (!B) && (!E) ) || ( (A) && (!B) && (E) && (!F))
+if(98 >= e) {
+  c = 92;
+  //#if ((A))
   b = a;
   //#endif 
-  //#if (D || (A && F))
-  e = 90;
+  //#if ((A && (!A)))
+  e = d;
   //#endif 
-  c = c;
-}
-//#if ((F && D) || ((!B) && E))
-a = (b / (((c + 96) * e) + 60));
-//#endif 
-//#if (!F)
-while((20 + (d - 27)) >= 4) {
-  c = (((b - c) / ((d * d) * (b + 33))) * (e - 22));
 }
 //#endif 
-//#if (F || C)
-c = d;
+d = b;
+//#if ((E))
+while(c <= 83) {
+  //#if ((F))
+  c = 41;
+  //#endif 
+  a = inc(47);
+  //#if ((E))
+  c = inc(d);
+  //#endif 
+}
 //#endif 
+//#if ((!B) && (!D) && (F) ) || ( (!B) && (D) ) || ( (B))
+d = ((c + 43) + e);
+//#endif 
+//#if ((!B) && (!D) && (E) ) || ( (!B) && (D) ) || ( (B))
+d = max(((c + min(min(((77 / b) / d), c), min(inc(a), a))) * 52), b);
+//#endif 
+a = 43;
+//#if ((!E))
+d = 28;
+//#endif 
+//#if ((A && (!A)))
+while(c >= 12) {
+  if(e >= 94) {
+    //#if ((E))
+    c = d;
+    //#endif 
+    //#if ((B))
+    a = a;
+    //#endif 
+  } else {
+    //#if ((!B))
+    a = 75;
+    //#endif 
+    //#if ((A && (!A)))
+    c = 35;
+    //#endif 
+  }
+  //#if ((!E))
+  a = 82;
+  //#endif 
+  if(inc(b) >= (a * b)) {
+    //#if ((A && (!A)))
+    c = 26;
+    //#endif 
+  } else {
+    //#if ((!E))
+    b = 7;
+    //#endif 
+    //#if ((!F))
+    d = d;
+    //#endif 
+    if(max(e, a) > 16) {
+      d = (d / (21 / c));
+      //#if ((A && (!A)))
+      b = (d * 76);
+      //#endif 
+    }
+  }
+}
+//#endif 
+b = (48 + 31);
+while((c * 81) >= e) {
+  //#if ((B) && (F))
+  e = b;
+  //#endif 
+}
+//#if ((!B) && (!E) && (F) ) || ( (!B) && (E) ) || ( (B))
+while(c <= inc(20)) {
+  //#if ((!D))
+  while(d <= 70) {
+    //#if ((!C))
+    b = d;
+    //#endif 
+    c = 3;
+  }
+  //#endif 
+  a = 65;
+}
+//#endif 
+//#if ((A && (!A)))
+e = a;
+//#endif 
+//#if ((A && (!A)))
+while(min(inc(inc(89)), a) > 22) {
+  a = e;
+  //#if ((!C) ) || ( (C) && (!D))
+  d = 96;
+  //#endif 
+}
+//#endif 
+d = (82 + c);
+//#if ((C))
+b = b;
+//#endif 
+//#if ((B) && (C))
+e = b;
+//#endif 
+e = a;
 end

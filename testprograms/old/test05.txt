@@ -1,0 +1,5 @@
+begin
+//#if (F || D)
+b = (b * d);
+//#endif 
+end

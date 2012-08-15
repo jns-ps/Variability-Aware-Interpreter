@@ -1,0 +1,42 @@
+begin
+//#if D
+if(15 < 81) {
+  while((b + ((d / d) * d)) <= 19) {
+    //#if ((!D) || F)
+    c = 73;
+    //#endif 
+    c = 98;
+    b = e;
+  }
+} else {
+  d = 17;
+  a = 90;
+}
+//#endif 
+//#if (D && (F || (E && C)))
+c = e;
+//#endif 
+while((86 * 61) <= 91) {
+  //#if (F && (C || D) && (E || (!D)))
+  while(a == ((d + 97) / b)) {
+    //#if A
+    while((((c / e) / 64) + b) < (e - ((1 - 13) - d))) {
+      //#if (D && A && C && ((!A) || E))
+      a = 81;
+      //#endif 
+    }
+    //#endif 
+  }
+  //#endif 
+}
+b = 5;
+//#if (C && ((!E) || (!F)))
+b = (37 + ((58 + d) * 35));
+//#endif 
+d = 13;
+while((c - d) == 92) {
+  a = 70;
+  b = b;
+  d = (d + e);
+}
+end

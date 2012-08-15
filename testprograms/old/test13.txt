@@ -1,0 +1,5 @@
+begin
+d = d;
+b = d;
+d = (56 / b);
+end

@@ -1,27 +1,65 @@
 begin
-d = 74;
-while(65 <= ((72 + 4) / 56)) {
-  while(46 == 28) {
-    //#if F
-    e = 73;
+//#if ((E))
+def sub(a, b) {
+  res = a - b;
+}
+//#endif 
+//#if ((E))
+c = 80;
+//#endif 
+//#if ((C))
+a = a;
+//#endif 
+d = 85;
+//#if ((C))
+b = (sub(a, e) + c);
+//#endif 
+//#if ((!A) && (F))
+b = sub((76 - 25), sub(6, (sub(5, sub(sub(d, 31), sub(c, sub(98, 90)))) * (57 + sub(22, sub(e, e))))));
+//#endif 
+if(d <= 30) {
+  if(a <= 50) {
+    //#if ((!A))
+    a = sub(99, sub(d, sub(a, 73)));
     //#endif 
   }
+  //#if ((C))
+  a = 82;
+  //#endif 
+  c = e;
+}
+//#if ((B))
+d = 56;
+//#endif 
+//#if ((D))
+a = (d / 66);
+//#endif 
+//#if ((C))
+if(c > sub(83, c)) {
+  //#if ((C))
+  d = b;
+  //#endif 
+  //#if ((E))
+  b = c;
+  //#endif 
+}
+//#endif 
+if(sub(sub(b, d), 58) <= b) {
+  //#if ((B))
+  while(10 < 9) {
+    //#if ((B))
+    b = a;
+    //#endif 
+    //#if ((A && (!A)))
+    a = c;
+    //#endif 
+    //#if ((E))
+    d = 16;
+    //#endif 
+  }
+  //#endif 
+  //#if ((!B) ) || ( (B) && (!F))
   a = a;
-  //#if (C || D)
-  if(d <= (e / (87 * e))) {
-    e = ((d / d) / (63 + a));
-    //#if (D || (!A))
-    e = 98;
-    //#endif 
-    if(d > (c + 60)) {
-      while((63 / 22) == c) {
-        a = e;
-      }
-      //#if E
-      b = 73;
-      //#endif 
-    }
-  }
   //#endif 
 }
 end

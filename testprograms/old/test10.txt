@@ -1,0 +1,27 @@
+begin
+d = 74;
+while(65 <= ((72 + 4) / 56)) {
+  while(46 == 28) {
+    //#if F
+    e = 73;
+    //#endif 
+  }
+  a = a;
+  //#if (C || D)
+  if(d <= (e / (87 * e))) {
+    e = ((d / d) / (63 + a));
+    //#if (D || (!A))
+    e = 98;
+    //#endif 
+    if(d > (c + 60)) {
+      while((63 / 22) == c) {
+        a = e;
+      }
+      //#if E
+      b = 73;
+      //#endif 
+    }
+  }
+  //#endif 
+}
+end

@@ -1,11 +1,43 @@
 begin
-d = 84;
-//#if (C && F)
-e = 52;
-//#endif 
-while((36 * (d - e)) <= (46 + d)) {
-  d = ((a - 32) - (d / e));
-  e = (b / 26);
-  b = ((38 - e) * (38 + 70));
+def inv(x) {
+  res = 0 - x;
 }
+e = ((inv(a) / (inv(c) + (84 - 45))) - c);
+c = inv((e * b));
+a = 34;
+c = (d + a);
+//#if ((!F))
+b = 76;
+//#endif 
+//#if ((C))
+if(inv(12) < c) {
+  e = b;
+}
+//#endif 
+if(e < a) {
+  d = 89;
+  d = d;
+  d = e;
+} else {
+  //#if ((!B))
+  d = e;
+  //#endif 
+  //#if ((A && (!A)))
+  if(38 == 43) {
+    c = b;
+    e = a;
+  }
+  //#endif 
+}
+b = 87;
+c = 100;
+//#if ((A && (!A)))
+a = e;
+//#endif 
+//#if ((F))
+a = 87;
+//#endif 
+//#if ((A))
+e = 67;
+//#endif 
 end

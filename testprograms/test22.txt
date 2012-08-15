@@ -1,28 +1,146 @@
 begin
-e = 5;
-e = 67;
-//#if E
-a = ((c / e) * ((70 - 42) - (53 * 83)));
-//#endif 
-if(((76 / c) - ((d * e) * a)) >= (d / 6)) {
-  //#if B
-  c = ((56 - 2) * (a * (b + 19)));
+def abs(x) {
+  if(x < 0) {
+    res = 0 - x;
+  }
+}
+while(c < abs(b)) {
+  //#if ((E))
+  d = (83 * abs(92));
   //#endif 
-  c = e;
+  c = a;
+  //#if ((F))
+  d = abs(abs(11));
+  //#endif 
+}
+//#if ((!A) && (!D) ) || ( (!A) && (D) && (!E) ) || ( (A))
+if(a <= 48) {
+  //#if ((C))
+  b = 48;
+  //#endif 
+}
+//#endif 
+b = 72;
+b = 55;
+//#if ((C))
+while(85 == c) {
+  //#if ((E))
+  c = c;
+  //#endif 
+  a = 82;
+  c = abs((a - (92 + (c / abs(abs(abs(a)))))));
+}
+//#endif 
+//#if ((!E) && (!F) ) || ( (E))
+d = c;
+//#endif 
+//#if ((A && (!A)))
+b = c;
+//#endif 
+//#if ((A) && (B))
+c = 100;
+//#endif 
+//#if ((!A))
+while(abs(abs(89)) <= d) {
+  //#if ((A) && (!B) && (F) ) || ( (A) && (B) && (!E) && (F) ) || ( (A) && (B) && (E))
+  b = e;
+  //#endif 
+  //#if ((!B) && (!C) && (!E) ) || ( (!B) && (C))
+  e = c;
+  //#endif 
+}
+//#endif 
+e = e;
+//#if ((B))
+d = a;
+//#endif 
+//#if ((A))
+if(56 < 1) {
+  //#if ((B))
+  a = 6;
+  //#endif 
 } else {
-  //#if D
-  c = d;
-  //#endif 
-  a = 85;
-  c = (54 + ((c + e) / d));
-}
-//#if E
-if((50 + (b * (40 - 8))) > 23) {
-  //#if ((!F) && (!A))
-  e = (20 + (1 * 1));
-  //#endif 
-  c = 92;
-  a = (c - (74 - 9));
+  if((c / c) > e) {
+    c = e;
+    //#if ((C))
+    c = abs(d);
+    //#endif 
+    //#if ((A && (!A)))
+    b = 34;
+    //#endif 
+  }
 }
 //#endif 
+//#if ((C))
+a = b;
+//#endif 
+//#if ((D))
+if((23 + b) > a) {
+  d = 80;
+} else {
+  //#if ((A))
+  d = 72;
+  //#endif 
+  e = (65 * (d + e));
+}
+//#endif 
+if(11 > (a - abs(37))) {
+  a = 18;
+  while(12 <= abs((b * 12))) {
+    //#if ((C))
+    d = 62;
+    //#endif 
+  }
+}
+//#if ((A))
+b = a;
+//#endif 
+//#if ((C))
+while((53 * 16) >= abs(c)) {
+  d = b;
+}
+//#endif 
+//#if ((D) && (F))
+a = 69;
+//#endif 
+d = (abs(e) * 40);
+//#if ((E))
+while(d <= 37) {
+  //#if ((B))
+  b = abs(52);
+  //#endif 
+  //#if ((B))
+  d = e;
+  //#endif 
+  if((c + 20) <= abs(e)) {
+    //#if ((B))
+    b = 3;
+    //#endif 
+    //#if ((A && (!A)))
+    c = d;
+    //#endif 
+  } else {
+    //#if ((B))
+    a = abs(c);
+    //#endif 
+    //#if ((B))
+    e = 35;
+    //#endif 
+  }
+}
+//#endif 
+//#if ((F))
+c = 85;
+//#endif 
+while(91 < abs((99 * c))) {
+  //#if ((F))
+  e = abs(a);
+  //#endif 
+  //#if ((B))
+  b = c;
+  //#endif 
+  //#if ((!E))
+  d = e;
+  //#endif 
+}
 end

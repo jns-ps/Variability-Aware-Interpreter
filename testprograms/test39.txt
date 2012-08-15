@@ -1,55 +1,224 @@
 begin
-d = (c + b);
-if(48 < 77) {
-  a = 97;
+//#if ((D))
+def sum(a, b) {
+  res = a + b;
 }
-e = 59;
-//#if B
-if((((e * (b - e)) * 60) + (((d * d) / 47) + ((c + c) - (d - c)))) >= (((b * 100) + (13 + a)) * (47 * 63))) {
-  //#if (C && (!B))
-  c = b;
-  //#endif 
-  //#if (D || B || (!A))
-  if(((e - 80) + (((14 - b) + 50) - b)) <= c) {
-    a = ((c - (c / (15 * d))) + (d - (e - 42)));
-    e = (49 / 39);
-  }
-  //#endif 
-  while(11 < 77) {
-    //#if E
-    b = (d * (23 * ((b * 24) / e)));
-    //#endif 
-    //#if B
-    e = (((81 + d) + d) / c);
-    //#endif 
+//#endif 
+//#if ((D))
+def max(a, b) {
+  if(a >= b) {
+    res = a;
+  } else {
+    res = b;
   }
 }
 //#endif 
-a = 76;
-d = 63;
-//#if D
+//#if ((B) && (E))
+b = c;
+//#endif 
+e = sum(d, e);
+c = a;
+a = 50;
+//#if ((F))
+while(82 == 84) {
+  while(d >= d) {
+    e = 30;
+    c = max(d, 41);
+    //#if ((!C) && (F))
+    d = ((d + (35 * (e / a))) + 83);
+    //#endif 
+  }
+  //#if ((A))
+  if(41 <= 52) {
+    //#if ((D))
+    c = 13;
+    //#endif 
+    //#if ((A && (!A)))
+    e = (d - max(b, (40 + a)));
+    //#endif 
+  }
+  //#endif 
+}
+//#endif 
+//#if ((!B))
+d = (e * 7);
+//#endif 
+e = (c / 89);
+//#if ((F))
+d = d;
+//#endif 
+//#if ((E))
 b = a;
 //#endif 
-//#if (C && E)
-c = ((d * ((b / 50) / (b + 41))) - 45);
+//#if ((A))
+b = 41;
 //#endif 
-while((68 + a) < (59 / a)) {
-  while(b == (1 * (34 * 89))) {
-    d = 82;
-    d = (e * e);
+//#if ((C))
+c = sum(d, 74);
+//#endif 
+//#if ((!B) && (!F) ) || ( (B))
+while(max(e, d) >= 56) {
+  //#if ((C) && (F))
+  a = a;
+  //#endif 
+}
+//#endif 
+//#if ((!D) && (E) ) || ( (D) && (E) && (F))
+c = b;
+//#endif 
+//#if ((D))
+a = sum(c, 67);
+//#endif 
+c = 28;
+d = d;
+//#if ((!A) && (!C) && (!D) && (!E) && (!F) ) || ( (!A) && (!C) && (!D) && (E) ) || ( (!A) && (!C) && (D) ) || ( (!A) && (C) ) || ( (A))
+while(a < c) {
+  a = a;
+  //#if ((!A) && (!B) && (F) ) || ( (!A) && (B) ) || ( (A))
+  while(47 < (c + (16 / (d + b)))) {
+    //#if ((B))
+    c = max(69, c);
+    //#endif 
   }
-  //#if ((!A) || (!B) || (!E))
-  d = 57;
   //#endif 
-}
-e = ((a / 74) + c);
-//#if (D || E)
-while(23 >= ((c - (37 + c)) + ((c + 78) - c))) {
-  e = d;
-  //#if C
-  e = (((81 + b) + (46 - e)) - (c - 34));
-  //#endif 
-  c = (((b * (d / 24)) - 14) - ((a + e) * ((e - 4) + 51)));
+  c = sum(a, d);
 }
 //#endif 
+//#if ((A && (!A)))
+while(c == max(a, 81)) {
+  //#if ((A && (!A)))
+  e = 27;
+  //#endif 
+}
+//#endif 
+while(a <= 4) {
+  c = 61;
+  //#if ((A && (!A)))
+  b = c;
+  //#endif 
+  //#if ((D))
+  d = 43;
+  //#endif 
+}
+//#if ((A && (!A)))
+d = e;
+//#endif 
+while((a - (max(((a - a) - 5), e) * c)) > 83) {
+  c = ((57 + sum(e, d)) - (34 / (d + a)));
+  b = 84;
+}
+//#if ((B) && (!C))
+while(e <= (13 / b)) {
+  //#if ((D))
+  while(max(max(42, (b - 33)), 12) == sum(d, (27 / e))) {
+    //#if ((F))
+    while(94 > max(sum(c, b), 28)) {
+      b = e;
+      b = 93;
+      //#if ((A))
+      a = c;
+      //#endif 
+    }
+    //#endif 
+    d = 98;
+    //#if ((A && (!A)))
+    e = (62 * 30);
+    //#endif 
+  }
+  //#endif 
+  //#if ((D))
+  b = 49;
+  //#endif 
+  b = 33;
+}
+//#endif 
+//#if ((C))
+a = e;
+//#endif 
+//#if ((E))
+b = sum(a, d);
+//#endif 
+//#if ((!F))
+d = 5;
+//#endif 
+//#if ((!A) && (!B) && (!C) && (F) ) || ( (!A) && (!B) && (C) ) || ( (!A) && (B) ) || ( (A))
+if(b == (d / (b - e))) {
+  //#if ((E))
+  d = (sum(d, 76) + 64);
+  //#endif 
+}
+//#endif 
+//#if ((A))
+a = 35;
+//#endif 
+c = a;
+//#if ((A && (!A)))
+c = 39;
+//#endif 
+//#if ((A))
+d = ((92 + e) / d);
+//#endif 
+//#if ((D))
+b = e;
+//#endif 
+b = b;
+//#if ((C))
+if((58 - 22) >= a) {
+  //#if ((!E))
+  c = max(c, c);
+  //#endif 
+  //#if ((E))
+  a = (62 - a);
+  //#endif 
+}
+//#endif 
+//#if ((A && (!A)))
+while(9 <= sum(a, sum(c, 18))) {
+  //#if ((F))
+  a = c;
+  //#endif 
+  //#if ((A) && (F))
+  d = max((c - 14), sum(sum(sum(e, 57), c), 91));
+  //#endif 
+}
+//#endif 
+//#if ((F))
+while(80 < (d * 66)) {
+  //#if ((!A) && (!F))
+  e = e;
+  //#endif 
+}
+//#endif 
+//#if ((A))
+a = 62;
+//#endif 
+//#if ((A))
+if(a > e) {
+  //#if ((B))
+  b = 31;
+  //#endif 
+  //#if ((C))
+  d = 81;
+  //#endif 
+  //#if ((A && (!A)))
+  b = ((e + 20) + (d * (98 / 64)));
+  //#endif 
+} else {
+  //#if ((B))
+  d = max(e, d);
+  //#endif 
+  a = sum(c, max(max(d, e), a));
+}
+//#endif 
+//#if ((A && (!A)))
+c = (89 / max((a - 36), (d - 19)));
+//#endif 
+while(max(89, c) == 19) {
+  //#if ((E))
+  d = 50;
+  //#endif 
+  //#if ((!E) && (F))
+  c = 68;
+  //#endif 
+}
 end

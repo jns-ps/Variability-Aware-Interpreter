@@ -1,3 +1,13 @@
 begin
-d = (d - 79);
+//#if ((B) && (C))
+if(d > a) {
+  //#if ((F))
+  b = d;
+  //#endif 
+}
+//#endif 
+if((b / e) < 46) {
+  a = c;
+  a = 32;
+}
 end

@@ -1,0 +1,60 @@
+begin
+if(d < (c + 65)) {
+  //#if (!C)
+  while(44 < ((39 - (e / 12)) + ((91 / e) * (b * 61)))) {
+    //#if C
+    a = 43;
+    //#endif 
+    a = a;
+  }
+  //#endif 
+  e = c;
+  //#if ((!C) || (A && (F || E)))
+  c = (((b * 91) - (94 - a)) * d);
+  //#endif 
+} else {
+  //#if F
+  d = e;
+  //#endif 
+  //#if A
+  c = b;
+  //#endif 
+}
+//#if ((!D) && A)
+if(e <= 19) {
+  c = d;
+}
+//#endif 
+//#if B
+if((d - ((b + b) / a)) >= 17) {
+  //#if F
+  d = (((43 * 44) + (64 * e)) * ((b / 94) - 67));
+  //#endif 
+  //#if ((!C) && (!D) && (C || F))
+  e = 61;
+  //#endif 
+}
+//#endif 
+c = 35;
+//#if ((!F) || (!C))
+if((d + 15) <= c) {
+  if((d / (5 / e)) > (27 - a)) {
+    c = 69;
+  } else {
+    d = (29 * ((e * 69) / d));
+  }
+  d = (((a - 92) + 42) - a);
+} else {
+  //#if F
+  if(c <= ((10 + (a - 78)) / ((d + b) - (84 + d)))) {
+    //#if D
+    e = ((20 * c) + b);
+    //#endif 
+  }
+  //#endif 
+  //#if C
+  a = c;
+  //#endif 
+}
+//#endif 
+end

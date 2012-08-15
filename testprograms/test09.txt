@@ -1,9 +1,25 @@
 begin
-//#if (E && B)
-b = a;
+b = 50;
+//#if ((A && (!A)))
+d = 17;
 //#endif 
-while(52 <= e) {
-  a = (a + (c * 86));
-  b = ((48 - a) - a);
-}
+//#if ((A && (!A)))
+b = (c / (87 - 15));
+//#endif 
+//#if ((D))
+a = 88;
+//#endif 
+//#if ((!B) && (E) ) || ( (B))
+b = 73;
+//#endif 
+//#if ((A && (!A)))
+d = b;
+//#endif 
+//#if ((C))
+b = e;
+//#endif 
+a = d;
+//#if ((D) && (!F))
+c = 73;
+//#endif 
 end
