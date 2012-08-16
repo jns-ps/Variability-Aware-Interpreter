@@ -203,4 +203,11 @@ class InterpreterTest {
         store.get("x")
     ))
   }
+  
+  @Test
+  def testClasses() {
+    val program: VariableProgram = parser.parseFile("program_classes.txt")
+    val store = program.run()
+    store.print("Classes")
+  }
 }

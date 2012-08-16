@@ -107,7 +107,7 @@ object SourceCodePrettyPrinter {
       case p: VariableProgram => 
         for (optStmt <- p.getStatements()) {
 //          if (!optStmt.feature.isContradiction)
-             doc = doc ~ prettyPrintFeatureExprOpen(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+             doc = doc ~ prettyPrintFeatureExprOpen(optStmt.feature, true) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature, true)
         }
       case p: ConfiguredProgram =>
         for (stmt <- p.getStatements()) {
@@ -134,7 +134,7 @@ object SourceCodePrettyPrinter {
         else {
            var doc: Doc = Empty
            for (optStmt <- stmts) {
-             doc = doc ~ prettyPrintFeatureExprOpen(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
+             doc = doc ~ prettyPrintFeatureExprOpen(optStmt.feature, true) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature, true)
            }
            "{" ~ Nest(2, doc) <~ "}"
         }
@@ -173,7 +173,7 @@ object SourceCodePrettyPrinter {
       case Call(fname, args) => {
         var doc: Doc = fname ~ "("
          for (i <- 0 until args.size) {
-          doc = doc ~ args(i)
+          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~~ args(i).entry ~~ prettyPrintFeatureExprClose(args(i).feature, false)
           if (i < args.size - 1) {
             doc = doc ~ ", "
           }
@@ -193,11 +193,11 @@ object SourceCodePrettyPrinter {
     }
   }
   
-  private def prettyPrintFeatureExprOpen(feature: FeatureExpr): Doc = {
+  private def prettyPrintFeatureExprOpen(feature: FeatureExpr, breakLine: Boolean): Doc = {
     if (feature.isTautology()) 
       Empty
-    else 
-      Line ~ "//#if " ~ (
+    else {
+      val doc: Doc = "//#if " ~ (
           if (FeatureExprFactory.default == FeatureExprFactory.sat)
             feature.toTextExpr
               .replace("!definedEx(", "(!")
@@ -212,10 +212,17 @@ object SourceCodePrettyPrinter {
               .replace("0", "(A && (!A))")
               +")"
         )
+      if (breakLine) (Line ~ doc) else doc
+    }
   }
   
-  private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
-    if (feature.isTautology()) Empty else Line ~ "//#endif "
+  private def prettyPrintFeatureExprClose(feature: FeatureExpr, breakLine: Boolean): Doc = {
+    if (feature.isTautology()) 
+      Empty 
+    else {
+      val doc: Doc = "//#endif"
+      if (breakLine) (Line ~ doc) else doc
+    } 
   }
 }
 

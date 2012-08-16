@@ -1,0 +1,31 @@
+begin
+// #if FOO
+class A {
+  // #if VAR
+  var a;
+  // #endif
+  // #if BAR
+  def add(x) {
+    res = 10 + x;
+  }
+  // #endif
+}
+// #endif
+
+// #if OOF
+class A {
+  // #if VAR
+  var a;
+  // #endif
+  // #if BAR
+  def add(x) {
+    res = 100 + x;
+  }
+  // #endif
+}
+// #endif
+
+o = new A(2);
+x = o.add(4) / 1 + 0;
+y = o.a;
+end

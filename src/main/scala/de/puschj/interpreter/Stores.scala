@@ -17,6 +17,10 @@ sealed abstract class Store[T] {
   
   protected val entries: Map[String, T] = Map.empty[String, T]
   
+  def contains(key: String) = entries.contains(key)
+  
+  def remove(key: String) = entries.remove(key)
+  
   def put(key: String, value: T) = entries.put(key, value)
   
   def get(key: String): T = {
@@ -122,13 +126,13 @@ sealed abstract class ClassStore[T] {
   
   protected val classes: Map[String, T] = Map.empty[String, T]
   
-  def put(funcName: String, funcDef: T) = classes.put(funcName, funcDef)
+  def put(className: String, funcDef: T) = classes.put(className, funcDef)
   
-  def get(funcName: String): T = {
-    if (!classes.contains(funcName))
-      undefined("func \""+funcName+"\" not declared")
+  def get(className: String): T = {
+    if (!classes.contains(className))
+      undefined("class \""+className+"\" not declared")
     else
-      classes.get(funcName).get
+      classes.get(className).get
   }
   
   protected def undefined(s: String): T
@@ -143,13 +147,13 @@ sealed abstract class ClassStore[T] {
 }
 
 class PlainClassStore extends ClassStore[ClassDef] {
-    classes.put("Object", CDef("", List.empty[Opt[Assignment]], List.empty[Opt[FuncDec]]))
+    classes.put("Object", CDef("", List.empty[Opt[String]], new VAFuncStore))
   
     def undefined(s: String) = CErr(s)
 }
 
 class VAClassStore extends ClassStore[Conditional[ClassDef]] {
-    classes.put("Object", One(CDef("", List.empty[Opt[Assignment]], List.empty[Opt[FuncDec]])))
+    classes.put("Object", One(CDef("", List.empty[Opt[String]], new VAFuncStore)))
   
     def undefined(s: String) = One(CErr(s))
 }

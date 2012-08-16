@@ -42,18 +42,7 @@ class ParserTest {
   }
   
   @Test
-  def testParseBDDs() {
-      setDefault(bdd)
-    
-      val fA = createDefinedExternal("A")
-      val fB = createDefinedExternal("B")
-      
-      val fe1 = (fA.not and fB) or fA
-      println(fe1)
-      
-      val fe2 = (fA and fB).not or fA
-      println(fe2)
-      
-//      parser.parseFile("program_functions.txt")
+  def testParseClasses() {
+    parser.parseFile("program_classes.txt").printAST
   }
 }

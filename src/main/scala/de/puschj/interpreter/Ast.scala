@@ -7,7 +7,6 @@ sealed abstract class ASTNode
 
 sealed abstract class Expression extends ASTNode
 case class Num(n: Int) extends Expression
-case object Null extends Expression
 case class Id(x: String) extends Expression
 case class Parens(e: Expression) extends Expression
 abstract case class BinaryExpression(e1: Expression, e2: Expression) extends Expression
@@ -17,11 +16,12 @@ case class Mul(override val e1: Expression, override val e2: Expression) extends
 case class Div(override val e1: Expression, override val e2: Expression) extends BinaryExpression(e1, e2)
 
 // functions
-case class Call(fname: String, args: List[Expression]) extends Expression
+case class Call(fname: String, args: List[Opt[Expression]]) extends Expression
 
 // classes
-case class New(name: String, args: List[Expression]) extends Expression
+case class New(name: String, args: List[Opt[Expression]]) extends Expression
 case class Field(e: Expression, fieldName: String) extends Expression
+case class MethodCall(e: Expression, call: Call) extends Expression
 
 sealed abstract class Condition extends Expression
 case class Neg(c: Condition) extends Condition
@@ -47,9 +47,10 @@ case class FDef(args: List[String], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
 // classes
-case class ClassDec(name: String, superClass: String, fields: List[Opt[Assignment]], methods: List[Opt[FuncDec]]) extends Statement
+case class ClassDec(name: String, superClass: String, fields: List[Opt[String]], methods: List[Opt[FuncDec]]) extends Statement
 sealed abstract class ClassDef
-case class CDef(superClass: String, fields: List[Opt[Assignment]], methods: List[Opt[FuncDec]]) extends ClassDef
+case class CDef(superClass: String, fields: List[Opt[String]], funcStore: VAFuncStore) extends ClassDef
+//case class PlainCDef(superClass: String, fields: List[String], funcStore: PlainFuncStore) extends ClassDef
 case class CErr(msg: String) extends ClassDef
 
 

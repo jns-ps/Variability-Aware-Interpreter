@@ -1,13 +1,14 @@
 begin
 
+//#if S
+def sum(a,b) { res = a + b; }
+//#endif
+
 a = 1;
 //#if A
 a = 2;
 //#endif
 b = 3;
-//#if S
-def sum(a,b) { res = a + b; }
-//#endif
 //#if C
 c = sum(a,b);
 //#endif

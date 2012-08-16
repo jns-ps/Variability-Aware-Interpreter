@@ -26,12 +26,12 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
   
   def getStatements() = stmts
   
-  def run(): VAStore = run(new VAStore, new VAFuncStore)
+  def run(): VAStore = run(new VAStore, new VAFuncStore, new VAClassStore)
   
-  def run(store: VAStore, funcStore: VAFuncStore): VAStore = {
+  def run(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): VAStore = {
     for(stm <- stmts) 
       try {
-        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore, classStore)
       }
       catch {
         case e: LoopExceededException => println(e.toString)
@@ -39,12 +39,12 @@ case class VariableProgram(private val stmts: List[Opt[Statement]]) extends Prog
     return store
   }
   
-  def runLoopCheck(): Boolean = runLoopCheck(new VAStore, new VAFuncStore)
+  def runLoopCheck(): Boolean = runLoopCheck(new VAStore, new VAFuncStore, new VAClassStore)
   
-  def runLoopCheck(store: VAStore, funcStore: VAFuncStore): Boolean = {
+  def runLoopCheck(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Boolean = {
     for(stm <- stmts)
       try {
-        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore, classStore)
       }
       catch {
         case e: LoopExceededException => return false

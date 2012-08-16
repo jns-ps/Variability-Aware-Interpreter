@@ -77,10 +77,10 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     arg1 <- genExpressionSized(size, funcNames)
     arg2 <- genExpressionSized(size, funcNames)
   } yield {
-    val args = ListBuffer.empty[Expression]
-    args += arg1
+    val args = ListBuffer.empty[Opt[Expression]]
+    args += Opt(True, arg1)
     if (predefFuncDefs.find(x => x.name equals funcName).get.args.size == 2)
-      args += arg2
+      args += Opt(True, arg2)
     Call(funcName, args.toList)
   }
   
