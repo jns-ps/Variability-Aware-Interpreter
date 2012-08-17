@@ -11,8 +11,22 @@ object VAInterpreter {
   def execute(s: Statement, context: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
     if (context.isContradiction()) return
     s match {
-      case Assignment(key, exp) => store.put(key, Choice(context, eval(exp, store, funcStore, classStore), store.get(key)).simplify)
+      case ExpressionStmt(expr) => eval(expr, store, funcStore, classStore)
+      
+      case Assignment(expr, value) => expr match {
+        case Id(name) => store.put(name, Choice(context, eval(value, store, funcStore, classStore), store.get(name)).simplify)
+        case Field(e, name) => 
+            eval(e, store, funcStore, classStore).map(_ match {
+              case e: ErrorValue => e
+              case VAObjectValue(cName, fields) => {
+                fields.put(name, Choice(context, eval(value, store, funcStore, classStore), fields.get(name)).simplify)
+              }
+              case v => IllegalOPValue("field access to non object value")
+            })
+        case e => IllegalOPValue("assignment to non variable")
+      }
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, store, funcStore, classStore)
+     
       case w @ While(c, s) => {
         var isSat: Boolean = true
         var n = 0
@@ -116,24 +130,23 @@ object VAInterpreter {
               throw new RuntimeException("Illegal number of construction arguments.")
             val vals = args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef constructor arg"))))
             val objectStore = new VAStore
-            
             for (i <- 0 until fields.size)
-                objectStore.put(fields(i).entry, vals(i))
+                objectStore.put(fields(i), vals(i))
             VAObjectValue(name, objectStore)
           }
         })
       }
       case Field(expr, name) => {
-        eval(expr, store, funcStore, classStore).mapr(v => v match {
+        eval(expr, store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
           case o: VAObjectValue => o.getFieldValue(name)
-          case x => throw new RuntimeException("cannot get field of non object Value")
+          case x => One(IllegalOPValue("cannot get field of non object Value"))
         })
       }
       case MethodCall(expr, call) => {
-        eval(expr, store, funcStore, classStore).mapr(v => v match {
+        eval(expr, store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
-          case VAObjectValue(cName, vars) => {
+          case v@VAObjectValue(cName, fields) => {
             // TODO: implement
             // different scope
             // get FuncDef from ClassStore
@@ -148,24 +161,32 @@ object VAInterpreter {
                 val nArgs = fargs.size
                 if (nArgs != call.args.size)
                   throw new RuntimeException("Illegal number of arguments.")
-                val vals = call.args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef func arg"))))
-                vars.remove("res")
-                for (i <- 0 until nArgs) {
-                   if (vars.contains(fargs(i)))
-                     throw new RuntimeException("local variable '"+fargs(i)+"' overrides global variable")
-                   vars.put(fargs(i), vals(i))
-                }
-                execute(fbody, True, vars, funcStore, classStore)
-                val result = vars.get("res")
-                for (i <- 0 until nArgs) {
-                  vars.remove(fargs(i))
-                }
-                result
+                val vals = call.args.map(a => Choice(a.feature, 
+                                                     eval(a.entry, store, funcStore, classStore), 
+                                                     One(UndefinedValue("undef func arg"))))
+//                vars.remove("res")
+//                for (i <- 0 until nArgs) {
+//                   if (vars.contains(fargs(i)))
+//                     throw new RuntimeException("local variable '"+fargs(i)+"' overrides global variable")
+//                   vars.put(fargs(i), vals(i))
+//                }
+//                execute(fbody, True, vars, funcStore, classStore)
+//                val result = vars.get("res")
+//                for (i <- 0 until nArgs) {
+//                  vars.remove(fargs(i))
+//                }
+//                result
+                val staticScopeStore = new VAStore()
+                staticScopeStore.put("this", One(v))
+                for (i <- 0 until nArgs)
+                  staticScopeStore.put(fargs(i), vals(i))
+                execute(fbody, True, staticScopeStore, funcStore, classStore)
+                staticScopeStore.get("res")                                   
               }
             })
             
           }
-          case x => throw new RuntimeException("cannot invoke method on: '"+x.getClass.getCanonicalName+"'")
+          case x => One(IllegalOPValue("cannot invoke method on: '"+x.getClass.getCanonicalName+"'"))
         })
       }
     }
@@ -191,7 +212,7 @@ object PlainInterpreter {
   @throws(classOf[LoopExceededException])
   def execute(s: Statement, store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): Unit = {
     s match {
-      case Assignment(key, exp) => store.put(key, eval(exp, store, funcStore, classStore))
+      case Assignment(expr, value) => store.put(value.toString, eval(value, store, funcStore, classStore))
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, store, funcStore, classStore)
       case w @ While(c, s) => {
         var n = 0

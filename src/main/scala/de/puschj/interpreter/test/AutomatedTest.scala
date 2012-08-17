@@ -175,7 +175,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   def genAssignment(funcNames: Seq[String]) = for {
     name <- genStoreVarName
     value <- genExpression(funcNames)
-  } yield Assignment(name, value)
+  } yield Assignment(Id(name), value)
   
   def genBlock(nested: Int, funcNames: Seq[String]): Gen[Block] = for {
     n <- Gen.choose(1, 3)

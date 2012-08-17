@@ -40,10 +40,9 @@ sealed case class ErrorValue(s: String) extends Value {
   }
 }
 
-
 case class UndefinedValue(override val s: String) extends ErrorValue(s)
 case class NotANumberValue(override val s: String) extends ErrorValue(s)
-
+case class IllegalOPValue(override val s: String) extends ErrorValue(s)
 
 sealed abstract case class ObjectValue[T] extends Value {
   def getFieldValue(fieldName: String): T

@@ -1,9 +1,8 @@
 begin
 // #if FOO
 class A {
-  // #if VAR
   var a;
-  // #endif
+  
   // #if BAR
   def add(x) {
     res = 10 + x;
@@ -14,18 +13,22 @@ class A {
 
 // #if OOF
 class A {
-  // #if VAR
   var a;
-  // #endif
+  
   // #if BAR
   def add(x) {
-    res = 100 + x;
+    this.a = this.a + x;
   }
   // #endif
 }
 // #endif
 
 o = new A(2);
-x = o.add(4) / 1 + 0;
+// #ifdef ERR
+o = 700;
+// #endif
+
+o.add(10);
 y = o.a;
+
 end
