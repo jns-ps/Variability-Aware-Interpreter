@@ -161,12 +161,20 @@ class WhileParser extends MultiFeatureParser() {
     
     lazy val arith_1: MultiParser[Expression] = access ~ repPlain("*" ~ access | "/" ~ access) ^^ reduceList
   
-    lazy val access: MultiParser[Expression] = 
-      factor ~ (("." ~> (call | identifier))?) ^^ {
-        case expr~Some(c:Call) => MethodCall(expr, c)
-        case expr~Some(s:String) => Field(expr, s)
-        case expr~None => expr
-      }
+    lazy val access: MultiParser[Expression] = factor ~ repPlain("." ~ (call | (identifier ^^ { case s => Id(s) })) ) ^^ reduceList
+//      factor ~ (("." ~> (call | identifier))?) ^^ {
+//        case expr~Some(c:Call) => MethodCall(expr, c)
+//        case expr~Some(s:String) => Field(expr, s)
+//        case expr~None => expr
+//      }
+//    
+//    val reduceList2: Expression ~ List[Elem ~ Expression] => Expression = {
+//      case i ~ ps => (i /: ps)(reduce2) 
+//    }
+//    
+//    def reduce2(l: Expression, r: Elem ~ Expression) = r._1 match {
+//      case Call(name, args) => Add(l, r._2)
+//    }
     
     val reduceList: Expression ~ List[Elem ~ Expression] => Expression = {
       case i ~ ps => (i /: ps)(reduce) 
@@ -186,6 +194,13 @@ class WhileParser extends MultiFeatureParser() {
       case "!=" => NEq(l, r._2)
       case "&&" => And(l, r._2)
       case "||" => Or(l, r._2)
+      
+      case "." => {
+        r._2 match {
+          case c: Call => MethodCall(l, c)
+          case Id(x) => Field(l, x)
+        }
+      }
     }
 
     def parse(code:String): VariableProgram = {

@@ -46,6 +46,11 @@ class ParserTest {
   }
   
   @Test
+  def testParseClasses2() {
+    parser.parseFile("program_classes2.txt").printAST
+  }
+  
+  @Test
   def testGPL() {
     parser.parseFile("program_GPL.txt").printAST
   }

@@ -1,0 +1,21 @@
+begin
+class A {
+  var x;
+  
+  def getX() {
+    res = this.x;
+  }
+}
+
+class B {
+  var a;
+  
+  def getA() {
+    res = this.a;
+  }
+}
+
+b = new B(new A(2));
+x = b.getA().x;
+
+end
