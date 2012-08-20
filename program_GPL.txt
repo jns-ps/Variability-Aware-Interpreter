@@ -1,0 +1,113 @@
+begin
+
+// ======================
+// CycleWorkSpace
+// ======================
+
+//#if CYCLE
+class CycleWorkSpace {
+    var AnyCycles;
+    var counter;
+    
+    const WHITE = 0;
+    const GRAY = 1;
+    const BLACK = 2;
+
+    def init_vertex( v) {
+        v.Cycle = 999999999; //Integer.MAX_VALUE
+        v.Color = this.WHITE;
+    }
+
+    def preVisitAction( v) {
+        if (v.visited != true) {
+            v.Cycle = this.counter;
+            this.counter = this.counter  + 1;
+            v.Color = this.GRAY;
+        }
+    }
+
+    def postVisitAction( v) {
+        v.Color = this.BLACK;
+        this.counter = this.counter - 1;
+    }
+
+    def checkNeighborAction( vsource,  vtarget) {
+        if ((vsource.Color == this.GRAY) && (vtarget.Color == this.GRAY)) {
+            AnyCycles = true;
+        }
+        // #if UNDIRECTED
+        if ((vsource.Color == this.GRAY) && (vtarget.Color == this.GRAY)
+                && vsource.Cycle != (vtarget.Cycle + 1)) {
+            AnyCycles = true;
+        }
+        // #endif
+    }
+}
+// #endif
+
+
+// ======================
+// Edge
+// ======================
+
+// #if SEARCHBASE
+class Edge {
+    var start;
+    var end;
+    
+    //// #if WEIGHTED
+    var aweight;
+    var weight;
+    //// #endif
+
+    def adjustAdorns(the_edge) {
+        // #if WEIGHTED
+        this.setWeight(the_edge.getWeight());
+        // #endif
+    }
+
+    // #if WEIGHTED
+    def setWeight(w) {
+        this.weight = w;
+    }
+    // #endif
+
+    // #if WEIGHTED
+    def getWeight() {
+        res = this.weight;
+    }
+    // #endif
+
+    def getOtherVertex(vertex) {
+        if (vertex == this.start) {
+          res = this.end;
+        } else {
+          if (vertex == this.end) {
+            res = this.start;
+          }
+        }
+        res = null; // TODO: support null values
+    }
+
+    def getStart() {
+        res = this.start;
+    }
+
+    def getEnd() {
+        res = this.end;
+    }
+
+    def display() {
+        // #ifdef WEIGHTED
+//      TODO: implement output mechanism or provide output variable
+//        System.out.print(" Weight=" + weight);
+        // #endif
+//        System.out.println(" start=" + start.getName() + " end="
+//                + end.getName());
+    }
+}
+// #endif
+
+
+
+end
