@@ -1,6 +1,6 @@
 package de.puschj.interpreter
 
-import scala.collection.mutable.Map
+import scala.collection.mutable.{Map => MMap}
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory.{True, False}
 import de.fosd.typechef.conditional.Conditional
@@ -15,7 +15,7 @@ import de.fosd.typechef.conditional.Opt
 
 sealed abstract class Store[T] {
   
-  protected val entries: Map[String, T] = Map.empty[String, T]
+  protected val entries: MMap[String, T] = MMap.empty[String, T]
   
   def contains(key: String) = entries.contains(key)
   
@@ -90,7 +90,7 @@ class VAStore extends Store[Conditional[Value]] {
 
 sealed abstract class FuncStore[T] {
   
-  protected val functions: Map[String, T] = Map.empty[String, T]
+  protected val functions: MMap[String, T] = MMap.empty[String, T]
   
   def put(funcName: String, funcDef: T) = functions.put(funcName, funcDef)
   
@@ -124,7 +124,7 @@ class VAFuncStore extends FuncStore[Conditional[FuncDef]] {
 
 sealed abstract class ClassStore[T] {
   
-  protected val classes: Map[String, T] = Map.empty[String, T]
+  protected val classes: MMap[String, T] = MMap.empty[String, T]
   
   def put(className: String, funcDef: T) = classes.put(className, funcDef)
   
@@ -147,13 +147,13 @@ sealed abstract class ClassStore[T] {
 }
 
 class PlainClassStore extends ClassStore[ClassDef] {
-    classes.put("Object", CDef("", List.empty[String], new VAFuncStore))
+    classes.put("Object", VACDef("", List.empty[String], Map.empty[String, Conditional[Value]], new VAFuncStore))
   
     def undefined(s: String) = CErr(s)
 }
 
 class VAClassStore extends ClassStore[Conditional[ClassDef]] {
-    classes.put("Object", One(CDef("", List.empty[String], new VAFuncStore)))
+    classes.put("Object", One(VACDef("", List.empty[String], Map.empty[String, Conditional[Value]], new VAFuncStore)))
   
     def undefined(s: String) = One(CErr(s))
 }

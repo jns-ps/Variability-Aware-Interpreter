@@ -210,4 +210,17 @@ class InterpreterTest {
     val store = program.run()
     store.print("Classes")
   }
+  
+  @Test
+  def testMap() {
+    
+    val fA: FeatureExpr = FeatureExprFactory.createDefinedExternal("A")
+    val fB: FeatureExpr = FeatureExprFactory.createDefinedExternal("B")
+    val fC: FeatureExpr = FeatureExprFactory.createDefinedExternal("C") 
+    
+    val fe = Choice(fA, 1, Choice(fB, 2, 3))
+    val mapped = fe.mapr(i => Choice(fC, i.getIntValue+1, 0))
+    
+    println(mapped)
+  }
 }

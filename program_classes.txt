@@ -3,9 +3,11 @@ begin
 class A {
   var a;
   
+  const FACTOR = 2;
+  
   // #if BAR
   def add(x) {
-    res = 10 + x;
+    this.a = this.a + this.FACTOR * x;
   }
   // #endif
 }
@@ -13,22 +15,21 @@ class A {
 
 // #if OOF
 class A {
-  var a;
+  var FACTOR;
+  
+  const a = 1;
   
   // #if BAR
   def add(x) {
-    this.a = this.a + x;
+    this.a = this.a + this.FACTOR;
   }
   // #endif
 }
 // #endif
 
 o = new A(2);
-// #ifdef ERR
-o = 700;
-// #endif
-
 o.add(10);
 y = o.a;
+x = o.FACTOR;
 
 end

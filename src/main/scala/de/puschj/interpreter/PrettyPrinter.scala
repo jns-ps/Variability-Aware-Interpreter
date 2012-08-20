@@ -169,7 +169,7 @@ object SourceCodePrettyPrinter {
       case Sub(e1, e2) => e1 ~~ "-" ~~ e2
       case Mul(e1, e2) => e1 ~~ "*" ~~ e2
       case Div(e1, e2) => e1 ~~ "/" ~~ e2
-      case Parens(expr) => "(" ~ expr ~ ")"
+      case Par(expr) => "(" ~ expr ~ ")"
       case Call(fname, args) => {
         var doc: Doc = fname ~ "("
          for (i <- 0 until args.size) {
@@ -182,11 +182,11 @@ object SourceCodePrettyPrinter {
       } 
       
       //Conditions
-      case Equal(e1, e2) => e1 ~~ "==" ~~ e2
-      case GreaterThan(e1, e2) => e1 ~~ ">" ~~ e2
-      case GreaterOE(e1, e2) => e1 ~~ ">=" ~~ e2
-      case LessThan(e1, e2) => e1 ~~ "<" ~~ e2
-      case LessOE(e1, e2) => e1 ~~ "<=" ~~ e2
+      case Eq(e1, e2) => e1 ~~ "==" ~~ e2
+      case GrT(e1, e2) => e1 ~~ ">" ~~ e2
+      case GoE(e1, e2) => e1 ~~ ">=" ~~ e2
+      case LeT(e1, e2) => e1 ~~ "<" ~~ e2
+      case LoE(e1, e2) => e1 ~~ "<=" ~~ e2
       case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
       
       case node => node.toString()

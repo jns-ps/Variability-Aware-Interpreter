@@ -1,8 +1,6 @@
 package de.puschj.interpreter
 
 import de.fosd.typechef.conditional.Conditional
-import de.fosd.typechef.conditional.Opt
-import de.fosd.typechef.conditional.Choice
 
 sealed trait Value {
   def getIntValue(): Int
@@ -55,14 +53,12 @@ sealed abstract case class ObjectValue[T] extends Value {
   }
 }
 
-//case class PlainObjectValue(store: PlainStore, funcStore: PlainFuncStore) extends ObjectValue[Value] {
-//  private val vars = new PlainStore
-//  private val funcs = new PlainFuncStore
-//  
-//  def getFieldValue(fieldName: String) = {
-//    vars.get(fieldName)
-//  }
-//}
+case class PlainObjectValue(className: String, vars: PlainStore) extends ObjectValue[Value] {
+
+  def getFieldValue(fieldName: String) = {
+    vars.get(fieldName)
+  }
+}
 
 case class VAObjectValue(className: String, vars: VAStore) extends ObjectValue[Conditional[Value]] {
   

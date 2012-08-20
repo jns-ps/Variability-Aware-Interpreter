@@ -13,7 +13,6 @@ class ParserTest {
   @Test
   def testParseAssignments() {
       parser.parseFile("program_assignments.txt")
-      assertTrue(true)
   }
 
   @Test
@@ -43,6 +42,11 @@ class ParserTest {
   
   @Test
   def testParseClasses() {
-    parser.parseFile("program_classes.txt").printAST
+    parser.parseFile("program_classes.txt")
+  }
+  
+  @Test
+  def testGPL() {
+    parser.parseFile("program_GPL.txt").printAST
   }
 }

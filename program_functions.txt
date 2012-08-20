@@ -4,4 +4,7 @@ def test(i) { res = i + 10; }
 def sum(a, b) { res = a + b; }
 a = 2;
 b = test(a);
+
+if ((true && false) == false) { c = 1; }
+
 end

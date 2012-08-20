@@ -88,22 +88,22 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 	  val genAdd = for {
 	    left <- lzy(genExpressionSized(size, funcNames))
 	    right <- genExpressionSized(size, funcNames)
-	  } yield Parens(Add(left,right))
+	  } yield Par(Add(left,right))
 	  
 	  val genSub = for {
 	    left <- lzy(genExpressionSized(size, funcNames))
 	    right <- genExpressionSized(size, funcNames)
-	  } yield Parens(Sub(left,right))
+	  } yield Par(Sub(left,right))
 	    
 	  val genMul = for {
 	    left <- lzy(genExpressionSized(size, funcNames))
 	    right <- genExpressionSized(size, funcNames)
-	  } yield Parens(Mul(left,right))
+	  } yield Par(Mul(left,right))
 	    
 	  val genDiv = for {
 	    left <- lzy(genExpressionSized(size, funcNames))
 	    right <- genExpressionSized(size, funcNames)
-	  } yield Parens(Div(left,right))
+	  } yield Par(Div(left,right))
     
 	  Gen.oneOf(genAdd, genSub, genMul, genDiv) 
   }
@@ -119,27 +119,27 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   def genEQ(funcNames: Seq[String]) = for {
     left <- lzy(genExpression(funcNames))
     right <- genExpression(funcNames)
-  } yield Equal(left, right)
+  } yield Eq(left, right)
   
   def genGT(funcNames: Seq[String]) = for {
     left <- lzy(genExpression(funcNames))
     right <- genExpression(funcNames)
-  } yield GreaterThan(left, right)
+  } yield GrT(left, right)
   
  def genGOE(funcNames: Seq[String]) = for {
     left <- lzy(genExpression(funcNames))
     right <- genExpression(funcNames)
-  } yield GreaterOE(left, right)
+  } yield GoE(left, right)
   
  def genLT(funcNames: Seq[String]) = for {
     left <- lzy(genExpression(funcNames))
     right <- genExpression(funcNames)
-  } yield LessThan(left, right)
+  } yield LeT(left, right)
   
   def genLOE(funcNames: Seq[String]) = for {
     left <- lzy(genExpression(funcNames))
     right <- genExpression(funcNames)
-  } yield LessOE(left, right)
+  } yield LoE(left, right)
   
   def genCondition(funcNames: Seq[String]) = oneOf(genEQ(funcNames), genGT(funcNames), genGOE(funcNames), genLT(funcNames), genLOE(funcNames))
   
