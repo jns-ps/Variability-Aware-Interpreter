@@ -64,16 +64,20 @@ object VAInterpreter {
         }
       }
       case FuncDec(name, args, body) => {
-        funcStore.put(name, Choice(context, One(FDef(args, body)), funcStore.get(name)).simplify)
+        funcStore.put(name, Choice(context, One(VAFDef(args, body)), funcStore.get(name)).simplify)
       }
-      case ClassDec(name, superClass, fields, consts, optFuncDecs) => {
+      case ClassDec(name, superClass, optFields, optConsts, optFuncDecs) => {
         val cFuncStore = new VAFuncStore
         for (optFuncDec <- optFuncDecs) {
           val funcDec = optFuncDec.entry
-          cFuncStore.put(funcDec.name, Choice(optFuncDec.feature, One(FDef(funcDec.args, funcDec.body)), funcStore.get(funcDec.name)).simplify)
+          cFuncStore.put(funcDec.name, Choice(optFuncDec.feature, One(VAFDef(funcDec.args, funcDec.body)), funcStore.get(funcDec.name)).simplify)
         }
-        val evaluatedConsts = consts.map(c => (c._1, eval(c._2, store, funcStore, classStore)))
-        classStore.put(name, Choice(context, One(VACDef(superClass, fields, evaluatedConsts, cFuncStore)), classStore.get(name)).simplify)
+        val cConstStore = new VAStore
+        for (optConst <- optConsts) {
+          val const = optConst.entry
+          cConstStore.put(const._1, Choice(optConst.feature, eval(const._2, store, funcStore, classStore), cConstStore.get(const._1)).simplify)
+        }
+        classStore.put(name, Choice(context, One(VACDef(superClass, optFields, cConstStore, cFuncStore)), classStore.get(name)).simplify)
       }
     }
   }
@@ -128,14 +132,13 @@ object VAInterpreter {
         // TODO: check correctness of all mapr ... !!!
         funcStore.get(name).mapr(_ match {
           case FErr(msg) => One(UndefinedValue(msg))
-          case FDef(fargs, fbody) => {
+          case VAFDef(fargs, fbody) => {
             val nArgs = fargs.size
             if (nArgs != args.size)
               throw new RuntimeException("Illegal number of arguments.")
-            val vals = args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef func arg"))))
             val staticScopeStore = new VAStore()
             for (i <- 0 until nArgs)
-              staticScopeStore.put(fargs(i), vals(i))
+              staticScopeStore.put(fargs(i).entry, Choice(args(i).feature and fargs(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg")) ))
             execute(fbody, True, staticScopeStore, funcStore, classStore)
             if (!staticScopeStore.contains("res"))
               One(UndefinedValue("'" + name + "' returning void"))
@@ -157,7 +160,7 @@ object VAInterpreter {
             val vals = args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef constructor arg"))))
             val objectStore = new VAStore
             for (i <- 0 until fields.size)
-              objectStore.put(fields(i), vals(i))
+              objectStore.put(fields(i).entry, Choice(args(i).feature and fields(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef constructor arg")) ))
             VAObjectValue(name, objectStore)
           }
         })
@@ -170,7 +173,10 @@ object VAInterpreter {
             classStore.get(o.className).mapr(_ match {
               case CErr(msg) => One(UndefinedValue(msg))
               case VACDef(superClass, fields, consts, methods) =>
-                consts.getOrElse(name, o.getFieldValue(name))
+                if (consts.contains(name))
+                   consts.get(name)
+                else
+                   o.getFieldValue(name)
             })
           }
           case x => One(IllegalOPValue("cannot get field of non object Value"))
@@ -183,7 +189,7 @@ object VAInterpreter {
             classStore.get(cName).mapr(_ match {
               case VACDef(_, _, _, classFuncStore) => classFuncStore.get(call.fname).mapr(_ match {
                 case FErr(msg) => One(UndefinedValue(msg))
-                case FDef(fargs, fbody) => {
+                case VAFDef(fargs, fbody) => {
                   val nArgs = fargs.size
                   if (nArgs != call.args.size)
                     throw new RuntimeException("Illegal number of arguments.")
@@ -191,7 +197,7 @@ object VAInterpreter {
                   val staticScopeStore = new VAStore()
                   staticScopeStore.put("this", One(v))
                   for (i <- 0 until nArgs)
-                    staticScopeStore.put(fargs(i), vals(i))
+                    staticScopeStore.put(fargs(i).entry, Choice(call.args(i).feature and fargs(i).feature, eval(call.args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg")) ))
                   execute(fbody, True, staticScopeStore, classFuncStore, classStore)
                   if (!staticScopeStore.contains("res"))
                     One(UndefinedValue("'" + call.fname + "' returning void"))
@@ -280,16 +286,22 @@ object PlainInterpreter {
           throw new AssertionError("violation of " + cnd)
       }
       case FuncDec(name, args, body) => {
-        funcStore.put(name, FDef(args, body))
+        // TODO: Introduce parser without Variability, so that no map function needs to be called
+        funcStore.put(name, PlainFDef(args.map(_.entry), body))
       }
-      case ClassDec(name, superClass, fields, consts, optFuncDecs) => {
+      case ClassDec(name, superClass, optFields, optConsts, optFuncDecs) => {
+        // TODO: Introduce parser without Variability, so that it needs not explicitly be removed here
         val cFuncStore = new PlainFuncStore
         for (optFuncDec <- optFuncDecs) {
           val funcDec = optFuncDec.entry
-          cFuncStore.put(funcDec.name, FDef(funcDec.args, funcDec.body))
+          cFuncStore.put(funcDec.name, PlainFDef(funcDec.args.map(_.entry), funcDec.body))
         }
-        val evaluatedConsts = consts.map(c => (c._1, eval(c._2, store, funcStore, classStore)))
-        classStore.put(name, PlainCDef(superClass, fields, evaluatedConsts, cFuncStore))
+        val cConstStore = new PlainStore
+        for (optConst <- optConsts) {
+          val const = optConst.entry
+          cConstStore.put(const._1, eval(const._2, store, funcStore, classStore))
+        }
+        classStore.put(name, PlainCDef(superClass, optFields.map(_.entry), cConstStore, cFuncStore))
       }
     }
   }
@@ -339,7 +351,7 @@ object PlainInterpreter {
         val fdef = funcStore.get(name)
         fdef match {
           case FErr(msg) => UndefinedValue(msg)
-          case FDef(fargs, fbody) => {
+          case PlainFDef(fargs, fbody) => {
             val nArgs = fargs.size
             if (nArgs != args.size)
               throw new RuntimeException("Illegal number of function arguments.")
@@ -380,7 +392,10 @@ object PlainInterpreter {
             classStore.get(o.className) match {
               case CErr(msg) => UndefinedValue(msg)
               case PlainCDef(superClass, fields, consts, methods) =>
-                consts.getOrElse(name, o.getFieldValue(name))
+                if (consts.contains(name))
+                  consts.get(name)
+                else
+                  o.getFieldValue(name)
             }
           }
           case x => IllegalOPValue("cannot get field of non object Value")
@@ -393,7 +408,7 @@ object PlainInterpreter {
             classStore.get(cName) match {
               case PlainCDef(_, _, _, funcStore) => funcStore.get(call.fname) match {
                 case FErr(msg) => UndefinedValue(msg)
-                case FDef(fargs, fbody) => {
+                case PlainFDef(fargs, fbody) => {
                   val nArgs = fargs.size
                   if (nArgs != call.args.size)
                     throw new RuntimeException("Illegal number of arguments.")

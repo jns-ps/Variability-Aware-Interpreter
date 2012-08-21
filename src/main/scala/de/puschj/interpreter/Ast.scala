@@ -58,17 +58,18 @@ case class If(cond: Expression, s1: Block, s2: Option[Block]) extends Statement
 case class Assert(cond: Expression) extends Statement
 
 // functions
-case class FuncDec(name: String, args: List[String], body: Block) extends Statement
+case class FuncDec(name: String, args: List[Opt[String]], body: Block) extends Statement
 sealed abstract class FuncDef
-case class FDef(args: List[String], body: Block) extends FuncDef
+case class VAFDef(args: List[Opt[String]], body: Block) extends FuncDef
+case class PlainFDef(args: List[String], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
 // classes
 //case class ConstDec(name: String, expr: Expression)
-case class ClassDec(name: String, superClass: String, fields: List[String], consts: Map[String, Expression], methods: List[Opt[FuncDec]]) extends Statement
+case class ClassDec(name: String, superClass: String, fields: List[Opt[String]], consts: List[Opt[(String, Expression)]], methods: List[Opt[FuncDec]]) extends Statement
 abstract class ClassDef
-case class VACDef(superClass: String, fields: List[String], consts: Map[String, Conditional[Value]], funcStore: VAFuncStore) extends ClassDef
-case class PlainCDef(superClass: String, fields: List[String], consts: Map[String, Value], funcStore: PlainFuncStore) extends ClassDef
+case class VACDef(superClass: String, fields: List[Opt[String]], constStore: VAStore, funcStore: VAFuncStore) extends ClassDef
+case class PlainCDef(superClass: String, fields: List[String], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
 case class CErr(msg: String) extends ClassDef
 
 

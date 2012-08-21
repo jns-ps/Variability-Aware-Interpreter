@@ -47,7 +47,7 @@ class ParserTest {
   
   @Test
   def testParseClasses2() {
-    parser.parseFile("program_classes2.txt").printAST
+    parser.parseFile("program_classes2.txt")
   }
   
   @Test

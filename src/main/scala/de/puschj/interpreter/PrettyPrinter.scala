@@ -154,7 +154,7 @@ object SourceCodePrettyPrinter {
       case FuncDec(name, args, body) => {
         var doc = "def" ~~ name ~ "("
         for (i <- 0 until args.size) {
-          doc = doc ~ args(i)
+          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~~ args(i).entry ~~ prettyPrintFeatureExprClose(args(i).feature, false)
           if (i < args.size - 1) {
             doc = doc ~ ", "
           }
@@ -189,7 +189,7 @@ object SourceCodePrettyPrinter {
       case LoE(e1, e2) => e1 ~~ "<=" ~~ e2
       case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
       
-      case node => node.toString()
+//      case node => node.toString()
     }
   }
   
