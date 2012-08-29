@@ -1,21 +1,48 @@
 begin
-class A {
-  var x;
-  
+
+CONST = 0;
+
+class A(x) {
   def getX() {
     res = this.x;
   }
 }
 
-class B {
-  var a;
+class B(
+//#ifdef FOO
+    n
+//#endif
+) {
+  var a = new A(10);
+  var c = CONST;
+  
+  def sum(a, b) {
+    res = a + b;
+  }
+  
+  def mult(x, n) {
+    cur = n;
+    res = 0;
+    while (cur > 0) {
+      res = sum(res, x);
+      cur = cur - 1;
+    }
+  }
   
   def getA() {
     res = this.a;
   }
 }
 
-b = new B(new A(2));
+b = new B(
+//#ifdef BAR
+    2
+//#endif
+);
+
 x = b.getA().x;
+m = b.mult(4,2);
+y = b.c;
+z = b.n;
 
 end

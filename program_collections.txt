@@ -1,0 +1,323 @@
+begin
+
+// ======================
+// LinkedList
+// ======================
+
+class Link(data) {
+  var next = null;
+}
+
+class LinkedList { 
+  var first = null;
+  
+  def isEmpty() {
+    res = (this.first == null);
+  }
+  
+  def add(data) {
+    if (this.isEmpty()) {
+      this.first = new Link(data);
+    } else {
+      cur = this.first;
+      while(cur.next != null) {
+        cur = cur.next;
+      }
+      cur.next = new Link(data);
+    }
+  }
+  
+  def get(index) {
+    i = index;
+    cur = this.first;
+    outOfBounds = false;
+    while(i > 0 && !outOfBounds) {
+      cur = cur.next;
+      i = i - 1;
+      if (cur == null) {
+        outOfBounds = true;
+      }
+    }
+    if (outOfBounds) { 
+      res = null;
+    } else {
+      res = cur.data;
+    }
+  }
+  
+  def update(index, data) {
+    if (!this.isEmpty()) {
+      cur = this.first;
+      i = index;
+      while(i > 0 && cur != null) {
+        cur = cur.next;
+        i = i - 1;
+      }
+      if (cur != null) {
+        cur.data = data;
+      }
+    }
+  }
+  
+  def removeFirst() {
+    if (!this.isEmpty()) {
+      this.first = this.first.next;
+    }
+  }
+  
+  def remove(data) {
+    if (!this.isEmpty()) {
+      if (this.first.data == data) {
+        this.first = this.first.next;
+      } 
+      else {
+          cur = this.first;
+          finished = false;
+          while(!finished) {
+            if (cur.next == null) {
+              finished = true;
+            } else {
+                if (cur.next.data == data) {
+                  cur.next = cur.next.next;
+                  finished = true;
+                }
+            }
+            cur = cur.next;
+          }
+      }
+    }
+  }
+  
+  def indexOf(data) {
+    if (this.isEmpty()) {
+      res = 0-1; // TODO: unary minus
+    } else {
+      found = false;
+      i = 0;
+      cur = this.first;
+      while ((!found) && (cur != null)) {
+        if (cur.data == data) {
+          found = true;
+        } else {
+          cur = cur.next;
+          i = i + 1;
+        }
+      }
+      if (found) {
+        res = i;
+      } else {
+        res = 0-1; // TODO: unary minus
+      }
+    }
+  }
+  
+  def size() {
+    i = 0;
+    cur = this.first;
+    while (cur != null) {
+      cur = cur.next;
+      i = i + 1;
+    }
+    res = i;
+  }
+  
+  def iterator() {
+    iter = new LinkedListSimpleIterator(this.first);
+    iter.init();
+    res = iter;
+  }
+  
+}
+
+class LinkedListSimpleIterator(root) {
+  var next = null;
+  
+  def init() {
+    this.next = this.root;
+  }
+  
+  def next() {
+    if (this.next == null) {
+      res = null;  // TODO: maybe add support for throwing exceptions, needed here
+    } else {
+      returnedData = this.next.data;
+      this.next = this.next.next;
+      res = returnedData;
+    }
+  }
+  
+  def hasNext() {
+    res = (this.next != null);
+  }
+  
+}
+
+
+// ======================
+// SimpleMap
+// ======================
+
+class SimpleMap {
+  var keys = new LinkedList();
+  var values = new LinkedList();
+  var size = 0;
+  
+  def put(key, value) {
+    this.keys.add(key);
+    this.values.add(value);
+    size = size + 1;
+  }
+  
+  def get(key) {
+    i = this.keys.indexOf(key);
+    if (i >= 0) {
+      res = this.values.get(i);
+    } else {
+      res = null;
+    }
+  }
+  
+  def size() {
+    res = this.size;
+  }
+}
+
+
+// ======================
+// CollectionUtils
+// ======================
+
+class CollectionUtils {
+    def quicksort(list, c) {
+       this.qsortRek(list, 0, list.size() - 1, c);
+    }
+    
+    def qsortRek(list, low, high, c) {
+      i = low;
+      j = high;
+      pivot = list.get(low + (high - low) / 2);
+      
+      while(i <= j) {
+        while(c.compare(list.get(i), pivot) < 0) {
+          i = i + 1;
+        }
+        while(c.compare(list.get(j), pivot) > 0) {
+          j = j - 1;
+        }
+        
+        if (i <= j) {
+          this.swap(list, i, j);
+          i = i + 1;
+          j = j - 1;
+        }
+      }
+      
+      if (low < j) {
+        this.qsortRek(list, low, j, c);
+      }
+      if (i < high) {
+        this.qsortRek(list, i, high, c);
+      }
+    }
+    
+    def swap(list, i, j) {
+      temp = list.get(i);
+      list.update(i, list.get(j));
+      list.update(j, temp);
+    }
+    
+    def binarySearch(list, key, c) {
+      low = 0;
+      high = list.size() - 1;
+      found = false;
+      
+      while (!found && (low <= high)) {
+        mid = (low + high) / 2;
+        midVal = list.get(mid);
+        cmp = c.compare(midVal, key);
+        
+        if (cmp < 0) {
+          low = mid + 1;
+        } else {
+          if (cmp > 0) {
+            high = mid - 1;
+          } else {
+            found = true;
+            indx = mid;
+          }
+        }
+      }
+      if (found) {
+        res = indx;
+      } else {
+        res = 0-(low + 1); // TODO: unary minus
+      }
+    }
+}
+
+class IntComparator {
+  def compare(i, j) {
+    if (i > j) {
+     res = 1; 
+    } else {
+      if (i == j) {
+        res = 0;
+      } else {
+        res = 0-1;
+      }
+    }
+  }
+}
+
+l = new LinkedList();
+l.add(10);
+l.add(2);
+l.add(7);
+l.add(8);
+l.add(3);
+l.add(1);
+l.add(6);
+l.add(4);
+l.add(9);
+l.add(5);
+//l.removeFirst();
+//l.removeFirst();
+//l.removeFirst();
+//l.removeFirst();
+//x = l.size();
+//x = new CollectionUtils().binarySearch(l, 12, new IntComparator());
+//new CollectionUtils().quicksort(l, new IntComparator());
+//a = l.get(0);
+//b = l.get(1);
+//c = l.get(2);
+
+sum = 0;
+iter = l.iterator();
+while (iter.hasNext()) {
+  sum = sum + iter.next();
+}
+
+
+
+//l.remove(1);
+//l.add(4);
+//x = l.update(0, 4);
+//y = l.update(1, 5);
+//z = l.update(2, 6);
+//a = l.get(0);
+//b = l.get(1);
+//c = l.get(2);
+//a = l.indexOf(4);
+//b = l.indexOf(5);
+//c = l.indexOf(6);
+
+//m = new SimpleMap();
+//m.put(1, 10);
+//m.put(2, 5);
+//m.put(3, 2);
+//
+//x = m.get(1);
+//y = m.get(2);
+//z = m.get(3);
+
+end

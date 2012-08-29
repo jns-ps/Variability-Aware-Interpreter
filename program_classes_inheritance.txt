@@ -1,0 +1,26 @@
+begin
+
+//#ifdef X
+class A(a) {
+  var b;
+}
+//#endif
+
+//#ifdef Y
+class A(a,b,c) {
+  
+}
+//#endif
+
+//#ifdef Z
+class B(d) extends A {
+  var e;
+}
+//#endif
+
+//#ifdef ZZ
+class B(d,e,f) extends A {
+}
+//#endif
+
+end

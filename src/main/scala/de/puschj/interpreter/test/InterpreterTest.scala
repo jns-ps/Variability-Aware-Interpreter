@@ -15,6 +15,11 @@ import de.puschj.parser.WhileParser
 import de.puschj.interpreter.VariableProgram
 import de.puschj.interpreter.VAFuncStore
 import de.puschj.interpreter.UndefinedValue
+import de.puschj.interpreter.VAClassStore
+import de.puschj.interpreter.VAStore
+import de.puschj.interpreter.VAFuncStore
+import com.sun.org.apache.bcel.internal.util.ClassStack
+import de.puschj.interpreter.VAInterpreter
 
 
 class InterpreterTest {
@@ -182,7 +187,7 @@ class InterpreterTest {
     val fS: FeatureExpr = FeatureExprFactory.createDefinedExternal("S")
 
     assertTrue("unexpected value for 'c'", ConditionalLib.equals(
-        Choice(fC, Choice(fS, Choice(fA, 5, 4), One(UndefinedValue("func \"sum\" not declared"))), 
+        Choice(fC, Choice(fS, Choice(fA, 5, 4), One(UndefinedValue("func \"sum\" not declared"))),
                    One(UndefinedValue("c not initialized."))),
         store.get("c")
     ))
@@ -216,5 +221,29 @@ class InterpreterTest {
     val program: VariableProgram = parser.parseFile("program_classes2.txt")
     val store = program.run()
     store.print("Classes 2")
+  }
+  
+//  @Test
+//  def testAllFields() {
+//    val program: VariableProgram = parser.parseFile("program_classes_inheritance.txt")
+//    val classStore = new VAClassStore
+//    program.run(new VAStore, new VAFuncStore, classStore)
+//    
+//    classStore.print()
+//    println(VAInterpreter.allFields("B", classStore))
+//  }
+  
+  @Test
+  def testGraphProductLine() {
+    val program: VariableProgram = parser.parseFile("program_GPL.txt")
+    val store = program.run()
+    store.print("Graph Product Line")
+  }
+  
+  @Test
+  def testCollections() {
+    val program: VariableProgram = parser.parseFile("program_collections.txt")
+    val store = program.run()
+    store.print("Collections")
   }
 }

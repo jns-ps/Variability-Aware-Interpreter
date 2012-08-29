@@ -66,7 +66,7 @@ object VAInterpreter {
       case FuncDec(name, args, body) => {
         funcStore.put(name, Choice(context, One(VAFDef(args, body)), funcStore.get(name)).simplify)
       }
-      case ClassDec(name, superClass, optFields, optConsts, optFuncDecs) => {
+      case ClassDec(name, args, superClass, optConsts, optFields, optFuncDecs) => {
         val cFuncStore = new VAFuncStore
         for (optFuncDec <- optFuncDecs) {
           val funcDec = optFuncDec.entry
@@ -77,7 +77,8 @@ object VAInterpreter {
           val const = optConst.entry
           cConstStore.put(const._1, Choice(optConst.feature, eval(const._2, store, funcStore, classStore), cConstStore.get(const._1)).simplify)
         }
-        classStore.put(name, Choice(context, One(VACDef(superClass, optFields, cConstStore, cFuncStore)), classStore.get(name)).simplify)
+        val fieldAssignments = optFields.map(f => Opt(f.feature, Assignment(Id(f.entry._1), f.entry._2)))
+        classStore.put(name, Choice(context, One(VACDef(args, superClass, fieldAssignments, cConstStore, cFuncStore)), classStore.get(name)).simplify)
       }
     }
   }
@@ -101,6 +102,7 @@ object VAInterpreter {
 
     exp match {
       // arithmetic
+      case Null => One(NullValue())
       case Num(n) => One(IntValue(n))
       case Id(x) => store.get(x)
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
@@ -138,7 +140,7 @@ object VAInterpreter {
               throw new RuntimeException("Illegal number of arguments.")
             val staticScopeStore = new VAStore()
             for (i <- 0 until nArgs)
-              staticScopeStore.put(fargs(i).entry, Choice(args(i).feature and fargs(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg")) ))
+                staticScopeStore.put(fargs(i).entry, Choice(args(i).feature and fargs(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg")) ))
             execute(fbody, True, staticScopeStore, funcStore, classStore)
             if (!staticScopeStore.contains("res"))
               One(UndefinedValue("'" + name + "' returning void"))
@@ -147,20 +149,24 @@ object VAInterpreter {
           }
         })
       }
-      case New(name, args) => {
+      case New(name, argsNew) => {
         classStore.get(name).map(_ match {
           case CErr(msg) => UndefinedValue(msg)
-          case VACDef(superClass, fields, consts, methods) => {
+          case VACDef(argsClass, superClass, fields, consts, methods) => {
 
             //            TODO: implement allFields for Superclasses
             //            val allFields = ...
 
-            if (fields.size != args.size)
+            if (argsClass.size != argsNew.size)
               throw new RuntimeException("Illegal number of construction arguments.")
-            val vals = args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef constructor arg"))))
             val objectStore = new VAStore
-            for (i <- 0 until fields.size)
-              objectStore.put(fields(i).entry, Choice(args(i).feature and fields(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef constructor arg")) ))
+            for (i <- 0 until argsClass.size)
+                objectStore.put(argsClass(i).entry, 
+                    Choice(argsNew(i).feature and argsClass(i).feature, 
+                        eval(argsNew(i).entry, store, funcStore, classStore), 
+                        One(UndefinedValue("undef constructor arg"))
+                    ))
+            fields.map(f => execute(f.entry, f.feature, objectStore, funcStore, classStore))
             VAObjectValue(name, objectStore)
           }
         })
@@ -168,11 +174,12 @@ object VAInterpreter {
       case Field(expr, name) => {
         eval(expr, store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
+          case n: NullValue => throw new NullPointerException("cannot access field '"+name+"' on null value") //One(IllegalOPValue("cannot access field '"+name+"' on null value"))
           case o: VAObjectValue => {
             // TODO: check feature expression merging here
             classStore.get(o.className).mapr(_ match {
               case CErr(msg) => One(UndefinedValue(msg))
-              case VACDef(superClass, fields, consts, methods) =>
+              case VACDef(_, _, _, consts, _) =>
                 if (consts.contains(name))
                    consts.get(name)
                 else
@@ -185,9 +192,10 @@ object VAInterpreter {
       case MethodCall(expr, call) => {
         eval(expr, store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
+          case n: NullValue => throw new NullPointerException("cannot execute method '"+call.fname+"' on null value") //One(IllegalOPValue("cannot execute method '"+call.fname+"' on null value"))
           case v @ VAObjectValue(cName, fields) => {
             classStore.get(cName).mapr(_ match {
-              case VACDef(_, _, _, classFuncStore) => classFuncStore.get(call.fname).mapr(_ match {
+              case VACDef(_, _, _, _, classFuncStore) => classFuncStore.get(call.fname).mapr(_ match {
                 case FErr(msg) => One(UndefinedValue(msg))
                 case VAFDef(fargs, fbody) => {
                   val nArgs = fargs.size
@@ -197,7 +205,11 @@ object VAInterpreter {
                   val staticScopeStore = new VAStore()
                   staticScopeStore.put("this", One(v))
                   for (i <- 0 until nArgs)
-                    staticScopeStore.put(fargs(i).entry, Choice(call.args(i).feature and fargs(i).feature, eval(call.args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg")) ))
+                      staticScopeStore.put(fargs(i).entry, 
+                          Choice(call.args(i).feature and fargs(i).feature, 
+                              eval(call.args(i).entry, store, funcStore, classStore), 
+                              One(UndefinedValue("undef func arg"))
+                          ))
                   execute(fbody, True, staticScopeStore, classFuncStore, classStore)
                   if (!staticScopeStore.contains("res"))
                     One(UndefinedValue("'" + call.fname + "' returning void"))
@@ -220,14 +232,23 @@ object VAInterpreter {
       case value => value.getBoolValue
     })
 
-  //  private def allFields(className: String, classStore: VAClassStore) : List[Conditional[String]] = {
-  //    if (className.equals("Object")) List.empty[Conditional[String]]
-  //    else {
-  //      classStore.get(className).map(_ match {
-  //        TODO implement
-  //      })
-  //    }
-  //  }
+//  def allFields(className: String, classStore: VAClassStore) : Conditional[List[String]] = {
+//    if (className.equals("Object")) 
+//      One(List.empty[String])
+//    else {
+//      classStore.get(className).mapr(_ match {
+//        case VACDef(args, superClass, fields, consts, methods) => {
+//          var res: Conditional[List[String]] = One(List.empty[String])
+//          val assignmentVars = fields.map(a => Opt(a.feature, a.entry.expr.asInstanceOf[Id].x))
+//          for (variable <- (args ++ assignmentVars)) {
+//              res = res.mapr(l => Choice(variable.feature, One(variable.entry :: l), One(l))).simplify
+//          }
+//          res.simplify
+//        }
+//        case CErr(_) => One(List.empty[String])
+//      })
+//    }
+//  }
 
   // TODO: lookupMethod() for Superclasses
 }
@@ -289,7 +310,7 @@ object PlainInterpreter {
         // TODO: Introduce parser without Variability, so that no map function needs to be called
         funcStore.put(name, PlainFDef(args.map(_.entry), body))
       }
-      case ClassDec(name, superClass, optFields, optConsts, optFuncDecs) => {
+      case ClassDec(name, args, superClass, optConsts, optFields, optFuncDecs) => {
         // TODO: Introduce parser without Variability, so that it needs not explicitly be removed here
         val cFuncStore = new PlainFuncStore
         for (optFuncDec <- optFuncDecs) {
@@ -301,7 +322,8 @@ object PlainInterpreter {
           val const = optConst.entry
           cConstStore.put(const._1, eval(const._2, store, funcStore, classStore))
         }
-        classStore.put(name, PlainCDef(superClass, optFields.map(_.entry), cConstStore, cFuncStore))
+        val cFieldAssignments = optFields.map(f => Assignment(Id(f.entry._1), f.entry._2))
+        classStore.put(name, PlainCDef(args.map(_.entry), superClass, cFieldAssignments, cConstStore, cFuncStore))
       }
     }
   }
@@ -322,6 +344,7 @@ object PlainInterpreter {
 
     exp match {
       // arithmetic
+      case Null => NullValue()
       case Num(n) => IntValue(n)
       case Id(x) => store.get(x)
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
@@ -358,7 +381,7 @@ object PlainInterpreter {
             val vals = args.map(a => eval(a.entry, store, funcStore, classStore))
             val staticScopeStore = new PlainStore()
             for (i <- 0 until nArgs)
-              staticScopeStore.put(fargs(i), vals(i))
+                staticScopeStore.put(fargs(i), vals(i))
             execute(fbody, staticScopeStore, funcStore, classStore)
             if (!staticScopeStore.contains("res"))
               UndefinedValue("'" + name + "' returning void")
@@ -367,20 +390,21 @@ object PlainInterpreter {
           }
         }
       }
-      case New(name, args) => {
+      case New(name, argsNew) => {
         classStore.get(name) match {
           case CErr(msg) => UndefinedValue(msg)
-          case PlainCDef(superClass, fields, consts, methods) => {
+          case PlainCDef(argsClass, superClass, fields, consts, methods) => {
 
             //            TODO: implement allFields for Superclasses
             //            val allFields = ...
 
-            if (fields.size != args.size)
+            if (argsClass.size != argsNew.size)
               throw new RuntimeException("Illegal number of construction arguments.")
-            val vals = args.map(a => eval(a.entry, store, funcStore, classStore))
+            val vals = argsNew.map(a => eval(a.entry, store, funcStore, classStore))
             val objectStore = new PlainStore
-            for (i <- 0 until fields.size)
-              objectStore.put(fields(i), vals(i))
+            for (i <- 0 until argsClass.size)
+              objectStore.put(argsClass(i), vals(i))
+            fields.map(execute(_, objectStore, funcStore, classStore))
             PlainObjectValue(name, objectStore)
           }
         }
@@ -391,7 +415,7 @@ object PlainInterpreter {
           case o: PlainObjectValue => {
             classStore.get(o.className) match {
               case CErr(msg) => UndefinedValue(msg)
-              case PlainCDef(superClass, fields, consts, methods) =>
+              case PlainCDef(_, _, _, consts, _) =>
                 if (consts.contains(name))
                   consts.get(name)
                 else
@@ -406,7 +430,7 @@ object PlainInterpreter {
           case e: ErrorValue => e
           case v @ PlainObjectValue(cName, fields) => {
             classStore.get(cName) match {
-              case PlainCDef(_, _, _, funcStore) => funcStore.get(call.fname) match {
+              case PlainCDef(_, _, _, _, funcStore) => funcStore.get(call.fname) match {
                 case FErr(msg) => UndefinedValue(msg)
                 case PlainFDef(fargs, fbody) => {
                   val nArgs = fargs.size
@@ -416,7 +440,7 @@ object PlainInterpreter {
                   val staticScopeStore = new PlainStore()
                   staticScopeStore.put("this", v)
                   for (i <- 0 until nArgs)
-                    staticScopeStore.put(fargs(i), vals(i))
+                      staticScopeStore.put(fargs(i), vals(i))
                   execute(fbody, staticScopeStore, funcStore, classStore)
                   if (!staticScopeStore.contains("res"))
                     UndefinedValue("'" + call.fname + "' returning void")

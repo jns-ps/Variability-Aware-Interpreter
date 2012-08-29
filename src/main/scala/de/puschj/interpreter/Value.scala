@@ -27,6 +27,18 @@ case class BoolValue(b: Boolean) extends Value {
   }
 }
 
+case class NullValue extends Value {
+  def getIntValue(): Int = {
+    throw new NullPointerException("called getIntValue on NullValue")
+  }
+  def getBoolValue(): Boolean = {
+    throw new NullPointerException("called getIntValue on NullValue")
+  }
+  override def equals(any: Any) = {
+    any.isInstanceOf[NullValue]
+  }
+}
+
 sealed case class ErrorValue(s: String) extends Value {
   private lazy val name = getClass().getCanonicalName();
   

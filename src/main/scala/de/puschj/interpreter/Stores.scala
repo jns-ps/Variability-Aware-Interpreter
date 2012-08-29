@@ -147,13 +147,13 @@ sealed abstract class ClassStore[T] {
 }
 
 class PlainClassStore extends ClassStore[ClassDef] {
-    classes.put("Object", PlainCDef("", List.empty[String], new PlainStore, new PlainFuncStore))
+    classes.put("Object", PlainCDef(List.empty[String], "", List.empty[Assignment], new PlainStore, new PlainFuncStore))
   
     def undefined(s: String) = CErr(s)
 }
 
 class VAClassStore extends ClassStore[Conditional[ClassDef]] {
-    classes.put("Object", One(VACDef("", List.empty[Opt[String]], new VAStore, new VAFuncStore)))
+    classes.put("Object", One(VACDef(List.empty[Opt[String]], "", List.empty[Opt[Assignment]], new VAStore, new VAFuncStore)))
   
     def undefined(s: String) = One(CErr(s))
 }

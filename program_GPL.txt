@@ -1,24 +1,261 @@
 begin
 
 // ======================
+// Constants
+// ======================
+
+MAX_VALUE = 2147483647;
+
+
+// ======================
+// LinkedList
+// ======================
+
+class Link(data) {
+  var next = null;
+}
+
+class LinkedList { 
+  var first = null;
+  
+  def isEmpty() {
+    res = (this.first == null);
+  }
+  
+  def add(data) {
+    if (this.isEmpty()) {
+      this.first = new Link(data);
+    } else {
+      cur = this.first;
+      while(cur.next != null) {
+        cur = cur.next;
+      }
+      cur.next = new Link(data);
+    }
+  }
+  
+  def get(index) {
+    i = index;
+    cur = this.first;
+    outOfBounds = false;
+    while(i > 0 && !outOfBounds) {
+      cur = cur.next;
+      i = i - 1;
+      if (cur == null) {
+        outOfBounds = true;
+      }
+    }
+    if (outOfBounds) { 
+      res = null;
+    } else {
+      res = cur.data;
+    }
+  }
+  
+  def update(index, data) {
+    if (!this.isEmpty()) {
+      cur = this.first;
+      i = index;
+      while(i > 0 && cur != null) {
+        cur = cur.next;
+        i = i - 1;
+      }
+      if (cur != null) {
+        cur.data = data;
+      }
+    }
+  }
+  
+  def removeFirst() {
+    if (!this.isEmpty()) {
+      this.first = this.first.next;
+    }
+  }
+  
+  def remove(data) {
+    if (!this.isEmpty()) {
+      if (this.first.data == data) {
+        this.first = this.first.next;
+      } 
+      else {
+          cur = this.first;
+          finished = false;
+          while(!finished) {
+            if (cur.next == null) {
+              finished = true;
+            } else {
+                if (cur.next.data == data) {
+                  cur.next = cur.next.next;
+                  finished = true;
+                }
+            }
+            cur = cur.next;
+          }
+      }
+    }
+  }
+  
+  def indexOf(data) {
+    if (this.isEmpty()) {
+      res = 0-1; // TODO: unary minus
+    } else {
+      found = false;
+      i = 0;
+      cur = this.first;
+      while ((!found) && (cur != null)) {
+        if (cur.data == data) {
+          found = true;
+        } else {
+          cur = cur.next;
+          i = i + 1;
+        }
+      }
+      if (found) {
+        res = i;
+      } else {
+        res = 0-1; // TODO: unary minus
+      }
+    }
+  }
+  
+  def size() {
+    i = 0;
+    cur = this.first;
+    while (cur != null) {
+      cur = cur.next;
+      i = i + 1;
+    }
+    res = i;
+  }
+  
+}
+
+
+// ======================
+// SimpleMap
+// ======================
+
+class SimpleMap {
+  var keys = new LinkedList();
+  var values = new LinkedList();
+  var size = 0;
+  
+  def put(key, value) {
+    this.keys.add(key);
+    this.values.add(value);
+    size = size + 1;
+  }
+  
+  def get(key) {
+    i = this.keys.indexOf(key);
+    if (i >= 0) {
+      res = this.values.get(i);
+    } else {
+      res = null;
+    }
+  }
+  
+  def size() {
+    res = this.size;
+  }
+}
+
+
+// ======================
+// CollectionUtils
+// ======================
+
+class CollectionUtils {
+    def quicksort(list, c) {
+       this.qsortRek(list, 0, list.size() - 1, c);
+    }
+    
+    def qsortRek(list, low, high, c) {
+      i = low;
+      j = high;
+      pivot = list.get(low + (high - low) / 2);
+      
+      while(i <= j) {
+        while(c.compare(list.get(i), pivot) < 0) {
+          i = i + 1;
+        }
+        while(c.compare(list.get(j), pivot) > 0) {
+          j = j - 1;
+        }
+        
+        if (i <= j) {
+          this.swap(list, i, j);
+          i = i + 1;
+          j = j - 1;
+        }
+      }
+      
+      if (low < j) {
+        this.qsortRek(list, low, j, c);
+      }
+      if (i < high) {
+        this.qsortRek(list, i, high, c);
+      }
+    }
+    
+    def swap(list, i, j) {
+      temp = list.get(i);
+      list.update(i, list.get(j));
+      list.update(j, temp);
+    }
+    
+    def binarySearch(list, key, c) {
+      low = 0;
+      high = list.size() - 1;
+      found = false;
+      
+      while (!found && (low <= high)) {
+        mid = (low + high) / 2;
+        midVal = list.get(mid);
+        cmp = c.compare(midVal, key);
+        
+        if (cmp < 0) {
+          low = mid + 1;
+        } else {
+          if (cmp > 0) {
+            high = mid - 1;
+          } else {
+            found = true;
+            indx = mid;
+          }
+        }
+      }
+      if (found) {
+        res = indx;
+      } else {
+        res = 0-(low + 1); // TODO: unary minus
+      }
+    }
+}
+
+
+
+
+// ======================
 // CycleWorkSpace
 // ======================
 
 //#if CYCLE
-class CycleWorkSpace {
-    var AnyCycles;
-    var counter;
-    
+class CycleWorkSpace extends WorkSpace {
     const WHITE = 0;
     const GRAY = 1;
     const BLACK = 2;
+    
+    var AnyCycles = false;
+    var counter = 0;
 
-    def init_vertex( v) {
-        v.Cycle = 999999999; //Integer.MAX_VALUE
+
+    def init_vertex(v) {
+        v.Cycle = MAX_VALUE;
         v.Color = this.WHITE;
     }
 
-    def preVisitAction( v) {
+    def preVisitAction(v) {
         if (v.visited != true) {
             v.Cycle = this.counter;
             this.counter = this.counter  + 1;
@@ -26,9 +263,12 @@ class CycleWorkSpace {
         }
     }
 
-    def postVisitAction( v) {
+    def postVisitAction(v) {
         v.Color = this.BLACK;
         this.counter = this.counter - 1;
+    }
+    
+    def nextRegionAction(v) {
     }
 
     def checkNeighborAction( vsource,  vtarget) {
@@ -51,14 +291,11 @@ class CycleWorkSpace {
 // ======================
 
 // #if SEARCHBASE
-class Edge {
-    var start;
-    var end;
-    
-    //// #if WEIGHTED
-    var aweight;
-    var weight;
-    //// #endif
+class Edge(start, end
+        //#ifdef WEIGHTED
+        , weight
+        //#endif
+        ) {
 
     def adjustAdorns(the_edge) {
         // #if WEIGHTED
@@ -84,9 +321,10 @@ class Edge {
         } else {
           if (vertex == this.end) {
             res = this.start;
+          } else {
+            res = null;
           }
         }
-        res = null; // TODO: support null values
     }
 
     def getStart() {
@@ -107,6 +345,1166 @@ class Edge {
     }
 }
 // #endif
+
+
+// ======================
+// FinishTimeWorkspace
+// ======================
+
+// #ifdef STRONGLYCONNECTED
+class FinishTimeWorkSpace extends WorkSpace {
+    var FinishCounter = 1;
+
+    def init_vertex(v) {
+    }
+    def preVisitAction(v) {
+        if (v.visited != true) {
+          this.FinishCounter = this.FinishCounter + 1;
+        }
+            
+    }
+    def postVisitAction(v) {
+        v.finishTime = this.FinishCounter;
+        this.FinishCounter = this.FinishCounter + 1;
+    }
+    def nextRegionAction(v) {
+    }
+    def checkNeighborAction(vsource, vtarget) {
+    }
+}
+// #endif
+
+
+// ======================
+// Graph
+// ======================
+
+//#ifdef STRONGLYCONNECTED
+class FinishTimeComparator {
+  def compare(v1, v2) {
+    if (v1.finishTime > v2.finishTime) {
+      res = 1;
+    } else {
+      if (v1.finishTime == v2.finishTime) {
+        res = 0;
+      } else {
+        res = 0-1; // TODO: implement unary minus
+      }
+    }
+  }
+}
+//#endif
+
+//#ifdef MSTKRUSKAL
+class EdgeWeightComparator {
+  def compare(e1, e2) {
+    if (e1.getWeight() > e2.getWeight()) {
+      res = 1;
+    } else {
+      if (e1.getWeight() == e2.getWeight()) {
+        res = 0;
+      } else {
+        res = 0-1; //TODO: implement unary minus
+      }
+    }
+  }
+}
+//#endif
+
+//#ifdef MSTPRIM
+class KeyComparator {
+  def compare(v1, v2) {
+     if (v1.key > v2.key) {
+      res = 1;
+    } else {
+      if (v1.key == v2.key) {
+        res = 0;
+      } else {
+        res = 0-1; //TODO: implement unary minus
+      }
+    }   
+  }
+}
+//#endif
+
+
+class Graph {
+    var vertices = new LinkedList();
+    //#ifdef SEARCHBASE
+    var edges = new LinkedList();
+    var edgesNotBuilt = true;
+    //#endif
+    
+    def getVertices(){
+      res = this.vertices.iterator();
+    }
+    
+    //#ifdef SEARCHBASE
+    def getEdges(){
+      //#ifndef GENEDGES
+      if (this.edgesNotBuilt) {
+            this.edgesNotBuilt = false;
+            this.edges = new LinkedList();
+            k1 = 0;
+            k2 = 0;
+            sizeAV = 0;
+            //#ifdef GNONLYNEIGHBORS
+            tempNeighbor = null;
+            //#endif
+            
+            vxiter = this.getVertices();
+            
+            while (vxiter.hasNext()) {
+              v = vxiter.next();
+              //#ifdef GNOEDGES
+              sizeAV = v.adjacentVertices.size();
+              //#endif
+              //#ifdef GNONLYNEIGHBORS
+              sizeAV = v.adjacentNeighbors.size();
+              //#endif
+              k2 = 0;
+              while (k2 < sizeAV) {
+                  //#ifdef GNOEDGES
+                  edges.add(new Edge(v,v.adjacentVertices.get(k2)
+                      //#ifdef WEIGHTED
+                      , v.weightsList.get(k2).intValue()
+                      //#endif
+                  ));
+                  //#endif
+                  
+                  //#ifdef GNONLYNEIGHBORS
+                  tempNeighbor=v.adjacentNeighbors.get(k2);
+                  //#endif
+                  //#ifdef GNONLYNEIGHBORS
+                  edges.add(new Edge(v,tempNeighbor.neighbor
+                      //#ifdef WEIGHTED
+                      , tempNeighbor.weight
+                      //#endif
+                  ));
+                  //#endif
+                  k2 = k2 + 1;
+              }
+            }
+      }
+      //#endif
+    }
+    //#endif
+    
+    def sortVertices(c) {
+      new CollectionUtils().quicksort(this.vertices, c);
+    }
+    
+    //#ifdef SEARCHBASE
+    def sortEdges(c) {
+      new CollectionUtils().quicksort(this.edges, c);
+    }
+    //#endif
+    
+    def addEdge(start, end
+            //#ifdef WEIGHTED
+            , weight
+            //#endif
+      ){
+        //#ifdef GNOEDGES
+        start.addAdjacent(end);
+        //#endif
+        //#if UNDIRECTED && GNOEDGES
+        end.addAdjacent(start);
+        //#endif
+        //#if WEIGHTED && GNOEDGES
+        start.setWeight(weight);
+        //#endif
+        //#if UNDIRECTED && WEIGHTED && GNOEDGES
+        end.addWeight(weight);
+        //#endif
+        
+        //#ifdef GNOEDGES
+        res = start;
+        //#else
+            //#ifdef GNONLYNEIGHBORS
+            e = new Neighbor(end
+                    //#ifdef WEIGHTED
+                    , weight
+                    //#endif
+                    );
+            //#endif
+            //#ifdef GNONLYNEIGHBORS
+            this.addEdge(start,e);
+            //#endif
+            //#ifdef GNONLYNEIGHBORS
+            res = e;
+            //#else
+                //#ifdef GENEDGES
+                theEdge = new Edge(start, end
+                        //#ifdef WEIGHTED
+                        , weight
+                        //#endif
+                        );
+                edges.add(theEdge);
+                start.addNeighbor(new Neighbor(end, theEdge));
+                end.addNeighbor(new Neighbor(start, theEdge));
+                res = theEdge;
+                //#endif
+            //#endif
+        //#endif
+    }
+    
+    //#ifdef GNONLYNEIGHBORS
+    def addEdge(start, theNeighbor) {
+      start.addEdge(theNeighbor);
+      //#ifdef UNDIRECTED
+      end = theNeighbor.neighbor;
+      //#endif
+      //#ifdef UNDIRECTED
+      end.addEdge(new Neighbor(start
+              //#ifdef WEIGHTED
+              , theNeighbor.weight
+              //#endif
+              ));
+      //#endif
+    }
+    //#endif
+    
+    def findsVertex(name) {
+      res = null;
+      found = false;
+      vxiter = this.getVertices();
+      while (vxiter.hasNext() && (!found)) {
+        theVertex = vxiter.next();
+        // TODO: check if == is the same as equals in this case
+        if (name == theVertex.getName()) {
+          // TODO: provide better solution for res.
+          // TODO: Check if res is equivalent to return here
+          res = theVertex;
+          found = true;
+        }
+      }
+    }
+    
+//    void display(){
+//      System.out.println("******************************************");
+//      System.out.println("Vertices ");
+//      for (int i=0; i < vertices.size(); i++)     vertices.get(i).display();
+//      System.out.println("******************************************");
+//  //#ifdef GENEDGES
+//      System.out.println("Edges ");
+//  //#endif
+//  //#ifdef GENEDGES
+//      for (EdgeIter edgeiter=getEdges(); edgeiter.hasNext(); ) 
+//  //#ifdef GENEDGES
+//      edgeiter.next().display();
+//  //#endif
+//  //#endif
+//  //#ifdef GENEDGES
+//      System.out.println("******************************************");
+//  //#endif
+//    }
+    
+    def addVertex(v){
+      this.vertices.add(v);
+    }
+    
+//  //#ifdef BENCHMARK
+    
+//    public Reader inFile;
+
+//    public static int ch;
+
+//    static long last=0, current=0, accum=0;
+
+//    public void runBenchmark(  String FileName) throws IOException {
+//      try {
+//        inFile=new FileReader(FileName);
+//      }
+//   catch (    IOException e) {
+//        System.out.println("Your file " + FileName + " cannot be read");
+//      }
+//    }
+
+//    public void stopBenchmark() throws IOException {
+//      inFile.close();
+//    }
+
+//    public int readNumber() throws IOException {
+//      int index=0;
+//      char[] word=new char[80];
+//      int ch=0;
+//      ch=inFile.read();
+//      while (ch == 32) {
+//        ch=inFile.read();
+//      }
+//      while (ch != -1 && ch != 32 && ch != 10) {
+//        word[index++]=(char)ch;
+//        ch=inFile.read();
+//      }
+//      word[index]=0;
+//      String theString=new String(word);
+//      theString=new String(theString.substring(0,index)).trim();
+//      return Integer.parseInt(theString,10);
+//    }
+
+//    public static void startProfile(){
+//      accum=0;
+//      current=System.currentTimeMillis();
+//      last=current;
+//    }
+
+//    public static void stopProfile(){
+//      current=System.currentTimeMillis();
+//      accum=accum + (current - last);
+//    }
+
+//    public static void resumeProfile(){
+//      current=System.currentTimeMillis();
+//      last=current;
+//    }
+
+//    public static void endProfile(){
+//      current=System.currentTimeMillis();
+//      accum=accum + (current - last);
+//      System.out.println("Time elapsed: " + accum + " milliseconds");
+//    }
+//  //#endif
+    
+    //#ifdef BASEIMPL
+    def run(v) {
+        //#ifdef CONNECTED
+        this.connectedComponents();
+        //#endif
+        
+        //#ifdef CYCLE
+//      System.out.println(" Cycle? " + cycleCheck());
+        this.cycleCheck = this.cycleCheck();
+        //#endif
+        
+        //#ifdef MSTKRUSKAL
+        gaux = this.kruskal();
+        //#endif
+        
+//  //#ifdef MSTKRUSKAL
+//      Graph.stopProfile();
+//  //#endif
+//  //#ifdef MSTKRUSKAL
+//      gaux.display();
+//  //#endif
+//  //#ifdef MSTKRUSKAL
+//      Graph.resumeProfile();
+//  //#endif
+        
+        //#ifdef MSTPRIM
+        gaux1 = this.prim(v);
+        //#endif
+        
+//  //#ifdef MSTPRIM
+//      Graph.stopProfile();
+//  //#endif
+//  //#ifdef MSTPRIM
+//      gaux1.display();
+//  //#endif
+//  //#ifdef MSTPRIM
+//      Graph.resumeProfile();
+//  //#endif
+        
+        //#ifdef NUMBER
+        this.numberVertices();
+        //#endif
+        
+        //#ifdef STRONGLYCONNECTED
+        gaux2 = this.strongComponents();
+        //#endif
+        
+//  //#ifdef STRONGLYCONNECTED
+//      Graph.stopProfile();
+//  //#endif
+//  //#ifdef STRONGLYCONNECTED
+//      gaux2.display();
+//  //#endif
+//  //#ifdef STRONGLYCONNECTED
+//      Graph.resumeProfile();
+//  //#endif
+        
+    }
+    //#endif
+    
+    //#ifdef SEARCHBASE
+    def findsEdge(theSource, theTarget){
+      v1 = theSource;
+      edgeiter = v1.getEdges();
+      res = null;
+      found = false;
+      while (edgeiter.hasNext() && (!found)) {
+        theEdge = edgeiter.next();
+        v2 = theEdge.getOtherVertex(v1);
+        if (((v1.getName() == theSource.getName()) && (v2.getName() == theTarget.getName())) || 
+            ((v1.getName() == theTarget.getName()) && (v2.getName() == theSource.getName()))) {
+          res = theEdge;
+          found = true;
+        }      
+      }
+    }
+    //#endif
+    
+    //#ifdef SEARCHALG
+    def graphSearch(w) {
+      vxiter = this.getVertices();
+      if (vxiter.hasNext()) {
+          while (vxiter.hasNext()) {
+            v = vxiter.next();
+            v.init_vertex(w);
+          }
+          
+          vxiter = this.getVertices();
+          while (vxiter.hasNext()) {
+            v = vxiter.next();
+            if (!v.visited) {
+              w.nextRegionAction(v);
+              v.nodeSearch(w);
+            }
+          }
+      }
+    }
+    //#endif
+    
+    //#ifdef NUMBER
+    def numberVertices() {
+      this.graphSearch(new NumberWorkSpace());
+    }
+    //#endif
+    
+    //#ifdef CONNECTED
+    def connectedComponents() {
+      this.graphSearch(new RegionWorkSpace());
+    }
+    //#endif
+    
+
+    
+    //#ifdef STRONGLYCONNECTED
+    def strongComponents() {
+      FTWS = new FinishTimeWorkSpace();
+      this.graphSearch(FTWS);
+      this.sortVertices(new FinishTimeComparator());
+      gaux = this.computeTranspose(this);
+      WST = new WorkSpaceTranspose();
+      gaux.graphSearch(WST);
+      res = gaux;
+    }
+    //#endif
+    
+  //#ifdef TRANSPOSE
+    def computeTranspose(the_graph) {
+//      int i;
+//      String theName;
+      newVertices = new SimpleMap();
+      newGraph = new Graph();
+      
+      vxiter = getVertices();
+      while (vxiter.hasNext()) {
+        theName = vxiter.next().getName();
+        v = new Vertex().assignName(theName);
+        newGraph.addVertex(v);
+        newVertices.put(theName, v);
+      }
+      
+//      Vertex theVertex, newVertex;
+//      Vertex theNeighbor;
+//      Vertex newAdjacent;
+//      EdgeIfc newEdge;
+      newvxiter = newGraph.getVertices();
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        theVertex = vxiter.next();
+        newAdjacent = newvxiter.next();
+        neighbors = theVertex.getNeighbors();
+        while (neighbors.hasNext()) {
+          theNeighbor = neighbors.next();
+          newVertex = newVertices.get(theNeighbor.getName());
+          newEdge = newGraph.addEdge(newVertex,newAdjacent
+                  //#ifdef WEIGHTED
+                  , 0
+                  //#endif
+                  );
+        }
+      }
+      res = newGraph;
+    }
+    //#endif
+    
+    //#ifdef CYCLE
+    def cycleCheck(){
+      c = new CycleWorkSpace();
+      this.graphSearch(c);
+      res = c.AnyCycles;
+    }
+    //#endif
+    
+    //#ifdef MSTKRUSKAL
+    def kruskal() {
+      A = new LinkedList();
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        v = vxiter.next();
+        v.representative = v;
+        v.members = new LinkedList();
+      }
+      Vneighbors = new LinkedList();
+      dummyIter = this.getEdges();
+      this.sortEdges(new EdgeWeightComparator());
+//      Vertex vaux, urep, vrep;
+      edgeiter = this.getEdges();
+      while (edgeiter.hasNext()) {
+        e1 = edgeiter.next();
+        u = e1.getStart();
+        v = e1.getEnd();
+        if (!(v.representative.getName() == u.representative.getName())) {
+          A.add(e1);
+          urep = u.representative;
+          vrep = v.representative;
+          if ((urep.members).size() > (vrep.members).size()) {
+            j = 0;
+            while (j < (vrep.members).size()) {
+              vaux = (vrep.members).get(j);
+              vaux.representative = urep;
+              (urep.members).add(vaux);
+              j = j + 1;
+            }
+            v.representative = urep;
+            vrep.representative = urep;
+            (urep.members).add(v);
+            // TODO: check if != means the same as not equals here
+            if (v != vrep) {
+              (urep.members).add(vrep);
+            }
+            (vrep.members).clear();
+          } else {
+            j = 0;
+            while (j < (urep.members).size()) {
+              vaux = (urep.members).get(j);
+              vaux.representative = vrep;
+              (vrep.members).add(vaux);
+              j = j + 1;
+            }
+            u.representative = vrep;
+            urep.representative = vrep;
+            (vrep.members).add(u);
+            // TODO: check if != means he same as not equals here
+            if (u != urep) {
+              (vrep.members).add(urep);
+            }
+            (urep.members).clear();
+          }
+        }
+      }
+//      String theName;
+      newGraph = new Graph();
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        theName = vxiter.next().getName();
+        newGraph.addVertex(new Vertex().assignName(theName));
+      }
+//      Vertex theStart, theEnd;
+//      Vertex theNewStart, theNewEnd;
+//      EdgeIfc theEdge;
+      i = 0;
+      while (i < A.size()) {
+        theEdge = A.get(i);
+        theStart = theEdge.getStart();
+        theEnd = theEdge.getEnd();
+        theNewStart = newGraph.findsVertex(theStart.getName());
+        theNewEnd = newGraph.findsVertex(theEnd.getName());
+        theNewEdge = newGraph.addEdge(theNewStart, theNewEnd, theEdge.getWeight());
+        theNewEdge.adjustAdorns(theEdge);
+        i = i + 1;
+      }
+      res = newGraph;
+    }
+    //#endif
+    
+    //#ifdef MSTPRIM
+    def prim(r) {
+//      Vertex root;
+      root = r;
+//      Vertex x;
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        x = vxiter.next();
+        x.pred = null;
+        x.key = MAX_VALUE;
+      }
+      root.key = 0;
+      root.pred = null;
+      queue = new LinkedList();
+      indx = new LinkedList(); // TODO: check equivalence to Set
+      queue.add(root);
+      indx.add(root.getName());
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        x = vxiter.next();
+        if (x.key != 0) {
+          queue.add(x);
+          indx.add(x.getName());
+        }
+      }
+//      int k;
+//      LinkedList<NeighborIfc> uneighbors;
+//      Vertex u, v;
+//      EdgeIfc en;
+//      NeighborIfc vn;
+//      int wuv;
+      isNeighborInQueue = false;
+      while (queue.size() != 0) {
+        u = queue.removeFirst();
+        indx.remove(u.getName());
+        uneighbors = u.getNeighborsObj();
+        k = 0;
+        edgeiter = u.getEdges();
+        while (edgeiter.hasNext()) {
+          vn = uneighbors.get(k);
+          en = edgeiter.next();
+          v = en.getOtherVertex(u);
+          isNeighborInQueue = false;
+          if (indx.contains(v.getName())) {
+            isNeighborInQueue = true;
+          }        
+          wuv = en.getWeight();
+          if (isNeighborInQueue && (wuv < v.key)) {
+            v.key = wuv;
+            v.pred = u.getName();
+            uneighbors.set(k,vn);
+            residue = v;
+            queue.remove(residue);
+            indx.remove(v.getName());
+            position = new CollectionUtils().binarySearch(queue, v, new KeyComparator());
+            if (position < 0) {
+              queue.add(0-(position + 1), v);  //TODO: implement unary minus
+            } else {
+              queue.add(position,v);
+            }
+            indx.add(v.getName());
+          }
+          k = k + 1;
+        }
+      }
+//      String theName;
+      newGraph = new Graph();
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        vtx = vxiter.next();
+        theName = vtx.name;
+        newGraph.addVertex(new Vertex().assignName(theName));
+      }
+//      Vertex theVertex, thePred;
+//      Vertex theNewVertex, theNewPred;
+//      EdgeIfc e;
+      vxiter = this.getVertices();
+      while (vxiter.hasNext()) {
+        theVertex = vxiter.next();
+        thePred = this.findsVertex(theVertex.pred);
+        if (thePred != null) {
+          theNewVertex = newGraph.findsVertex(theVertex.name);
+          theNewPred = newGraph.findsVertex(thePred.name);
+          theNewEdge = newGraph.addEdge(theNewPred, theNewVertex, 0);
+          e = this.findsEdge(thePred, theVertex);
+          theNewEdge.adjustAdorns(e);
+        }
+      }
+      res = newGraph;
+    }
+    //#endif
+}
+
+// ======================
+// Neighbor
+// ======================
+
+class Neighbor(
+        // #ifdef GNONLYNEIGHBORS
+        neighbor
+        // #endif
+        // #if GNONLYNEIGHBORS && WEIGHTED
+        , weight
+        // #endif
+) {
+//implements EdgeIfc, NeighborIfc
+    
+    //#ifdef GENEDGES
+    var end = null;
+    var edge = null;
+    //#endif
+    
+    //#ifdef GNONLYNEIGHBORS
+//    public void display(){
+//      System.out.print(this.neighbor.name + " ,");
+//    }
+    
+    def getStart(){
+      res = null;
+    }
+    
+    def getEnd(){
+      res = this.neighbor;
+    }
+    //#endif
+    
+    //#if WEIGHTED && GNONLYNEIGHBORS
+    def setWeight(weight){
+      this.weight = weight;
+    }
+
+    def getWeight(){
+      res = this.weight;
+    }
+    //#endif
+
+    //#ifdef GNONLYNEIGHBORS
+    def getOtherVertex(vertex){
+      res = this.neighbor;
+    }
+
+    def adjustAdorns(the_edge) {
+    }
+    //#endif
+}
+
+
+// ======================
+// NumberWorkSpace
+// ======================
+
+//#ifdef NUMBER
+class NumberWorkSpace extends WorkSpace {
+    var vertexCounter = 0;
+    
+    def init_vertex(vertex) {
+    }
+    def preVisitAction(v) {
+      if (v.visited != true) {
+        v.vertexNumber = vertexCounter;
+        vertexCounter = vertexCounter + 1;
+      }
+    }
+    def postVisitAction(vertex) {
+    }
+    def nextRegionAction(vertex) {
+    }
+    def checkNeighborAction(vsource, vtarget) {
+    }
+}
+//#endif
+
+
+// ======================
+// RegionWorkSpace
+// ======================
+
+//#ifdef CONNECTED
+class RegionWorkSpace extends WorkSpace {
+    var counter = 0;
+    
+    def init_vertex(v) {
+      v.componentNumber = 0-1;  // TODO: unary minus
+    }
+    def preVisitAction(vertex) {
+    }
+    def postVisitAction(v) {
+      v.componentNumber = this.counter;
+    }
+    def nextRegionAction(v) {
+      counter = counter + 1;
+    }
+    def checkNeighborAction(vsource, vtarget) {
+    }
+}
+//#endif
+
+
+// ======================
+// Vertex
+// ======================
+
+class NeighborIterator(iterator) {
+  def next() {
+    res = (iter.next()).neighbor;
+  }
+  def hasNext() {
+    res = iter.hasNext();
+  }
+}
+
+class EndIterator(iterator) {
+  def next() {
+    res = (iter.next()).end;
+  }
+  def hasNext() {
+    res = iter.hasNext();
+  }
+}
+
+class EdgeIterator(iterator) {
+  def next() {
+    res = iter.next().edge;
+  }
+  def hasNext() {
+    res = iter.hasNext();
+  }
+}
+
+QUEUE = new LinkedList();
+
+class Vertex {
+//implements EdgeIfc, NeighborIfc
+  
+  var name = null;
+  
+  //#ifdef GNOEDGES
+  var adjacentVertices = new LinkedList();
+  //#endif
+  
+  //#ifdef GNONLYNEIGHBORS
+  var adjacentNeighbors = new LinkedList();
+  //#endif
+  
+  //#ifdef GENEDGES
+  var neighbors = new LinkedList();
+  //#endif
+  
+  //#if WEIGHTED && GNOEDGES
+  var weightsList = new LinkedList();
+  //#endif
+  
+  //#ifdef SEARCHALG
+  var visited = false;
+  //#endif
+  
+  // #ifdef NUMBER
+  var vertexNumber;
+  // #endif
+  // #ifdef CONNECTED
+  var componentNumber;
+  // #endif
+  // #ifdef STRONGLYCONNECTED
+  var finishTime;
+  // #endif
+  // #ifdef STRONGLYCONNECTED
+  var strongComponentNumber;
+  // #endif
+  // #ifdef CYCLE
+  var VertexCycle;
+  // #endif
+  // #ifdef CYCLE
+  var VertexColor;
+  // #endif
+  // #ifdef MSTKRUSKAL
+  var representative;
+  // #endif
+  // #ifdef MSTKRUSKAL
+  var members;
+  // #endif
+  // #ifdef MSTPRIM
+  var pred;
+  // #endif
+  // #ifdef MSTPRIM
+  var key;
+  // #endif
+  
+  def assignName(name){
+    this.name = name;
+    res = this;
+  }
+  
+  def getName(){
+    res = this.name;
+  }
+
+  //#ifdef GNOEDGES
+  def addAdjacent(n){
+    this.adjacentVertices.add(n);
+  }
+  //#endif
+  
+  //#ifdef GNOEDGES
+  def adjustAdorns(the_vertex,  index) {
+      //#ifdef WEIGHTED
+      the_weight = the_vertex.weightsList.get(index);
+      this.weightsList.add(the_weight);
+      //#endif
+  }
+  //#endif
+  
+  def getNeighbors() {
+      //#ifdef GNOEDGES
+      res = this.adjacentVertices.iterator();
+      //#else
+          //#ifdef GNONLYNEIGHBORS
+          res = new NeighborIterator(this.adjacentNeighbors.iterator());
+          //#else
+              //#ifdef GENEDGES
+              res = new EndIterator(this.neighbors.iterator());
+              //#endif
+          //#endif
+      //#endif
+  }
+  
+  //#ifdef GNOEDGES
+  def getStart() {
+      //#ifdef UNDIRECTED
+      res = this;
+      //#else
+      res = null;
+      //#endif
+  }
+  //#endif
+  
+  //#ifdef GNOEDGES
+  def getEnd() {
+    res = null;
+  }
+  //#endif
+  
+  //#ifdef GNOEDGES
+  def getWeight() {
+    res = 0;
+  }
+  //#endif
+  
+  //#ifdef GNOEDGES
+  def getOtherVertex(vertex) {
+    res = this;
+  }
+  //#endif
+  
+  //#ifdef GNOEDGES
+  def adjustAdorns(the_edge) {
+  }
+  //#endif
+  
+  //#ifdef GNONLYNEIGHBORS
+  def addEdge(n) {
+    this.adjacentNeighbors.add(n);
+  }
+  //#endif
+  
+  //#ifdef GNONLYNEIGHBORS
+  def adjustAdorns(sourceNeighbor) {
+      //#ifdef WEIGHTED
+      this.adjacentNeighbors.getLast().weight = sourceNeighbor.weight;
+      //#endif
+  }
+  //#endif
+
+  //#ifdef GENEDGES
+  def addNeighbor(n) {
+    this.neighbors.add(n);
+  }
+  //#endif
+  
+  
+  //#ifdef SEARCHBASE
+  def getEdges() {
+      //#ifdef GNOEDGES
+      res = this.adjacentVertices.iterator();
+      //#else
+          //#ifdef GNONLYNEIGHBORS
+          res = this.adjacentNeighbors.iterator();
+          //#else
+              //#ifdef GENEDGES
+              res = new EdgeIter(this.neighbors.iterator());
+              //#endif
+          //#endif
+      //#endif
+  }
+  //#endif
+  
+  def getNeighborsObj() {
+    //#ifdef GNONLYNEIGHBORS
+    res = this.adjacentNeighbors;
+    //#else
+        //#ifdef GENEDGES
+        res = this.neighbors;
+        //#else
+            //#ifdef GNOEDGES
+            res = this.adjacentVertices;
+            //#endif
+        //#endif
+    //#endif
+  }
+
+  //#ifdef WEIGHTED
+  def addWeight(weight) {
+      //#ifdef GNOEDGES
+      this.weightsList.add(weight);
+      //#endif
+      //#ifdef GNONLYNEIGHBORS
+      this.adjacentNeighbors.getLast().weight = weight;
+      //#endif
+  }
+  //#endif
+  
+  //#if WEIGHTED && GNOEDGES
+  def setWeight(weight){
+    addWeight(weight);
+    this.adjacentVertices.getLast().addWeight(weight);
+  }
+  //#endif
+  
+
+  //#ifdef SEARCHALG
+  def init_vertex(w) {
+    this.visited = false;
+    w.init_vertex(this);
+  }
+  //#endif
+  
+  //#ifdef SEARCHALG
+  def nodeSearch(w) {
+    w.preVisitAction(this);
+    if (!this.visited) {
+        this.visited = true;
+        //#ifdef DFS
+        vxiter = getNeighbors();
+        while (vxiter.hasNext()) {
+            v = vxiter.next();
+            w.checkNeighborAction(this, v);
+            v.nodeSearch(w);
+        }
+        //#endif
+        w.postVisitAction(this);
+        //#ifdef BFS
+        vxiter = getNeighbors();
+        while (vxiter.hasNext()) {
+            v = vxiter.next();
+            if (!v.visited) {
+                QUEUE.add(v);
+            }
+        }
+        while (QUEUE.size() != 0) {
+          header = QUEUE.get(0);
+          QUEUE.remove(0);
+          header.nodeSearch(w);
+        }
+        //#endif
+    }
+  }
+  //#endif
+  
+//  public void display(){
+////#ifdef WEIGHTED
+////#ifdef GNOEDGES
+//    System.out.print(" Weights : ");
+////#endif
+////#endif
+////#ifdef WEIGHTED
+////#ifdef GNOEDGES
+//    for (int i=0; i < weightsList.size(); i++) 
+////#ifdef WEIGHTED
+////#ifdef GNOEDGES
+//{
+//      System.out.print(weightsList.get(i).intValue() + ", ");
+//    }
+////#endif
+////#endif
+////#endif
+////#endif
+//    System.out.print("Vertex " + name + " connected to: ");
+//    for (VertexIter vxiter=getNeighbors(); vxiter.hasNext(); ) {
+//      Vertex v=vxiter.next();
+//      System.out.print(v.getName() + ", ");
+//    }
+////#ifdef SEARCHALG
+//    if (visited)     System.out.print("  visited");
+// else     System.out.println(" !visited");
+////#endif
+////#ifdef NUMBER
+//    System.out.print(" # " + vertexNumber + " ");
+////#endif
+////#ifdef CONNECTED
+//    System.out.print(" comp# " + componentNumber + " ");
+////#endif
+////#ifdef STRONGLYCONNECTED
+//    System.out.print(" FinishTime -> " + finishTime + " SCCNo -> "+ strongComponentNumber);
+////#endif
+////#ifdef CYCLE
+//    System.out.print(" VertexCycle# " + VertexCycle + " ");
+////#endif
+////#ifdef MSTKRUSKAL
+//    if (representative == null) 
+////#ifdef MSTKRUSKAL
+//    System.out.print("Rep null ");
+////#endif
+// else 
+////#ifdef MSTKRUSKAL
+//    System.out.print(" Rep " + representative.getName() + " ");
+////#endif
+////#endif
+////#ifdef MSTPRIM
+//    System.out.print(" Pred " + pred + " Key "+ key+ " ");
+////#endif
+//    System.out.println();
+//  }
+}
+
+
+// ======================
+// WorkSpaceTranspose
+// ======================
+
+//#ifdef STRONGLYCONNECTED
+class WorkSpaceTranspose extends WorkSpace {
+    var SCCCounter = 0;
+    
+    def init_vertex(vertex){
+    }
+    def postVisitAction(vertex){
+    }
+    def preVisitAction(v) {
+      if (v.visited != true) {
+        v.strongComponentNumber = this.SCCCounter;
+      }
+    }
+    def nextRegionAction(v) {
+      this.SCCCounter = this.SCCCounter + 1;
+    }
+    def checkNeighborAction(vsource, vtarget) {
+    }
+}
+//#endif
+
+
+// ======================
+// MAIN
+// ======================
+
+//#ifdef BASEIMPL
+
+V = new LinkedList();
+startVertices = new LinkedList();
+endVertices = new LinkedList();
+
+g = new Graph();
+
+num_vertices = 100;
+num_edges = 99;
+
+i = 0;
+while (i < num_vertices) {
+  vertex = new Vertex();
+  vertex.assignName(i);
+  V.add(vertex);
+  g.addVertex(vertex);
+  i = i + 1;
+}
+
+i = 0;
+while (i < num_edges) {
+  startVertices.add(i);
+  endVertices.add(i + 1);
+  i = i + 1;
+}
+
+//i = 0;
+//while (i < )
+
+//#endif
 
 
 

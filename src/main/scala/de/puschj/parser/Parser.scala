@@ -33,6 +33,8 @@ class WhileParser extends MultiFeatureParser() {
     
     lazy val identifier = identifierToken ^^ { x => x.getText() }
     
+    lazy val nullExpr = "null" ^^ { x => Null }
+    
     lazy val start: MultiParser[List[Opt[Statement]]] = "begin" ~> (repOpt(declaration | statement)) <~ "end"  
    
 // =====================
@@ -64,59 +66,23 @@ class WhileParser extends MultiFeatureParser() {
     lazy val funcDeclaration : MultiParser[FuncDec] = "def" ~> identifier ~ ("(" ~> repSep(identifier, ",") <~ ")") ~ blockStatement ^^ {
       case funcName~funcArgs~funcBody => FuncDec(funcName, funcArgs, funcBody)
     }
-    lazy val fieldDec : MultiParser[String] = "var" ~> identifier <~ ";"
-    
+    lazy val fieldDec : MultiParser[(String, Expression)] = "var" ~> identifier ~ (("=" ~> expression)?) <~ ";" ^^ {
+      case name~Some(expr) => (name, expr)
+      case name~None => (name, Null)
+    }
     lazy val constDec : MultiParser[(String, Expression)] = "const" ~> identifier ~ ("=" ~> expression <~ ";") ^^ {
       case name~expr => (name, expr)
     }
     
-    lazy val classDeclaration : MultiParser[ClassDec] = "class" ~> identifier ~ (("extends" ~> identifier)?) ~ ("{" ~> 
-                                                        repOpt(fieldDec)) ~ 
-                                                        repOpt(constDec) ~
+    lazy val classDeclaration : MultiParser[ClassDec] = "class" ~> identifier ~ (("(" ~> repSep(identifier, ",") <~")")?) ~ (("extends" ~> identifier)?) ~ ("{" ~> 
+                                                        repOpt(constDec)) ~ 
+                                                        repOpt(fieldDec) ~
                                                         (repOpt(funcDeclaration) <~ "}") ^^ {
-      case cName~Some(superClass)~fields~consts~funcs => ClassDec(cName, superClass, fields, consts, funcs)
-      case cName~None~fields~consts~funcs => ClassDec(cName, "Object",  fields, consts, funcs)
+      case name~Some(args)~Some(superClass)~consts~fields~funcs => ClassDec(name, args, superClass, consts, fields, funcs)
+      case name~None~None~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], "Object",  consts, fields, funcs)
+      case name~None~Some(superClass)~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], superClass, consts, fields, funcs)
+      case name~Some(args)~None~consts~fields~funcs => ClassDec(name, args, "Object",  consts, fields, funcs)
     }
-
-// =====================
-// Conditions
-// =====================
-    
-    lazy val condition : MultiParser[Condition] = equal | notEqual | greater | less | 
-                                                  greaterOrEqual | lessOrEqual | 
-                                                  and | or | literal | negation     
-    
-    lazy val equal: MultiParser[Condition] = expression ~ "==" ~ expression ^^ { 
-      case e1~_~e2 => Eq(e1,e2)
-    }
-    lazy val notEqual: MultiParser[Condition] = expression ~ "!=" ~ expression ^^ { 
-      case e1~_~e2 => NEq(e1,e2)
-    }
-    lazy val greater: MultiParser[Condition] = expression ~ ">" ~ expression ^^ { 
-      case e1~_~e2 => GrT(e1,e2)
-    }
-    lazy val less: MultiParser[Condition] = expression ~ "<" ~ expression ^^ {
-      case e1~_~e2 => LeT(e1,e2)
-    }
-    lazy val greaterOrEqual: MultiParser[Condition] = expression ~ ">=" ~ expression ^^ {
-      case e1~_~e2 => GoE(e1,e2)
-    }
-    lazy val lessOrEqual: MultiParser[Condition] = expression ~ "<=" ~ expression ^^ {
-      case e1~_~e2 => LoE(e1,e2)
-    }
-    lazy val and: MultiParser[Condition] = condition ~ "&&" ~ condition ^^ {
-      case e1~_~e2 => And(e1,e2)
-    }
-    lazy val or: MultiParser[Condition] = condition ~ "||" ~ condition ^^ {
-      case e1~_~e2 => Or(e1,e2)
-    }    
-    lazy val negation = "!" ~> condition ^^ {
-      case c => Neg(c)
-    }
-    lazy val literal: MultiParser[Condition] = ("false" | "true") ^^ {
-      case b => Bool(b.getText.toBoolean)
-    }
-    
 
 // =====================
 // Expressions
@@ -132,7 +98,12 @@ class WhileParser extends MultiFeatureParser() {
       
     lazy val arith_2: MultiParser[Expression] = arith_1 ~ repPlain("+" ~ arith_1 | "-" ~ arith_1) ^^ reduceList
     
-    lazy val arith_1: MultiParser[Expression] = access ~ repPlain("*" ~ access | "/" ~ access) ^^ reduceList
+    lazy val arith_1: MultiParser[Expression] = negation ~ repPlain("*" ~ negation | "/" ~ negation) ^^ reduceList
+    
+    lazy val negation: MultiParser[Expression] = (("!")?) ~ access ^^ {
+      case None ~ e => e
+      case _ ~ e => Neg(e)
+    } 
   
     lazy val access: MultiParser[Expression] = factor ~ repPlain("." ~ (call | (identifier ^^ { case s => Id(s) })) ) ^^ reduceList
     
@@ -141,9 +112,13 @@ class WhileParser extends MultiFeatureParser() {
       call |
       classNew |
       literal |
-      negation |
+      nullExpr |
       integer ^^ { case i => Num(i) } |
       identifier ^^ { case i => Id(i) }
+      
+    lazy val literal: MultiParser[Condition] = ("false" | "true") ^^ {
+      case b => Bool(b.getText.toBoolean)
+    }
       
     lazy val call : MultiParser[Call] = identifier ~ ("(" ~> repSep(expression, ",") <~ ")")  ^^ {
       case name~args => Call(name, args)

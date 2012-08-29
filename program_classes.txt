@@ -1,8 +1,6 @@
 begin
 // #if FOO
-class A {
-  var a;
-  
+class A(a) {
   const FACTOR = 2;
   
   // #if BAR
@@ -14,9 +12,7 @@ class A {
 // #endif
 
 // #if OOF
-class A {
-  var FACTOR;
-  
+class A(FACTOR) {
   const a = 1;
   
   // #if BAR
