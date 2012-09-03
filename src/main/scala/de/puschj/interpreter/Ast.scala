@@ -3,7 +3,11 @@ package de.puschj.interpreter
 import de.fosd.typechef.conditional._
 
 
-sealed abstract class ASTNode
+sealed abstract class ASTNode {
+//  override def toString = {
+//    SourceCodePrettyPrinter.prettyPrintNode(this).mkString
+//  }
+}
 
 // =====================
 // Expressions
@@ -60,14 +64,15 @@ case class Assert(cond: Expression) extends Statement
 
 // functions
 case class FuncDec(name: String, args: List[Opt[String]], body: Block) extends Statement
+
 sealed abstract class FuncDef
 case class VAFDef(args: List[Opt[String]], body: Block) extends FuncDef
 case class PlainFDef(args: List[String], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
 // classes
-//case class ConstDec(name: String, expr: Expression)
-case class ClassDec(name: String, args: List[Opt[String]], superClass: String, consts: List[Opt[(String, Expression)]], fields: List[Opt[(String, Expression)]], methods: List[Opt[FuncDec]]) extends Statement
+case class ClassDec(name: String, args: List[Opt[String]], superClass: String, consts: List[Opt[Assignment]], fields: List[Opt[Assignment]], methods: List[Opt[FuncDec]]) extends Statement
+
 abstract class ClassDef
 case class VACDef(args: List[Opt[String]], superClass: String, fields: List[Opt[Assignment]], constStore: VAStore, funcStore: VAFuncStore) extends ClassDef
 case class PlainCDef(args: List[String], superClass: String, fields: List[Assignment], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef

@@ -66,12 +66,12 @@ class WhileParser extends MultiFeatureParser() {
     lazy val funcDeclaration : MultiParser[FuncDec] = "def" ~> identifier ~ ("(" ~> repSep(identifier, ",") <~ ")") ~ blockStatement ^^ {
       case funcName~funcArgs~funcBody => FuncDec(funcName, funcArgs, funcBody)
     }
-    lazy val fieldDec : MultiParser[(String, Expression)] = "var" ~> identifier ~ (("=" ~> expression)?) <~ ";" ^^ {
-      case name~Some(expr) => (name, expr)
-      case name~None => (name, Null)
+    lazy val fieldDec : MultiParser[Assignment] = "var" ~> identifier ~ (("=" ~> expression)?) <~ ";" ^^ {
+      case name~Some(expr) => Assignment(Id(name), expr)
+      case name~None => Assignment(Id(name), Null)
     }
-    lazy val constDec : MultiParser[(String, Expression)] = "const" ~> identifier ~ ("=" ~> expression <~ ";") ^^ {
-      case name~expr => (name, expr)
+    lazy val constDec : MultiParser[Assignment] = "const" ~> identifier ~ ("=" ~> expression <~ ";") ^^ {
+      case name~expr => Assignment(Id(name), expr)
     }
     
     lazy val classDeclaration : MultiParser[ClassDec] = "class" ~> identifier ~ (("(" ~> repSep(identifier, ",") <~")")?) ~ (("extends" ~> identifier)?) ~ ("{" ~> 
@@ -79,9 +79,9 @@ class WhileParser extends MultiFeatureParser() {
                                                         repOpt(fieldDec) ~
                                                         (repOpt(funcDeclaration) <~ "}") ^^ {
       case name~Some(args)~Some(superClass)~consts~fields~funcs => ClassDec(name, args, superClass, consts, fields, funcs)
-      case name~None~None~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], "Object",  consts, fields, funcs)
-      case name~None~Some(superClass)~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], superClass, consts, fields, funcs)
       case name~Some(args)~None~consts~fields~funcs => ClassDec(name, args, "Object",  consts, fields, funcs)
+      case name~None~Some(superClass)~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], superClass, consts, fields, funcs)
+      case name~None~None~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], "Object",  consts, fields, funcs)
     }
 
 // =====================

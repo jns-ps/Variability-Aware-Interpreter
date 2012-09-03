@@ -128,6 +128,35 @@ class LinkedList {
     res = i;
   }
   
+  def iterator() {
+    iter = new LinkedListSimpleIterator(this.first);
+    iter.init();
+    res = iter;
+  }
+  
+}
+
+class LinkedListSimpleIterator(root) {
+  var next = null;
+  
+  def init() {
+    this.next = this.root;
+  }
+  
+  def next() {
+    if (this.next == null) {
+      res = null;  // TODO: maybe add support for throwing exceptions, needed here
+    } else {
+      returnedData = this.next.data;
+      this.next = this.next.next;
+      res = returnedData;
+    }
+  }
+  
+  def hasNext() {
+    res = (this.next != null);
+  }
+  
 }
 
 
@@ -435,6 +464,18 @@ class Graph {
     var edgesNotBuilt = true;
     //#endif
     
+    //#ifdef CYCLE
+    var cycleCheck;
+    //#endif
+
+    //#ifdef MSTPRIM
+    var gaux1;
+    //#endif
+
+    //#ifdef STRONGLYCONNECTED
+    var gaux2;
+    //#endif
+    
     def getVertices(){
       res = this.vertices.iterator();
     }
@@ -529,7 +570,7 @@ class Graph {
                     );
             //#endif
             //#ifdef GNONLYNEIGHBORS
-            this.addEdge(start,e);
+            this.addEdge(start,e); // TODO: make it possible to call with 2 arguments.
             //#endif
             //#ifdef GNONLYNEIGHBORS
             res = e;
@@ -692,7 +733,7 @@ class Graph {
 //  //#endif
         
         //#ifdef MSTPRIM
-        gaux1 = this.prim(v);
+        this.gaux1 = this.prim(v);
         //#endif
         
 //  //#ifdef MSTPRIM
@@ -710,7 +751,7 @@ class Graph {
         //#endif
         
         //#ifdef STRONGLYCONNECTED
-        gaux2 = this.strongComponents();
+        this.gaux2 = this.strongComponents();
         //#endif
         
 //  //#ifdef STRONGLYCONNECTED
@@ -1482,8 +1523,8 @@ endVertices = new LinkedList();
 
 g = new Graph();
 
-num_vertices = 100;
-num_edges = 99;
+num_vertices = 5;
+num_edges = 4;
 
 i = 0;
 while (i < num_vertices) {
@@ -1501,8 +1542,14 @@ while (i < num_edges) {
   i = i + 1;
 }
 
-//i = 0;
-//while (i < )
+i = 0;
+while (i < num_edges) {
+  v1 = V.get(startVertices.get(i));
+  v2 = V.get(endVertices.get(i));
+  g.addEdge(v1, v2, 0);
+  g.run(g.findsVertex(4));
+  i = i + 1;
+}
 
 //#endif
 

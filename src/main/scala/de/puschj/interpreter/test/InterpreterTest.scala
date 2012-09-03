@@ -234,16 +234,44 @@ class InterpreterTest {
 //  }
   
   @Test
-  def testGraphProductLine() {
-    val program: VariableProgram = parser.parseFile("program_GPL.txt")
-    val store = program.run()
-    store.print("Graph Product Line")
-  }
-  
-  @Test
   def testCollections() {
     val program: VariableProgram = parser.parseFile("program_collections.txt")
     val store = program.run()
     store.print("Collections")
   }
+  
+//  @Test
+//  def testGraphProductLine() {
+//    
+//    val program: VariableProgram = parser.parseFile("program_GPL.txt")
+//    val store = program.run()
+//    store.print("Graph Product Line")
+//  }
+  
+  @Test
+  def testGPLconfigured() {
+    val set = Set(
+        "BENCHMARK", 
+        "BASEIMPL", 
+        "SEARCHALG", 
+        "UNDIRECTED", 
+        "WEIGHTED", 
+        "NUMBER", 
+        "CONNECTED", 
+        "TRANSPOSE", 
+        "MSTPRIM", 
+        "MSTKRUSKAL", 
+        "CYCLE", 
+        "SEARCHBASE", 
+        "DFS", 
+        "GENEDGES")
+    
+    val program: VariableProgram = parser.parseFile("program_GPL.txt")
+    val configured = program.configured(set)
+    configured.print
+    configured.run.print()
+//    val store = program.configured(set).run()
+//    store.print("Graph Product Line")
+  }
+  
 }

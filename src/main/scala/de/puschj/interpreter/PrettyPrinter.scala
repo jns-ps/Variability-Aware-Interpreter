@@ -118,9 +118,10 @@ object SourceCodePrettyPrinter {
     doc.mkString
   }
   
-  private def prettyPrintNode(node: ASTNode): Doc = {
+  def prettyPrintNode(node: ASTNode): Doc = {
     node match {
       // Statements
+      case ExpressionStmt(expr) => expr ~ ";"
       case Assignment(name, expr) => name ~~ "=" ~~ expr ~ ";"
       case While(cond, stmt) => {
         var doc: Doc = "while" ~ "(" ~cond ~ ")"
@@ -130,7 +131,7 @@ object SourceCodePrettyPrinter {
         }
       } 
       case Block(stmts) => {
-        if (stmts.isEmpty) Empty
+        if (stmts.isEmpty) "{ }"
         else {
            var doc: Doc = Empty
            for (optStmt <- stmts) {
@@ -154,40 +155,80 @@ object SourceCodePrettyPrinter {
       case FuncDec(name, args, body) => {
         var doc = "def" ~~ name ~ "("
         for (i <- 0 until args.size) {
-          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~~ args(i).entry ~~ prettyPrintFeatureExprClose(args(i).feature, false)
+          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
           if (i < args.size - 1) {
             doc = doc ~ ", "
           }
         }
         doc ~ ")" ~~ body
       }
+      
+      case ClassDec(name, args, superClass, consts, fields, methods) => {
+        var head = "class" ~~ name ~~ "("
+        for (i <- 0 until args.size) {
+          head = head ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
+          if (i < args.size - 1) {
+            head = head ~ ", "
+          }
+        }
+        head = head ~ ")"
+        
+        var body: Doc = Empty
+        for (i <- 0 until consts.size) {
+          body = body <~ prettyPrintFeatureExprOpen(consts(i).feature, true) ~ "const" ~~ consts(i).entry ~ prettyPrintFeatureExprClose(consts(i).feature, true)
+        }
+        for (i <- 0 until fields.size) {
+          body = body <~ prettyPrintFeatureExprOpen(fields(i).feature, true) ~ "var" ~~ fields(i).entry ~ prettyPrintFeatureExprClose(fields(i).feature, true)
+        }
+        for (i <- 0 until methods.size) {
+          body = body <~ prettyPrintFeatureExprOpen(methods(i).feature, true) ~ methods(i).entry ~ prettyPrintFeatureExprClose(methods(i).feature, true)
+        }
+        
+        head ~~ "{" ~> body <~ "}" 
+      }
 
-      // Expressions                          
+      // Expressions         
+      case Null => "null"
       case Num(x) => x.toString()
+      case Bool(b) => b.toString
       case Id(varname) => varname
       case Add(e1, e2) => e1 ~~ "+" ~~ e2
       case Sub(e1, e2) => e1 ~~ "-" ~~ e2
       case Mul(e1, e2) => e1 ~~ "*" ~~ e2
       case Div(e1, e2) => e1 ~~ "/" ~~ e2
+      case Eq(e1, e2) => e1 ~~ "==" ~~ e2
+      case NEq(e1, e2) => e1 ~~ "!=" ~~ e2
+      case GrT(e1, e2) => e1 ~~ ">" ~~ e2
+      case GoE(e1, e2) => e1 ~~ ">=" ~~ e2
+      case LeT(e1, e2) => e1 ~~ "<" ~~ e2
+      case LoE(e1, e2) => e1 ~~ "<=" ~~ e2
+      case And(e1, e2) => e1 ~~ "&&" ~~ e2
+      case Or(e1, e2) => e1 ~~ "||" ~~ e2
+      case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
       case Par(expr) => "(" ~ expr ~ ")"
+      
       case Call(fname, args) => {
         var doc: Doc = fname ~ "("
          for (i <- 0 until args.size) {
-          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~~ args(i).entry ~~ prettyPrintFeatureExprClose(args(i).feature, false)
+          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
           if (i < args.size - 1) {
             doc = doc ~ ", "
           }
         }
         doc ~ ")"
-      } 
-      
-      //Conditions
-      case Eq(e1, e2) => e1 ~~ "==" ~~ e2
-      case GrT(e1, e2) => e1 ~~ ">" ~~ e2
-      case GoE(e1, e2) => e1 ~~ ">=" ~~ e2
-      case LeT(e1, e2) => e1 ~~ "<" ~~ e2
-      case LoE(e1, e2) => e1 ~~ "<=" ~~ e2
-      case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
+      }
+      case New(name, args) => {
+        var doc = "new" ~~ name ~ "("
+        for (i <- 0 until args.size) {
+          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
+          if (i < args.size - 1) {
+            doc = doc ~ ", "
+          }
+        }
+        doc ~ ")"
+      }
+      case Field(expr, name) => expr ~ "." ~ name
+      case MethodCall(expr, call) => expr ~ "." ~ call
       
 //      case node => node.toString()
     }
@@ -212,7 +253,7 @@ object SourceCodePrettyPrinter {
               .replace("0", "(A && (!A))")
               +")"
         )
-      if (breakLine) (Line ~ doc) else doc
+      (if (breakLine) Line else Empty) ~ doc ~ " "
     }
   }
   
@@ -220,9 +261,8 @@ object SourceCodePrettyPrinter {
     if (feature.isTautology()) 
       Empty 
     else {
-      val doc: Doc = "//#endif"
-      if (breakLine) (Line ~ doc) else doc
-    } 
+      (if (breakLine) Line else Text(" ")) ~ "//#endif"
+    }
   }
 }
 
