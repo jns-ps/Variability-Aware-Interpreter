@@ -1,17 +1,45 @@
 package de.puschj.parser
-import scala.util.parsing.combinator.JavaTokenParsers
-import scala.util.parsing.combinator.Parsers
-import de.puschj.interpreter._
-import scala.util.parsing.input.CharSequenceReader
-import de.fosd.typechef.featureexpr.FeatureExpr
-import de.fosd.typechef.parser._
-import de.fosd.typechef.conditional._
-import de.fosd.typechef.parser.MultiFeatureParser
-import de.fosd.typechef.parser.java15.TokenWrapper
-import de.fosd.typechef.parser.java15.JavaLexer
-import de.fosd.typechef.featureexpr.FeatureExpr
+
+import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.featureexpr.FeatureExprFactory
-import de.fosd.typechef.featureexpr.FeatureExprFactory.True
+import de.fosd.typechef.parser.java15.JavaLexer
+import de.fosd.typechef.parser.java15.TokenWrapper
+import de.fosd.typechef.parser.~
+import de.fosd.typechef.parser.MultiFeatureParser
+import de.puschj.interpreter.Add
+import de.puschj.interpreter.And
+import de.puschj.interpreter.Assert
+import de.puschj.interpreter.Assign
+import de.puschj.interpreter.Block
+import de.puschj.interpreter.Bool
+import de.puschj.interpreter.Call
+import de.puschj.interpreter.ClassDec
+import de.puschj.interpreter.Div
+import de.puschj.interpreter.Eq
+import de.puschj.interpreter.Expr
+import de.puschj.interpreter.ExprStmt
+import de.puschj.interpreter.Field
+import de.puschj.interpreter.FuncDec
+import de.puschj.interpreter.GoE
+import de.puschj.interpreter.GrT
+import de.puschj.interpreter.Id
+import de.puschj.interpreter.If
+import de.puschj.interpreter.LeT
+import de.puschj.interpreter.LoE
+import de.puschj.interpreter.MethodCall
+import de.puschj.interpreter.Mul
+import de.puschj.interpreter.NEq
+import de.puschj.interpreter.Neg
+import de.puschj.interpreter.New
+import de.puschj.interpreter.Null
+import de.puschj.interpreter.Num
+import de.puschj.interpreter.Or
+import de.puschj.interpreter.Par
+import de.puschj.interpreter.Stmt
+import de.puschj.interpreter.Sub
+import de.puschj.interpreter.VariableProgram
+import de.puschj.interpreter.While
+
 
 class WhileParser extends MultiFeatureParser() {
     type Elem = TokenWrapper

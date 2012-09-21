@@ -10,6 +10,18 @@ sealed abstract class ASTNode {
 }
 
 // =====================
+// Statements
+// =====================
+
+sealed abstract class Stmt extends ASTNode 
+case class ExprStmt(expr: Expr) extends Stmt
+case class Assign(expr: Expr, value: Expr) extends Stmt
+case class Block(stmts: List[Opt[Stmt]]) extends Stmt
+case class While(cond: Expr, body: Block) extends Stmt
+case class If(cond: Expr, then: Block, els: Option[Block]) extends Stmt
+case class Assert(cond: Expr) extends Stmt
+
+// =====================
 // Expressions
 // =====================
 
@@ -43,24 +55,13 @@ case class New(name: String, args: List[Opt[Expr]]) extends Expr
 case class Field(expr: Expr, name: String) extends Expr
 case class MethodCall(expr: Expr, call: Call) extends Expr
 
-// =====================
-// Statements
-// =====================
 
-sealed abstract class Stmt extends ASTNode 
-case class ExprStmt(expr: Expr) extends Stmt
-case class Assign(expr: Expr, value: Expr) extends Stmt
-case class Block(stmts: List[Opt[Stmt]]) extends Stmt
-case class While(cond: Expr, body: Block) extends Stmt
-case class If(cond: Expr, thn: Block, els: Option[Block]) extends Stmt
-case class Assert(cond: Expr) extends Stmt
 
 // functions
 case class FuncDec(name: String, args: List[Opt[String]], body: Block) extends Stmt
 
 sealed abstract class FuncDef
-case class VAFDef(args: List[Opt[String]], body: Block) extends FuncDef
-case class PlainFDef(args: List[String], body: Block) extends FuncDef
+case class FDef(args: List[Opt[String]], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
 // classes
@@ -68,7 +69,7 @@ case class ClassDec(name: String, args: List[Opt[String]], superClass: String, c
 
 abstract class ClassDef
 case class VACDef(args: List[Opt[String]], superClass: String, fields: List[Opt[Assign]], constStore: VAStore, funcStore: VAFuncStore) extends ClassDef
-case class PlainCDef(args: List[String], superClass: String, fields: List[Assign], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
+//case class PlainCDef(args: List[String], superClass: String, fields: List[Assign], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
 case class CErr(msg: String) extends ClassDef
 
 

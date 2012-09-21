@@ -1,0 +1,12 @@
+begin
+
+class A(a, b) {
+  var c = this.a + 3;
+  var d = this.b + 2;
+}
+
+a = new A(2,3);
+x = a.c;
+y = a.d;
+
+end

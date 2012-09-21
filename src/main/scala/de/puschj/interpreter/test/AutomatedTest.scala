@@ -212,7 +212,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   } yield Opt(feat, stmt)
   
   def genProgram(size: Int): Gen[VariableProgram] = {
-    println("generating program with size "+size)
+//    println("generating program with size "+size)
     def nonExceeding = (  for {
                        decls <- genOptFuncDefs( size / 10 )
                        stmts <- listOfN(size, genOptStatementTopLevel(decls.map(x => x.entry.name)))
@@ -231,16 +231,16 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   
   var tcCount = 0
   
-  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
-    if (tcCount == 0)
-        for (file <- new File("testprograms").listFiles)
-            file.delete
-//    saveProgramAST(p, "testprograms\\ast"+(if (tcCount<10) "0"+tcCount else tcCount)+".txt")
-    saveProgram(p, "testprograms\\test%02d.txt".format(tcCount))
-    println("TestCase "+ tcCount +" created.")
-    tcCount += 1
-    true
-  })
+//  property("createTestCases") = Prop.forAll( (p: VariableProgram) => {
+//    if (tcCount == 0)
+//        for (file <- new File("testprograms").listFiles)
+//            file.delete
+////    saveProgramAST(p, "testprograms\\ast"+(if (tcCount<10) "0"+tcCount else tcCount)+".txt")
+//    saveProgram(p, "testprograms\\test%02d.txt".format(tcCount))
+//    println("TestCase "+ tcCount +" created.")
+//    tcCount += 1
+//    true
+//  })
   
 //  property("checkPrettyPrinter") = Prop.forAll( (p: VariableProgram) => {
 //    val parsed = parser.parse(p.toString)
@@ -260,10 +260,32 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 //    }
 //  })
   
-//  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
+  property("configuredPrograms") = Prop.forAll( (p: VariableProgram) => {
+    println("testing variable program "+tcCount)
+    tcCount += 1
+    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
+  })
+  
+//  property("plainInterpreterSpeedUp") = Prop.forAll( (p: VariableProgram) => {
 //    println("testing variable program "+tcCount)
 //    tcCount += 1
-//    ProgramUtils.compareProgramVariants(p, FEATURENAMES.toSet, VARNAMES.toSet) 
+//    var start = 0L
+//    var stop = 0L
+//    val conf = p.configured(FEATURENAMES.toSet)
+//    start = System.nanoTime
+//    p.run
+//    stop = System.nanoTime
+//    val vainterpr: Double = stop - start
+//    println(vainterpr)
+//    
+//    start = System.nanoTime
+//    conf.run
+//    stop = System.nanoTime
+//    val plaininterpr: Double = stop - start
+//    println(stop - start)
+//    println(vainterpr / plaininterpr)
+//    println("==========================")
+//    true
 //  })
 
   

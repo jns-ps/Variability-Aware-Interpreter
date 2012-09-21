@@ -1,16 +1,15 @@
 package de.puschj.interpreter
 
-import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.{Map => MMap}
 import scala.collection.mutable.{Set => MSet}
 import scala.collection.mutable.{HashSet => MHashSet}
-import de.puschj.parser.WhileParser
-import de.fosd.typechef.featureexpr.FeatureExprFactory
-import de.fosd.typechef.featureexpr.FeatureExprFactory._
+import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{Map => MMap}
+
 import de.fosd.typechef.conditional.ConditionalLib
-import java.text.SimpleDateFormat
-import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.conditional.One
+import de.fosd.typechef.conditional.Opt
+import de.fosd.typechef.featureexpr.FeatureExprFactory.True
+import de.fosd.typechef.featureexpr.FeatureExprFactory.createDefinedExternal
 
 
 object ProgramUtils {
@@ -107,7 +106,7 @@ object ProgramUtils {
            context = (availableFeatures -- selectedFeatures).foldLeft(context)( (f, s) => f andNot createDefinedExternal(s))
            for (variable <- comparedVariables) {
              val varStoreValue = variableStore.getByContext(variable, context)
-             val cnfStoreValue = One(configuredStore.get(variable))
+             val cnfStoreValue = configuredStore.get(variable)
              if (!ConditionalLib.equals(varStoreValue, cnfStoreValue)) {
                System.err.println("Different Values for \""+variable+"\" - expected: "+cnfStoreValue+" result: "+varStoreValue);
 //               System.err.println("==== Variable Program: ====\n"+program.toString+"\n");

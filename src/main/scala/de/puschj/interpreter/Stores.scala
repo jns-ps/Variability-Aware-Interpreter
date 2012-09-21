@@ -11,8 +11,6 @@ import de.fosd.typechef.conditional.One
 import de.fosd.typechef.conditional.Opt
 
 
-// === stores for variables ===
-
 sealed abstract class Store[T] {
   
   protected val entries: MMap[String, T] = MMap.empty[String, T]
@@ -44,22 +42,22 @@ sealed abstract class Store[T] {
 }
 
 
-class PlainStore extends Store[Value] {
-  
-  def undefined(s: String) = UndefinedValue(s)
-  
-  override def equals(that: Any): Boolean = {
-    if (!that.isInstanceOf[PlainStore])
-        return false
-    val s = that.asInstanceOf[PlainStore]
-    if (!getStoredVariables().equals(s.getStoredVariables()))
-        return false
-    for (variable <- getStoredVariables())
-        if (!entries.get(variable).equals(s.entries.get(variable).get))
-            return false
-    true
-  }
-}
+//class PlainStore extends Store[Value] {
+//  
+//  def undefined(s: String) = UndefinedValue(s)
+//  
+//  override def equals(that: Any): Boolean = {
+//    if (!that.isInstanceOf[PlainStore])
+//        return false
+//    val s = that.asInstanceOf[PlainStore]
+//    if (!getStoredVariables().equals(s.getStoredVariables()))
+//        return false
+//    for (variable <- getStoredVariables())
+//        if (!entries.get(variable).equals(s.entries.get(variable).get))
+//            return false
+//    true
+//  }
+//}
 
 
 class VAStore extends Store[Conditional[Value]] {
@@ -112,9 +110,9 @@ sealed abstract class FuncStore[T] {
   }
 }
 
-class PlainFuncStore extends FuncStore[FuncDef] {
-    def undefined(s: String) = FErr(s)
-}
+//class PlainFuncStore extends FuncStore[FuncDef] {
+//    def undefined(s: String) = FErr(s)
+//}
 
 class VAFuncStore extends FuncStore[Conditional[FuncDef]] {
     def undefined(s: String) = One(FErr(s))
@@ -146,11 +144,11 @@ sealed abstract class ClassStore[T] {
   }
 }
 
-class PlainClassStore extends ClassStore[ClassDef] {
-    classes.put("Object", PlainCDef(List.empty[String], "", List.empty[Assign], new PlainStore, new PlainFuncStore))
-  
-    def undefined(s: String) = CErr(s)
-}
+//class PlainClassStore extends ClassStore[ClassDef] {
+//    classes.put("Object", VACDef(List.empty[Opt[String]], "", List.empty[Opt[Assign]], new VAStore, new VAFuncStore))
+//  
+//    def undefined(s: String) = CErr(s)
+//}
 
 class VAClassStore extends ClassStore[Conditional[ClassDef]] {
     classes.put("Object", One(VACDef(List.empty[Opt[String]], "", List.empty[Opt[Assign]], new VAStore, new VAFuncStore)))

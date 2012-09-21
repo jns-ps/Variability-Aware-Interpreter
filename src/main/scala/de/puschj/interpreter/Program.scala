@@ -135,9 +135,9 @@ case class ConfiguredProgram(private val stmts: List[Stmt]) extends Program {
   
   def getStatements() = stmts
   
-  def run(): PlainStore = run(new PlainStore, new PlainFuncStore, new PlainClassStore)
+  def run(): VAStore = run(new VAStore, new VAFuncStore, new VAClassStore)
   
-  def run(store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): PlainStore = {
+  def run(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): VAStore = {
     for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore, classStore)
     return store
   }

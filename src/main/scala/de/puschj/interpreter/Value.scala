@@ -66,12 +66,12 @@ sealed abstract case class ObjectValue[T](id: Long) extends Value {
 }
 
 // TODO: introduce object id for more performant comparison of two objects
-case class PlainObjectValue(/* id: Long, */className: String, vars: PlainStore) extends ObjectValue[Value](0) {
-
-  def getFieldValue(fieldName: String) = {
-    vars.get(fieldName)
-  }
-}
+//case class PlainObjectValue(/* id: Long, */className: String, vars: VAStore) extends ObjectValue[Value](0) {
+//
+//  def getFieldValue(fieldName: String) = {
+//    vars.get(fieldName) match {}
+//  }
+//}
 
 case class VAObjectValue(/* id: Long, */className: String, vars: VAStore) extends ObjectValue[Conditional[Value]](0) {
   

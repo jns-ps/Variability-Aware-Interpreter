@@ -1,9 +1,9 @@
 package de.puschj.parser.test
 
-import de.puschj.parser.WhileParser
 import de.fosd.typechef.featureexpr.FeatureExprFactory._
 import org.junit._
 import Assert._
+import de.puschj.parser.WhileParser
 
 class ParserTest {
   
