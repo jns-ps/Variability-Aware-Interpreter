@@ -9,12 +9,12 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory
 object VAInterpreter {
 
   @throws(classOf[LoopExceededException])
-  def execute(s: Statement, context: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
+  def execute(s: Stmt, context: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
     if (context.isContradiction()) return
     s match {
-      case ExpressionStmt(expr) => eval(expr, store, funcStore, classStore)
+      case ExprStmt(expr) => eval(expr, store, funcStore, classStore)
 
-      case Assignment(expr, value) => expr match {
+      case Assign(expr, value) => expr match {
         case Id(name) => store.put(name, Choice(context, eval(value, store, funcStore, classStore), store.get(name)).simplify)
         case Field(e, name) => {
           eval(e, store, funcStore, classStore).map(_ match {
@@ -37,9 +37,6 @@ object VAInterpreter {
         while (isSat && (n < 1000)) {
           val x: FeatureExpr = whenTrue(c, store, funcStore, classStore)
           isSat = (context and x).isSatisfiable
-          if (n == 998) {
-            println("bp")
-          }
           if (isSat)
             execute(block, context and x, store, funcStore, classStore)
           n += 1
@@ -86,9 +83,9 @@ object VAInterpreter {
     }
   }
 
-  private def eval(exp: Expression, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Conditional[Value] = {
+  private def eval(exp: Expr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Conditional[Value] = {
 
-    def calculateValue(e1: Expression, e2: Expression, f: (Value, Value) => Value) =
+    def calculateValue(e1: Expr, e2: Expr, f: (Value, Value) => Value) =
       ConditionalLib.mapCombination(
         eval(e1, store, funcStore, classStore),
         eval(e2, store, funcStore, classStore),
@@ -166,14 +163,16 @@ object VAInterpreter {
               UndefinedValue("illegal arguments size")
             else {
               val objectStore = new VAStore
+              val obj = VAObjectValue(name, objectStore)
               for (i <- 0 until argsClass.size)
                   objectStore.put(argsClass(i).entry, 
                       Choice(argsNew(i).feature and argsClass(i).feature, 
                           eval(argsNew(i).entry, store, funcStore, classStore), 
                           One(UndefinedValue("undef constructor arg"))
                       ).simplify)
+              objectStore.put("this", One(obj))
               fields.map(f => execute(f.entry, f.feature, objectStore, funcStore, classStore))
-              VAObjectValue(name, objectStore)
+              obj
             }
           }
         })
@@ -235,7 +234,7 @@ object VAInterpreter {
     }
   }
 
-  private def whenTrue(e: Expression, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): FeatureExpr =
+  private def whenTrue(e: Expr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): FeatureExpr =
     eval(e, store, funcStore, classStore).when(_ match {
       case ErrorValue(_) => false
       case value => value.getBoolValue
@@ -265,11 +264,11 @@ object VAInterpreter {
 object PlainInterpreter {
 
   @throws(classOf[LoopExceededException])
-  def execute(s: Statement, store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): Unit = {
+  def execute(s: Stmt, store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): Unit = {
     s match {
-      case ExpressionStmt(expr) => eval(expr, store, funcStore, classStore)
+      case ExprStmt(expr) => eval(expr, store, funcStore, classStore)
 
-      case Assignment(expr, value) => expr match {
+      case Assign(expr, value) => expr match {
         case Id(name) => store.put(name, eval(value, store, funcStore, classStore))
         case Field(e, name) => {
           eval(e, store, funcStore, classStore) match {
@@ -337,9 +336,9 @@ object PlainInterpreter {
     }
   }
 
-  private def eval(exp: Expression, store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): Value = {
+  private def eval(exp: Expr, store: PlainStore, funcStore: PlainFuncStore, classStore: PlainClassStore): Value = {
 
-    def calculateValue(e1: Expression, e2: Expression, f: (Value, Value) => Value): Value =
+    def calculateValue(e1: Expr, e2: Expr, f: (Value, Value) => Value): Value =
       propagateError(eval(e1, store, funcStore, classStore), eval(e2, store, funcStore, classStore), f)
 
     def propagateError(a: Value, b: Value, f: (Value, Value) => Value) = {
@@ -413,10 +412,12 @@ object PlainInterpreter {
               throw new RuntimeException("Illegal number of construction arguments: "+name+" ("+argsNew.size+")")
             val vals = argsNew.map(a => eval(a.entry, store, funcStore, classStore))
             val objectStore = new PlainStore
+            val obj = PlainObjectValue(name, objectStore)
             for (i <- 0 until argsClass.size)
               objectStore.put(argsClass(i), vals(i))
+            objectStore.put("this", obj)
             fields.map(execute(_, objectStore, funcStore, classStore))
-            PlainObjectValue(name, objectStore)
+            obj
           }
         }
       }

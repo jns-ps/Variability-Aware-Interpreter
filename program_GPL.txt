@@ -467,6 +467,10 @@ class Graph {
     //#ifdef CYCLE
     var cycleCheck;
     //#endif
+    
+    //#ifdef MSTKRUSKAL
+    var gaux;
+    //#endif
 
     //#ifdef MSTPRIM
     var gaux1;
@@ -719,7 +723,7 @@ class Graph {
         //#endif
         
         //#ifdef MSTKRUSKAL
-        gaux = this.kruskal();
+        this.gaux = this.kruskal();
         //#endif
         
 //  //#ifdef MSTKRUSKAL
@@ -1059,19 +1063,28 @@ class Graph {
 // ======================
 
 class Neighbor(
-        // #ifdef GNONLYNEIGHBORS
-        neighbor
-        // #endif
-        // #if GNONLYNEIGHBORS && WEIGHTED
-        , weight
-        // #endif
+    
+    //#if GENEDGES || GNONLYNEIGHBORS
+    arg1
+    //#endif
+    //#if GENEDGES || GNONLYNEIGHBORS && WEIGHTED
+    , arg2
+    //#endif
 ) {
 //implements EdgeIfc, NeighborIfc
     
     //#ifdef GENEDGES
-    var end = null;
-    var edge = null;
+    var end = this.arg1;
+    var edge = this.arg2;
     //#endif
+    
+    // #ifdef GNONLYNEIGHBORS
+    var neighbor = this.arg1;
+    // #endif
+    // #if GNONLYNEIGHBORS && WEIGHTED
+    var weight = this.arg2;
+    // #endif
+    
     
     //#ifdef GNONLYNEIGHBORS
 //    public void display(){
@@ -1550,6 +1563,10 @@ while (i < num_edges) {
   g.run(g.findsVertex(4));
   i = i + 1;
 }
+
+cycle = g.cycleCheck;
+gaux = g.gaux;
+gaux2 = g.gaux1;
 
 //#endif
 

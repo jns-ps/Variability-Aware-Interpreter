@@ -53,7 +53,7 @@ case class UndefinedValue(override val s: String) extends ErrorValue(s)
 case class NotANumberValue(override val s: String) extends ErrorValue(s)
 case class IllegalOPValue(override val s: String) extends ErrorValue(s)
 
-sealed abstract case class ObjectValue[T] extends Value {
+sealed abstract case class ObjectValue[T](id: Long) extends Value {
   def getFieldValue(fieldName: String): T
   
   def getIntValue(): Int = {
@@ -65,14 +65,15 @@ sealed abstract case class ObjectValue[T] extends Value {
   }
 }
 
-case class PlainObjectValue(className: String, vars: PlainStore) extends ObjectValue[Value] {
+// TODO: introduce object id for more performant comparison of two objects
+case class PlainObjectValue(/* id: Long, */className: String, vars: PlainStore) extends ObjectValue[Value](0) {
 
   def getFieldValue(fieldName: String) = {
     vars.get(fieldName)
   }
 }
 
-case class VAObjectValue(className: String, vars: VAStore) extends ObjectValue[Conditional[Value]] {
+case class VAObjectValue(/* id: Long, */className: String, vars: VAStore) extends ObjectValue[Conditional[Value]](0) {
   
   def getFieldValue(fieldName: String) = {
     vars.get(fieldName)

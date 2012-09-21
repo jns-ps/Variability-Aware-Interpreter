@@ -1,25 +1,18 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.{VAStore,Assignment,Statement,Mul,Num,IntValue}
-import de.fosd.typechef.conditional.Opt
-import de.fosd.typechef.featureexpr.FeatureExprFactory
-import de.fosd.typechef.featureexpr.FeatureExprFactory.True
-import de.fosd.typechef.featureexpr.FeatureExpr
-import de.fosd.typechef.conditional.One
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+
 import de.fosd.typechef.conditional.Choice
-import de.fosd.typechef.conditional.Conditional
-import org.junit._
-import Assert._
 import de.fosd.typechef.conditional.ConditionalLib
-import de.puschj.parser.WhileParser
-import de.puschj.interpreter.VariableProgram
-import de.puschj.interpreter.VAFuncStore
+import de.fosd.typechef.conditional.One
+import de.fosd.typechef.featureexpr.FeatureExpr
+import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.puschj.interpreter.IntValue
 import de.puschj.interpreter.UndefinedValue
-import de.puschj.interpreter.VAClassStore
-import de.puschj.interpreter.VAStore
-import de.puschj.interpreter.VAFuncStore
-import com.sun.org.apache.bcel.internal.util.ClassStack
-import de.puschj.interpreter.VAInterpreter
+import de.puschj.interpreter.VariableProgram
+import de.puschj.parser.WhileParser
 
 
 class InterpreterTest {
@@ -27,6 +20,7 @@ class InterpreterTest {
   val parser: WhileParser = new WhileParser()
   
   implicit def singleIntValue(value: Int) = One(IntValue(value))
+  
     
   @Test
   def testAssignments() {
@@ -223,6 +217,13 @@ class InterpreterTest {
     store.print("Classes 2")
   }
   
+  @Test
+  def testClasses3() {
+    val program: VariableProgram = parser.parseFile("program_classes3.txt")
+    val store = program.run()
+    store.print("Classes 3")
+  }
+  
 //  @Test
 //  def testAllFields() {
 //    val program: VariableProgram = parser.parseFile("program_classes_inheritance.txt")
@@ -240,38 +241,37 @@ class InterpreterTest {
     store.print("Collections")
   }
   
-//  @Test
-//  def testGraphProductLine() {
-//    
-//    val program: VariableProgram = parser.parseFile("program_GPL.txt")
-//    val store = program.run()
-//    store.print("Graph Product Line")
-//  }
-  
   @Test
-  def testGPLconfigured() {
-    val set = Set(
-        "BENCHMARK", 
-        "BASEIMPL", 
-        "SEARCHALG", 
-        "UNDIRECTED", 
-        "WEIGHTED", 
-        "NUMBER", 
-        "CONNECTED", 
-        "TRANSPOSE", 
-        "MSTPRIM", 
-        "MSTKRUSKAL", 
-        "CYCLE", 
-        "SEARCHBASE", 
-        "DFS", 
-        "GENEDGES")
+  def testGraphProductLine() {
+    FeatureExprFactory.setDefault(FeatureExprFactory.bdd)
     
     val program: VariableProgram = parser.parseFile("program_GPL.txt")
-    val configured = program.configured(set)
-    configured.print
-    configured.run.print()
-//    val store = program.configured(set).run()
-//    store.print("Graph Product Line")
+    val store = program.run()
+    store.print("Graph Product Line")
   }
+  
+//  @Test
+//  def testGPLconfigured() {
+//    val set = Set(
+//        "BENCHMARK", 
+//        "BASEIMPL", 
+//        "SEARCHALG", 
+//        "UNDIRECTED", 
+//        "WEIGHTED", 
+//        "NUMBER", 
+//        "CONNECTED", 
+//        "TRANSPOSE", 
+//        "MSTPRIM", 
+//        "MSTKRUSKAL", 
+//        "CYCLE", 
+//        "SEARCHBASE", 
+//        "DFS", 
+//        "GENEDGES")
+//    
+//    val program: VariableProgram = parser.parseFile("program_GPL.txt")
+//    val configured = program.configured(set)
+//    configured.print
+//    configured.run.print("GPL Configured")
+//  }
   
 }

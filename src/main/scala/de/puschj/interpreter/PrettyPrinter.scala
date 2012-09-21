@@ -121,8 +121,8 @@ object SourceCodePrettyPrinter {
   def prettyPrintNode(node: ASTNode): Doc = {
     node match {
       // Statements
-      case ExpressionStmt(expr) => expr ~ ";"
-      case Assignment(name, expr) => name ~~ "=" ~~ expr ~ ";"
+      case ExprStmt(expr) => expr ~ ";"
+      case Assign(name, expr) => name ~~ "=" ~~ expr ~ ";"
       case While(cond, stmt) => {
         var doc: Doc = "while" ~ "(" ~cond ~ ")"
         stmt match {

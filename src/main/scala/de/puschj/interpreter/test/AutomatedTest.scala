@@ -77,7 +77,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     arg1 <- genExpressionSized(size, funcNames)
     arg2 <- genExpressionSized(size, funcNames)
   } yield {
-    val args = ListBuffer.empty[Opt[Expression]]
+    val args = ListBuffer.empty[Opt[Expr]]
     args += Opt(True, arg1)
     if (predefFuncDefs.find(x => x.name equals funcName).get.args.size == 2)
       args += Opt(True, arg2)
@@ -108,7 +108,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
 	  Gen.oneOf(genAdd, genSub, genMul, genDiv) 
   }
   
-  def genExpressionSized(size: Int, funcNames: Seq[String]): Gen[Expression] = {
+  def genExpressionSized(size: Int, funcNames: Seq[String]): Gen[Expr] = {
     if (size <= 0) genAtomicExpression
     else Gen.frequency( (5, genAtomicExpression), (1, genCompoundExpression(size / 2, funcNames)), (1, genCall(size / 2, funcNames)))
   }
@@ -175,7 +175,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
   def genAssignment(funcNames: Seq[String]) = for {
     name <- genStoreVarName
     value <- genExpression(funcNames)
-  } yield Assignment(Id(name), value)
+  } yield Assign(Id(name), value)
   
   def genBlock(nested: Int, funcNames: Seq[String]): Gen[Block] = for {
     n <- Gen.choose(1, 3)
@@ -194,19 +194,19 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     elsebranch <- oneOf(None, Some(stmt))
   } yield If(cond, ifbranch, elsebranch)
   
-  def genOptStatementTopLevel(funcNames: Seq[String]): Gen[Opt[Statement]] = for {
+  def genOptStatementTopLevel(funcNames: Seq[String]): Gen[Opt[Stmt]] = for {
     feat <- genFeatureExpr
     stmt <- Gen.frequency( (3, genAssignment(funcNames)), (1, genWhile(0, funcNames)), (1, genIf(0, funcNames)) )
   } yield Opt(feat, stmt)
   
-  def genStatementNested(nested: Int, funcNames: Seq[String]): Gen[Statement] = {
+  def genStatementNested(nested: Int, funcNames: Seq[String]): Gen[Stmt] = {
     if (nested > 2) 
       Gen.frequency( (10, genAssignment(funcNames)), (1, genIf(nested, funcNames)) )
     else
       Gen.frequency( (10, genAssignment(funcNames)), (1, genWhile(nested, funcNames)), (1, genIf(nested, funcNames)) )
   }
   
-  def genOptStatementNested(nested: Int, funcNames: Seq[String]): Gen[Opt[Statement]] = for {
+  def genOptStatementNested(nested: Int, funcNames: Seq[String]): Gen[Opt[Stmt]] = for {
     feat <- genFeatureExpr
     stmt <- genStatementNested(nested, funcNames)
   } yield Opt(feat, stmt)

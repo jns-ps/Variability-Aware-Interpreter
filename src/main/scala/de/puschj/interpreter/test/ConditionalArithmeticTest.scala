@@ -1,16 +1,16 @@
 package de.puschj.interpreter.test
 
-import de.puschj.interpreter.{VAStore,Assignment,Statement,Mul,Num}
-import de.fosd.typechef.conditional.Opt
-import de.fosd.typechef.featureexpr.FeatureExprFactory
-import de.fosd.typechef.featureexpr.FeatureExprFactory.True
-import de.fosd.typechef.featureexpr.FeatureExpr
-import de.fosd.typechef.conditional.One
+import org.junit.Assert._
+import org.junit._
+
 import de.fosd.typechef.conditional.Choice
 import de.fosd.typechef.conditional.Conditional
-import org.junit._
-import Assert._
 import de.fosd.typechef.conditional.ConditionalLib
+import de.fosd.typechef.conditional.One
+import de.fosd.typechef.featureexpr.FeatureExprFactory.True
+import de.fosd.typechef.featureexpr.FeatureExpr
+import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.puschj.interpreter.VAStore
 
 
 class ConditionalArithmeticTest {

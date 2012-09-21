@@ -26,7 +26,7 @@ object ProgramUtils {
     
     def countProgramStatments(program: VariableProgram) = countStatements(program.getStatements)
     
-    private def countStatements(stmts: List[Opt[Statement]]): Int = {
+    private def countStatements(stmts: List[Opt[Stmt]]): Int = {
       var c = 0
       for (optStmt <- stmts) {
         val stmt = optStmt.entry
@@ -43,12 +43,12 @@ object ProgramUtils {
     
     def countProgramFeatures(program: VariableProgram) = countFeatures(program.getStatements)
     
-    private def countFeatures(stmts: List[Opt[Statement]]) = {
+    private def countFeatures(stmts: List[Opt[Stmt]]) = {
       val features = distinctFeatures(stmts)
       features.size
     }
     
-    private def distinctFeatures(stmts: List[Opt[Statement]]): MSet[String] = {
+    private def distinctFeatures(stmts: List[Opt[Stmt]]): MSet[String] = {
       var features = MHashSet.empty[String]
       for (optStmt <- stmts) {
         features ++= optStmt.feature.collectDistinctFeatures
@@ -66,7 +66,7 @@ object ProgramUtils {
     
     def countProgramFeatureExpressions(program: VariableProgram) = countFeatureExpressions(program.getStatements)
     
-    private def countFeatureExpressions(stmts: List[Opt[Statement]]): Int = {
+    private def countFeatureExpressions(stmts: List[Opt[Stmt]]): Int = {
       var features = 0
       for (optStmt <- stmts) {
         val feat = optStmt.feature
