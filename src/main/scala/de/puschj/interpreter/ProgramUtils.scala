@@ -47,7 +47,7 @@ object ProgramUtils {
       features.size
     }
     
-    private def distinctFeatures(stmts: List[Opt[Stmt]]): MSet[String] = {
+    def distinctFeatures(stmts: List[Opt[Stmt]]): Set[String] = {
       var features = MHashSet.empty[String]
       for (optStmt <- stmts) {
         features ++= optStmt.feature.collectDistinctFeatures
@@ -60,7 +60,7 @@ object ProgramUtils {
           case s => 
         }      
       }
-      features
+      features.toSet
     }
     
     def countProgramFeatureExpressions(program: VariableProgram) = countFeatureExpressions(program.getStatements)

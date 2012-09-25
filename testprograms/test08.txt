@@ -1,23 +1,21 @@
 begin
-//#if ((A && (!A)))
-b = d;
-//#endif 
-//#if ((!C) && (!D) ) || ( (!C) && (D) && (!F) ) || ( (C))
-while((48 + 80) == e) {
-  e = 75;
-  a = a;
+//#if ((!B)) 
+c = d;
+//#endif
+//#if ((B)) 
+if(73 != 56) {
+  //#if ((E)) 
+  c = b;
+  //#endif
+  e = 27;
 }
-//#endif 
-a = c;
-c = 42;
-c = 4;
-//#if ((D))
-a = a;
-//#endif 
-//#if ((A) && (!E))
-while(9 <= e) {
-  d = (17 + 23);
-}
-//#endif 
-d = (a + 1);
+//#endif
+e = c;
+b = (d + 79);
+d = 8;
+b = b;
+c = a;
+//#if ((B)) 
+a = 38;
+//#endif
 end

@@ -1,146 +1,79 @@
 begin
-def abs(x) {
-  if(x < 0) {
-    res = 0 - x;
-  }
+def dec(x) {
+  res = x - 1;
 }
-while(c < abs(b)) {
-  //#if ((E))
-  d = (83 * abs(92));
-  //#endif 
+def mean(a, b) {
+  res = (a + b) / 2;
+}
+i = 0;
+//#if ((C)) 
+while(i < 43) {
+  //#if ((F)) 
   c = a;
-  //#if ((F))
-  d = abs(abs(11));
-  //#endif 
+  //#endif
+  e = a;
+  i = i + 1;
 }
-//#if ((!A) && (!D) ) || ( (!A) && (D) && (!E) ) || ( (A))
-if(a <= 48) {
-  //#if ((C))
-  b = 48;
-  //#endif 
+//#endif
+e = 80;
+d = 46;
+if(75 <= dec(94)) {
+  e = 41;
 }
-//#endif 
-b = 72;
-b = 55;
-//#if ((C))
-while(85 == c) {
-  //#if ((E))
-  c = c;
-  //#endif 
-  a = 82;
-  c = abs((a - (92 + (c / abs(abs(abs(a)))))));
+a = a;
+i = 0;
+while(i < 37) {
+  b = b;
+  a = (dec(b) / dec(52));
+  c = e;
+  i = i + 1;
 }
-//#endif 
-//#if ((!E) && (!F) ) || ( (E))
-d = c;
-//#endif 
-//#if ((A && (!A)))
-b = c;
-//#endif 
-//#if ((A) && (B))
-c = 100;
-//#endif 
-//#if ((!A))
-while(abs(abs(89)) <= d) {
-  //#if ((A) && (!B) && (F) ) || ( (A) && (B) && (!E) && (F) ) || ( (A) && (B) && (E))
-  b = e;
-  //#endif 
-  //#if ((!B) && (!C) && (!E) ) || ( (!B) && (C))
-  e = c;
-  //#endif 
-}
-//#endif 
-e = e;
-//#if ((B))
-d = a;
-//#endif 
-//#if ((A))
-if(56 < 1) {
-  //#if ((B))
-  a = 6;
-  //#endif 
+a = 33;
+c = e;
+b = 86;
+//#if ((B)) 
+b = 50;
+//#endif
+d = e;
+b = (62 + (6 + 72));
+if(72 <= 42) {
+  //#if ((B) && (C)) 
+  c = mean(e, e);
+  //#endif
+  d = 82;
 } else {
-  if((c / c) > e) {
-    c = e;
-    //#if ((C))
-    c = abs(d);
-    //#endif 
-    //#if ((A && (!A)))
-    b = 34;
-    //#endif 
+  b = 100;
+  //#if ((C)) 
+  b = (d / (21 - (82 * b)));
+  //#endif
+  a = e;
+}
+b = 9;
+e = c;
+a = 54;
+b = (a / 12);
+d = 54;
+b = d;
+e = c;
+i = 0;
+while(i < 0) {
+  e = 81;
+  k = 0;
+  while(k < 9) {
+    e = mean(c, (c - c));
+    c = dec(77);
+    k = k + 1;
   }
+  b = 41;
+  i = i + 1;
 }
-//#endif 
-//#if ((C))
-a = b;
-//#endif 
-//#if ((D))
-if((23 + b) > a) {
-  d = 80;
-} else {
-  //#if ((A))
-  d = 72;
-  //#endif 
-  e = (65 * (d + e));
-}
-//#endif 
-if(11 > (a - abs(37))) {
-  a = 18;
-  while(12 <= abs((b * 12))) {
-    //#if ((C))
-    d = 62;
-    //#endif 
+if(a > b) {
+  i = 0;
+  while(i < 48) {
+    d = e;
+    a = ((53 * d) * e);
+    i = i + 1;
   }
-}
-//#if ((A))
-b = a;
-//#endif 
-//#if ((C))
-while((53 * 16) >= abs(c)) {
-  d = b;
-}
-//#endif 
-//#if ((D) && (F))
-a = 69;
-//#endif 
-d = (abs(e) * 40);
-//#if ((E))
-while(d <= 37) {
-  //#if ((B))
-  b = abs(52);
-  //#endif 
-  //#if ((B))
-  d = e;
-  //#endif 
-  if((c + 20) <= abs(e)) {
-    //#if ((B))
-    b = 3;
-    //#endif 
-    //#if ((A && (!A)))
-    c = d;
-    //#endif 
-  } else {
-    //#if ((B))
-    a = abs(c);
-    //#endif 
-    //#if ((B))
-    e = 35;
-    //#endif 
-  }
-}
-//#endif 
-//#if ((F))
-c = 85;
-//#endif 
-while(91 < abs((99 * c))) {
-  //#if ((F))
-  e = abs(a);
-  //#endif 
-  //#if ((B))
-  b = c;
-  //#endif 
-  //#if ((!E))
-  d = e;
-  //#endif 
+  e = dec(c);
 }
 end

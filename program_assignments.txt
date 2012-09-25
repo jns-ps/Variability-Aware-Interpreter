@@ -1,16 +1,17 @@
 begin
 //#ifdef A
 a = 1;
-//#endif
-//#ifndef A
+//#else
 a = 2;
-//#endif 
+//#endif
+
+
+//#ifdef B
 b = 0;
-c = 0;
-//#ifdef X
-c = 1;
-//#ifdef Y
-c = 2;
 //#endif
+//#ifndef B
+b = 5;
 //#endif
+
+c = a + b;
 end

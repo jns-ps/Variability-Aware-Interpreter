@@ -1,14 +1,17 @@
 package de.puschj.interpreter.benchmark
 
-import de.puschj.interpreter._
-import de.puschj.interpreter.ProgramUtils._
-import de.puschj.parser.WhileParser
-import scala.collection.mutable.{Map => MMap}
-import de.fosd.typechef.conditional.ConditionalLib
-import de.fosd.typechef.featureexpr.FeatureExprFactory._
-import de.fosd.typechef.featureexpr.FeatureExprFactory
 import scala.collection.mutable.ListBuffer
-import de.puschj.interpreter.test.TestConstraints._
+
+import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.puschj.interpreter.ProgramUtils.allProgramVariants
+import de.puschj.interpreter.ProgramUtils.countProgramFeatureExpressions
+import de.puschj.interpreter.ProgramUtils.countProgramFeatures
+import de.puschj.interpreter.ProgramUtils.countProgramStatments
+import de.puschj.interpreter.test.TestConstraints.FEATURENAMES
+import de.puschj.interpreter.test.TestConstraints.VARNAMES
+import de.puschj.interpreter.FileUtils
+import de.puschj.interpreter.VariableProgram
+import de.puschj.parser.WhileParser
 
 case class BenchmarkResult(nFeatures: Int, nFeatureExpressions: Int, nVariants: Int, nStatements: Int, tVAInterpreter: Long, tBFInterpreter: Long)
 
@@ -109,14 +112,14 @@ object Benchmarks {
       var bf_bench = 0L
       
       start = System.nanoTime
-      val variableStore = program.run()
+      program.run()
       stop = System.nanoTime
       va_bench = (stop - start)
       
       val allVariantsMap = allProgramVariants(program, availableFeatures)
       for (programVariant <- allVariantsMap) {
         start = System.nanoTime
-        val configuredStore = programVariant._1.run()
+        programVariant._1.run()
         stop = System.nanoTime
         bf_bench += (stop - start)
       }

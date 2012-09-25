@@ -14,11 +14,11 @@ sealed abstract class ASTNode {
 // =====================
 
 sealed abstract class Stmt extends ASTNode 
-case class ExprStmt(expr: Expr) extends Stmt
-case class Assign(expr: Expr, value: Expr) extends Stmt
+case class Assign(expr: Expr, value: Conditional[Expr]) extends Stmt
 case class Block(stmts: List[Opt[Stmt]]) extends Stmt
-case class While(cond: Expr, body: Block) extends Stmt
-case class If(cond: Expr, then: Block, els: Option[Block]) extends Stmt
+case class While(cond: Conditional[Expr], body: Block) extends Stmt
+case class If(cond: Conditional[Expr], then: Block, els: Option[Block]) extends Stmt
+case class ExprStmt(expr: Expr) extends Stmt
 case class Assert(cond: Expr) extends Stmt
 
 // =====================
@@ -28,7 +28,7 @@ case class Assert(cond: Expr) extends Stmt
 sealed abstract class Expr extends ASTNode
 case object Null extends Expr
 case class Num(n: Int) extends Expr
-case class Id(x: String) extends Expr
+case class Var(name: String) extends Expr
 case class Par(e: Expr) extends Expr
 case class Add(e1: Expr, e2: Expr) extends Expr
 case class Sub(e1: Expr, e2: Expr) extends Expr

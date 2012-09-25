@@ -1,157 +1,212 @@
 begin
-def mean(a, b) {
-  res = (a + b) / 2;
+def dec(x) {
+  res = x - 1;
 }
-if(87 >= 35) {
-  //#if ((A && (!A)))
-  e = mean(33, mean(6, 16));
-  //#endif 
+def sum(a, b) {
+  res = a + b;
 }
-//#if ((B))
-e = 30;
-//#endif 
-//#if ((!A) ) || ( (A) && (!C) && (!D) ) || ( (A) && (!C) && (D) && (F) ) || ( (A) && (C))
-e = 97;
-//#endif 
-//#if ((B))
-c = b;
-//#endif 
-e = d;
-d = 95;
-//#if ((A))
-if(e == b) {
-  a = 5;
-} else {
-  //#if ((C))
+//#if ((!B) && (C) ) || ( (B)) 
+b = d;
+//#endif
+i = 0;
+while(i < 34) {
   d = b;
-  //#endif 
+  i = i + 1;
 }
-//#endif 
-//#if ((!A) && (B))
-if(mean((mean(46, 1) + 55), c) <= d) {
-  c = (a / d);
-  e = (c - (mean(b, e) - (a + d)));
-  if(83 <= mean((((c / 5) / mean((81 - mean((c / 17), 31)), 18)) + (10 * 6)), 12)) {
-    //#if ((A))
-    while(b > a) {
-      e = 71;
-      a = d;
-      //#if ((C))
-      c = 2;
-      //#endif 
-    }
-    //#endif 
-  } else {
-    b = a;
-  }
-} else {
-  c = a;
-  //#if ((!A))
-  c = mean((86 + (3 / 46)), b);
-  //#endif 
-  //#if ((A && (!A)))
-  d = (e - (((mean(d, 82) - mean(88, 30)) * 8) / 68));
-  //#endif 
-}
-//#endif 
-//#if ((A) && (B))
-if(e == 63) {
-  //#if ((E))
-  c = mean(c, (3 - mean(mean(e, 81), 64)));
-  //#endif 
-} else {
-  //#if ((B))
-  e = c;
-  //#endif 
-  //#if ((!B) && (!C) && (!D) && (!E) ) || ( (!B) && (C) ) || ( (B) && (C))
-  b = d;
-  //#endif 
-}
-//#endif 
-a = (c - 37);
-//#if ((E))
-if((mean(a, e) - (c - (mean(((c - b) - 66), a) - d))) == 13) {
+c = b;
+b = 59;
+i = 0;
+while(i < 42) {
+  a = d;
   c = c;
+  b = a;
+  i = i + 1;
+}
+i = 0;
+//#if ((!A) && (E) ) || ( (A)) 
+while(i < 16) {
+  //#if ((A) && (E)) 
+  e = b;
+  //#endif
+  if(b <= sum(b, (e * sum(e, b)))) {
+    d = dec(e);
+    e = b;
+  } else {
+    b = 56;
+    e = b;
+    //#if ((D)) 
+    if(42 < 35) {
+      d = c;
+      k = 0;
+      while(k < 32) {
+        c = dec(c);
+        c = 42;
+        k = k + 1;
+      }
+      //#if ((C) && (D)) 
+      b = b;
+      //#endif
+    }
+    //#endif
+  }
+  k = 0;
+  while(k < 19) {
+    if((c / 31) <= b) {
+      c = dec(c);
+      d = 81;
+    }
+    k = k + 1;
+  }
+  i = i + 1;
+}
+//#endif
+i = 0;
+//#if ((A) && (F)) 
+while(i < 25) {
+  if(10 == (sum(b, 46) + 69)) {
+    e = b;
+    c = b;
+  } else {
+    c = 8;
+    d = dec(84);
+  }
+  c = 48;
+  i = i + 1;
+}
+//#endif
+//#if ((A) && (C)) 
+a = 47;
+//#endif
+e = a;
+a = 28;
+e = (83 + c);
+i = 0;
+while(i < 47) {
+  k = 0;
+  while(k < 26) {
+    //#if ((B)) 
+    c = 41;
+    //#endif
+    //#if ((A) && (E)) 
+    b = sum(26, 79);
+    //#endif
+    k = k + 1;
+  }
+  i = i + 1;
+}
+i = 0;
+while(i < 35) {
+  b = 81;
+  //#if ((D)) 
+  e = 40;
+  //#endif
+  i = i + 1;
+}
+d = (e / d);
+//#if ((!C)) 
+c = dec(9);
+//#endif
+//#if ((!C)) 
+if(c == dec(c)) {
+  a = e;
+  c = b;
 } else {
-  //#if ((B))
-  d = 58;
-  //#endif 
-  //#if ((B))
-  a = c;
-  //#endif 
-  //#if ((!A) && (E) ) || ( (A))
-  c = 76;
-  //#endif 
+  if(d != dec(e)) {
+    e = (c / 72);
+    i = 0;
+    while(i < 1) {
+      if(a >= e) {
+        b = sum(84, (17 - (c / 54)));
+      } else {
+        if(26 > d) {
+          b = 4;
+          d = dec(d);
+        }
+        d = sum(a, sum(a, b));
+      }
+      d = 14;
+      i = i + 1;
+    }
+  }
+  b = 76;
+  c = 58;
 }
-//#endif 
-while(c == d) {
-  //#if ((F))
-  a = c;
-  //#endif 
-  //#if ((F))
-  a = c;
-  //#endif 
+//#endif
+a = (93 - d);
+if(1 < a) {
+  e = 91;
+} else {
+  c = 85;
 }
-d = 97;
-d = 13;
-//#if ((F))
-d = 13;
-//#endif 
-//#if ((!B) && (!C) && (!F) ) || ( (B))
-if((28 * mean(63, 34)) == d) {
-  b = (c + 78);
-  while((mean(d, 27) * e) == a) {
-    c = e;
-    //#if ((!D) ) || ( (D) && (!F))
-    b = d;
-    //#endif 
-    //#if ((!E))
-    d = mean(a, a);
-    //#endif 
+if(b > d) {
+  if(e <= dec(b)) {
+    //#if ((!B) && (F) ) || ( (B)) 
+    a = e;
+    //#endif
+  } else {
+    a = a;
+  }
+  if(31 == 48) {
+    if(a != b) {
+      if(c <= b) {
+        i = 0;
+        while(i < 36) {
+          d = 19;
+          i = i + 1;
+        }
+      } else {
+        a = sum(sum(b, 70), b);
+        c = a;
+      }
+    } else {
+      //#if ((!E) && (F) ) || ( (E)) 
+      a = a;
+      //#endif
+      a = dec(d);
+    }
+    b = 5;
+    e = 66;
   }
 }
-//#endif 
-//#if ((A && (!A)))
-while((45 - b) <= 29) {
-  //#if ((B))
-  b = mean(81, d);
-  //#endif 
+i = 0;
+while(i < 19) {
+  b = b;
+  c = 62;
+  i = i + 1;
 }
-//#endif 
-//#if ((F))
-b = a;
-//#endif 
-//#if ((!B) ) || ( (B) && (F))
-if(a > mean(32, mean(e, 50))) {
-  //#if ((A && (!A)))
-  a = (c / mean(17, 67));
-  //#endif 
-} else {
-  e = (mean(29, 27) + 15);
+i = 0;
+while(i < 9) {
+  //#if ((E)) 
+  d = c;
+  //#endif
+  d = 72;
+  i = i + 1;
 }
-//#endif 
-a = 35;
-//#if ((A && (!A)))
-while(52 == b) {
-  d = mean(a, mean(51, a));
-  //#if ((E))
-  e = (39 / 48);
-  //#endif 
-  //#if ((D))
-  a = 37;
-  //#endif 
+c = (82 / (43 * dec(e)));
+e = 38;
+i = 0;
+while(i < 2) {
+  b = a;
+  i = i + 1;
 }
-//#endif 
-a = mean(e, 2);
-//#if ((A))
-b = (82 * b);
-//#endif 
-//#if ((!E))
-e = 46;
-//#endif 
-//#if ((C))
-e = mean(mean(b, 7), e);
-//#endif 
-b = (c / e);
-e = mean(c, 58);
+i = 0;
+while(i < 2) {
+  c = c;
+  c = c;
+  i = i + 1;
+}
+i = 0;
+while(i < 31) {
+  c = b;
+  k = 0;
+  //#if ((E)) 
+  while(k < 22) {
+    c = e;
+    k = k + 1;
+  }
+  //#endif
+  c = 29;
+  i = i + 1;
+}
+d = 7;
 end

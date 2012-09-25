@@ -6,18 +6,24 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory.True
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 
+
 object VAInterpreter {
+  
+  private val LOOP_EXCEEDANCE_VALUE = 1000
+  
+//  var nWhileLoops = 0
+//  var nWhileAbordsOnStart = 0
 
   @throws(classOf[LoopExceededException])
   def execute(s: Stmt, context: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
     if (context.isContradiction()) return
     s match {
-      case ExprStmt(expr) => eval(expr, store, funcStore, classStore)
+      case ExprStmt(expr) => eval(One(expr), store, funcStore, classStore)
 
       case Assign(expr, value) => expr match {
-        case Id(name) => store.put(name, Choice(context, eval(value, store, funcStore, classStore), store.get(name)).simplify)
+        case Var(name) => store.put(name, Choice(context, eval(value, store, funcStore, classStore), store.get(name)).simplify)
         case Field(e, name) => {
-          eval(e, store, funcStore, classStore).map(_ match {
+          eval(One(e), store, funcStore, classStore).map(_ match {
             case e: ErrorValue => e
             case VAObjectValue(cName, fields) => {
               // TODO: consider check for field existance
@@ -32,16 +38,18 @@ object VAInterpreter {
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, store, funcStore, classStore)
 
       case w @ While(c, block) => {
+//        nWhileLoops += 1
         var isSat: Boolean = true
         var n = 0
-        while (isSat && (n < 1000)) {
+        while (isSat && (n < LOOP_EXCEEDANCE_VALUE)) {
           val x: FeatureExpr = whenTrue(c, store, funcStore, classStore)
           isSat = (context and x).isSatisfiable
           if (isSat)
             execute(block, context and x, store, funcStore, classStore)
+//          if ((n == 0) && (!isSat)) nWhileAbordsOnStart += 1
           n += 1
         }
-        if (n >= 1000) {
+        if (n >= LOOP_EXCEEDANCE_VALUE) {
           throw new LoopExceededException("Exceeded Loop in Statement: \n" + SourceCodePrettyPrinter.prettyPrintNode(w).mkString)
         }
       }
@@ -55,7 +63,7 @@ object VAInterpreter {
         }
       }
       case Assert(cnd) => {
-        val whentrue: FeatureExpr = whenTrue(cnd, store, funcStore, classStore)
+        val whentrue: FeatureExpr = whenTrue(One(cnd), store, funcStore, classStore)
         val equivToContext: Boolean = whentrue.equivalentTo(context)
         if (!(whentrue.isTautology || equivToContext)) {
           throw new AssertionError("violation of " + cnd +
@@ -74,7 +82,7 @@ object VAInterpreter {
         }
         val cConstStore = new VAStore
         for (optConst <- optConsts) {
-          val name = optConst.entry.expr.asInstanceOf[Id].x
+          val name = optConst.entry.expr.asInstanceOf[Var].name
           val value = optConst.entry.value
           cConstStore.put(name, Choice(optConst.feature, eval(value, store, funcStore, classStore), cConstStore.get(name)).simplify)
         }
@@ -83,12 +91,12 @@ object VAInterpreter {
     }
   }
 
-  private def eval(exp: Expr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Conditional[Value] = {
-
+  private def eval(exp: Conditional[Expr], store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Conditional[Value] = {
+    
     def calculateValue(e1: Expr, e2: Expr, f: (Value, Value) => Value) =
       ConditionalLib.mapCombination(
-        eval(e1, store, funcStore, classStore),
-        eval(e2, store, funcStore, classStore),
+        eval(One(e1), store, funcStore, classStore),
+        eval(One(e2), store, funcStore, classStore),
         (a: Value, b: Value) => propagateError(a, b, (a, b) => f(a, b)))
 
     def propagateError(a: Value, b: Value, f: (Value, Value) => Value) = {
@@ -99,12 +107,12 @@ object VAInterpreter {
         case (a, b) => f(a, b)
       }
     }
-
-    exp match {
+    
+    exp.mapr(_ match {
       // arithmetic
       case Null => One(NullValue())
       case Num(n) => One(IntValue(n))
-      case Id(x) => store.get(x)
+      case Var(name) => store.get(name)
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
       case Sub(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue - b.getIntValue))
       case Mul(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue * b.getIntValue))
@@ -112,10 +120,10 @@ object VAInterpreter {
         UndefinedValue("divide by zero")
       else
         IntValue(a.getIntValue / b.getIntValue))
-      case Par(e) => eval(e, store, funcStore, classStore)
+      case Par(e) => eval(One(e), store, funcStore, classStore)
 
       // conditions
-      case Neg(c) => eval(c, store, funcStore, classStore).map(_ match {
+      case Neg(c) => eval(One(c), store, funcStore, classStore).map(_ match {
         case e @ ErrorValue(_) => e
         case v => BoolValue(!v.getBoolValue())
       })
@@ -141,7 +149,7 @@ object VAInterpreter {
             else {
                 val staticScopeStore = new VAStore()
                 for (i <- 0 until nArgs)
-                    staticScopeStore.put(fargs(i).entry, Choice(args(i).feature and fargs(i).feature, eval(args(i).entry, store, funcStore, classStore), One(UndefinedValue("undef func arg"))).simplify)
+                    staticScopeStore.put(fargs(i).entry, Choice(args(i).feature and fargs(i).feature, eval(One(args(i).entry), store, funcStore, classStore), One(UndefinedValue("undef func arg"))).simplify)
                 execute(fbody, True, staticScopeStore, funcStore, classStore)
                 if (!staticScopeStore.contains("res"))
                   One(UndefinedValue("'" + name + "' returning void"))
@@ -167,7 +175,7 @@ object VAInterpreter {
               for (i <- 0 until argsClass.size)
                   objectStore.put(argsClass(i).entry, 
                       Choice(argsNew(i).feature and argsClass(i).feature, 
-                          eval(argsNew(i).entry, store, funcStore, classStore), 
+                          eval(One(argsNew(i).entry), store, funcStore, classStore), 
                           One(UndefinedValue("undef constructor arg"))
                       ).simplify)
               objectStore.put("this", One(obj))
@@ -178,7 +186,7 @@ object VAInterpreter {
         })
       }
       case Field(expr, name) => {
-        eval(expr, store, funcStore, classStore).mapr(_ match {
+        eval(One(expr), store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
           case n: NullValue => One(IllegalOPValue("null pointer access: '"+name+"' on "+expr)) //throw new NullPointerException("cannot access field '"+name+"' on null value: "+expr)
           case o: VAObjectValue => {
@@ -196,7 +204,7 @@ object VAInterpreter {
         })
       }
       case MethodCall(expr, call) => {
-        eval(expr, store, funcStore, classStore).mapr(_ match {
+        eval(One(expr), store, funcStore, classStore).mapr(_ match {
           case e: ErrorValue => One(e)
           case n: NullValue => One(IllegalOPValue("null pointer access: '"+call.fname+"'"))//throw new NullPointerException("cannot execute method '"+call.fname+"' on null value")
           case v @ VAObjectValue(cName, fields) => {
@@ -208,13 +216,13 @@ object VAInterpreter {
                   if (nArgs != call.args.size)
                     One(UndefinedValue("illegal arguments size"))
                   else {
-                      val vals = call.args.map(a => Choice(a.feature, eval(a.entry, store, funcStore, classStore), One(UndefinedValue("undef func arg"))))
+                      val vals = call.args.map(a => Choice(a.feature, eval(One(a.entry), store, funcStore, classStore), One(UndefinedValue("undef func arg"))))
                       val staticScopeStore = new VAStore()
                       staticScopeStore.put("this", One(v))
                       for (i <- 0 until nArgs)
                           staticScopeStore.put(fargs(i).entry, 
                               Choice(call.args(i).feature and fargs(i).feature, 
-                                  eval(call.args(i).entry, store, funcStore, classStore), 
+                                  eval(One(call.args(i).entry), store, funcStore, classStore), 
                                   One(UndefinedValue("undef func arg"))
                               ).simplify)
                       execute(fbody, True, staticScopeStore, classFuncStore, classStore)
@@ -231,10 +239,10 @@ object VAInterpreter {
           case x => One(IllegalOPValue("cannot invoke method on: '" + x.getClass.getCanonicalName + "'"))
         })
       }
-    }
+    })
   }
 
-  private def whenTrue(e: Expr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): FeatureExpr =
+  private def whenTrue(e: Conditional[Expr], store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): FeatureExpr =
     eval(e, store, funcStore, classStore).when(_ match {
       case ErrorValue(_) => false
       case value => value.getBoolValue
@@ -262,14 +270,16 @@ object VAInterpreter {
 }
 
 object PlainInterpreter {
+  
+  private val LOOP_EXCEEDANCE_VALUE = 1000
 
   @throws(classOf[LoopExceededException])
   def execute(s: Stmt, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
     s match {
       case ExprStmt(expr) => eval(expr, store, funcStore, classStore)
 
-      case Assign(expr, value) => expr match {
-        case Id(name) => store.put(name, One(eval(value, store, funcStore, classStore)))
+      case Assign(expr, One(value)) => expr match {
+        case Var(name) => store.put(name, One(eval(value, store, funcStore, classStore)))
         case Field(e, name) => {
           eval(e, store, funcStore, classStore) match {
             case e: ErrorValue => e
@@ -285,10 +295,10 @@ object PlainInterpreter {
       }
 
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, store, funcStore, classStore)
-      case w @ While(c, s) => {
+      case w @ While(One(c), s) => {
         var n = 0
         var cnd = true
-        while (cnd && (n < 1000)) {
+        while (cnd && (n < LOOP_EXCEEDANCE_VALUE)) {
           cnd = eval(c, store, funcStore, classStore) match {
             case ErrorValue(_) => false
             case v => v.getBoolValue
@@ -297,11 +307,11 @@ object PlainInterpreter {
             execute(s, store, funcStore, classStore)
           n += 1
         }
-        if (n >= 1000) {
+        if (n >= LOOP_EXCEEDANCE_VALUE) {
           throw new LoopExceededException("Exceeded Loop in Statement: " + w)
         }
       }
-      case If(c, s1, s2) => {
+      case If(One(c), s1, s2) => {
         val cnd = eval(c, store, funcStore, classStore)
         if (!cnd.isInstanceOf[ErrorValue] && cnd.getBoolValue)
           execute(s1, store, funcStore, classStore)
@@ -330,9 +340,9 @@ object PlainInterpreter {
         val cConstStore = new VAStore
         for (optConst <- optConsts) {
           assert(optConst.feature == True)
-          val name = optConst.entry.expr.asInstanceOf[Id].x
+          val name = optConst.entry.expr.asInstanceOf[Var].name
           val value = optConst.entry.value
-          cConstStore.put(name, One(eval(value, store, funcStore, classStore)))
+          cConstStore.put(name, One(eval(value.asInstanceOf[One[Expr]].value, store, funcStore, classStore)))
         }
         classStore.put(name, One(VACDef(args, superClass, optFields, cConstStore, cFuncStore)))
       }
@@ -357,9 +367,9 @@ object PlainInterpreter {
       // arithmetic
       case Null => NullValue()
       case Num(n) => IntValue(n)
-      case Id(x) => store.get(x) match {
+      case Var(name) => store.get(name) match {
         case One(value) => value
-        case _ => throw new AssertionError("conditional Id '"+x+"' in plain interpreter")
+        case _ => throw new AssertionError("conditional Id '"+name+"' in plain interpreter")
       }
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
       case Sub(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue - b.getIntValue))
@@ -447,7 +457,7 @@ object PlainInterpreter {
         }
       }
       case Field(expr, name) => {
-        eval(expr, store, funcStore, classStore) match {
+        eval(expr.asInstanceOf[One[Expr]].value, store, funcStore, classStore) match {
           case e: ErrorValue => e
           case o: VAObjectValue => {
             classStore.get(o.className) match {
@@ -473,7 +483,7 @@ object PlainInterpreter {
         }
       }
       case MethodCall(expr, call) => {
-        eval(expr, store, funcStore, classStore) match {
+        eval(expr.asInstanceOf[One[Expr]].value, store, funcStore, classStore) match {
           case e: ErrorValue => e
           case v @ VAObjectValue(cName, fields) => {
             classStore.get(cName) match {

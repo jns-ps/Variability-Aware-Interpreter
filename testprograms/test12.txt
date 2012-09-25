@@ -1,43 +1,75 @@
 begin
-def inv(x) {
-  res = 0 - x;
-}
-e = ((inv(a) / (inv(c) + (84 - 45))) - c);
-c = inv((e * b));
-a = 34;
-c = (d + a);
-//#if ((!F))
-b = 76;
-//#endif 
-//#if ((C))
-if(inv(12) < c) {
-  e = b;
-}
-//#endif 
-if(e < a) {
-  d = 89;
-  d = d;
-  d = e;
-} else {
-  //#if ((!B))
-  d = e;
-  //#endif 
-  //#if ((A && (!A)))
-  if(38 == 43) {
-    c = b;
-    e = a;
+def min(a, b) {
+  if(a <= b) {
+    res = a;
+  } else {
+    res = b;
   }
-  //#endif 
 }
-b = 87;
-c = 100;
-//#if ((A && (!A)))
-a = e;
-//#endif 
-//#if ((F))
-a = 87;
-//#endif 
-//#if ((A))
-e = 67;
-//#endif 
+i = 0;
+while(i < 41) {
+  //#if ((D) && (F)) 
+  if(62 < d) {
+    k = 0;
+    while(k < 46) {
+      //#if ((D)) 
+      b = 25;
+      //#endif
+      k = k + 1;
+    }
+  } else {
+    b = 59;
+    k = 0;
+    while(k < 17) {
+      d = 81;
+      k = k + 1;
+    }
+  }
+  //#endif
+  e = min((32 + d), (e / 6));
+  i = i + 1;
+}
+d = b;
+a = c;
+i = 0;
+while(i < 18) {
+  //#if ((F)) 
+  a = (((d + d) - c) - c);
+  //#endif
+  b = 66;
+  i = i + 1;
+}
+i = 0;
+//#if ((B)) 
+while(i < 34) {
+  d = c;
+  e = 76;
+  b = 41;
+  i = i + 1;
+}
+//#endif
+b = (min((e + e), a) - a);
+//#if ((!F)) 
+a = c;
+//#endif
+//#if ((C)) 
+if(e >= min(72, d)) {
+  e = min(c, min(90, b));
+  b = b;
+} else {
+  e = (c + min(48, e));
+  //#if ((!C) && (F) ) || ( (C)) 
+  a = 87;
+  //#endif
+  //#if ((D)) 
+  e = a;
+  //#endif
+}
+//#endif
+a = 98;
+c = c;
+if(c > d) {
+  b = (min((9 - min(e, b)), 82) / min(b, 97));
+}
+d = (min((c * c), e) + c);
 end

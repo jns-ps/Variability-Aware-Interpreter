@@ -1,102 +1,53 @@
 begin
-//#if ((A))
 def sub(a, b) {
   res = a - b;
 }
-//#endif 
-//#if ((E))
-d = sub((a + 43), a);
-//#endif 
-//#if ((A && (!A)))
-while(d > a) {
-  //#if ((A && (!A)))
-  b = sub(c, 44);
-  //#endif 
-  //#if ((A && (!A)))
-  d = 57;
-  //#endif 
-  while(e >= a) {
-    if(c == d) {
-      //#if ((!A))
-      b = 95;
-      //#endif 
-    } else {
-      //#if ((A))
-      e = e;
-      //#endif 
-    }
+b = sub(3, (75 - 66));
+c = 10;
+if(c == c) {
+  //#if ((!B)) 
+  d = d;
+  //#endif
+} else {
+  i = 0;
+  while(i < 1) {
+    c = 100;
+    e = 97;
+    i = i + 1;
   }
 }
-//#endif 
-//#if ((F))
-b = sub(a, 70);
-//#endif 
-//#if ((!B))
-if(91 >= 8) {
-  //#if ((!B) && (E) ) || ( (B))
-  d = sub(57, 38);
-  //#endif 
-  d = d;
-  //#if ((!E))
-  d = d;
-  //#endif 
+a = d;
+d = a;
+i = 0;
+while(i < 14) {
+  c = (e - 1);
+  e = 69;
+  i = i + 1;
+}
+if(73 != sub(sub((d / e), 2), 9)) {
+  a = sub((((57 - 99) * 42) * 76), 28);
 } else {
-  //#if ((!C))
-  e = d;
-  //#endif 
-  //#if ((!B) && (!D) ) || ( (B))
-  c = 98;
-  //#endif 
+  //#if ((B) && (C)) 
+  e = e;
+  //#endif
+  c = 86;
 }
-//#endif 
-//#if ((F))
-while(b == 10) {
-  b = 54;
-  d = b;
-  b = 92;
-}
-//#endif 
-a = 39;
-while(a > 54) {
-  e = (sub(31, 56) + 48);
-}
-e = 59;
-c = e;
-//#if ((!E) ) || ( (E) && (F))
-d = sub(42, sub((40 + d), e));
-//#endif 
-//#if ((C))
-e = sub(sub(4, sub(sub(e, 79), sub(84, sub(55, (b / e))))), (86 - b));
-//#endif 
-d = 100;
-//#if ((A && (!A)))
-if(100 <= sub(38, 84)) {
-  //#if ((A))
-  a = 97;
-  //#endif 
-  c = 35;
-  //#if ((!F))
-  c = 54;
-  //#endif 
+a = a;
+b = 67;
+b = a;
+c = sub(b, 89);
+e = (c * 26);
+d = b;
+if(23 > 54) {
+  //#if ((B)) 
+  c = (e * 10);
+  //#endif
+  e = 96;
 } else {
-  //#if ((A && (!A)))
-  c = (62 + c);
-  //#endif 
-  //#if ((D))
-  a = sub(a, c);
-  //#endif 
-  b = b;
+  //#if ((!A)) 
+  a = 40;
+  //#endif
+  b = a;
+  b = 41;
 }
-//#endif 
-//#if ((!B) ) || ( (B) && (C))
-if(70 >= sub(b, a)) {
-  c = c;
-  d = 96;
-} else {
-  e = sub(100, d);
-  //#if ((A && (!A)))
-  b = 22;
-  //#endif 
-}
-//#endif 
 end

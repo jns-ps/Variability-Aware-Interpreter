@@ -3,6 +3,9 @@ import scala.text.Document
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
 import de.fosd.typechef.featureexpr.FeatureExprFactory
+import de.fosd.typechef.conditional.Conditional
+import de.fosd.typechef.conditional.One
+import de.fosd.typechef.conditional.Choice
 
 //object ASTPrettyPrinter {
 //  
@@ -122,9 +125,9 @@ object SourceCodePrettyPrinter {
     node match {
       // Statements
       case ExprStmt(expr) => expr ~ ";"
-      case Assign(name, expr) => name ~~ "=" ~~ expr ~ ";"
+      case Assign(expr, value) => expr ~~ "=" ~~ prettyPrintConditional(value) ~ ";"
       case While(cond, stmt) => {
-        var doc: Doc = "while" ~ "(" ~cond ~ ")"
+        var doc: Doc = "while" ~ "(" ~ prettyPrintConditional(cond) ~ ")"
         stmt match {
           case b: Block => doc ~~ stmt
           case s => doc ~> stmt
@@ -141,7 +144,7 @@ object SourceCodePrettyPrinter {
         }
       }
       case If(cond, s1, s2) => {
-        var doc: Doc = "if" ~ "(" ~ cond ~ ")"
+        var doc: Doc = "if" ~ "(" ~ prettyPrintConditional(cond) ~ ")"
         s1 match {
           case b: Block => doc = doc ~~ s1
           case s => doc = doc ~> s1
@@ -191,7 +194,7 @@ object SourceCodePrettyPrinter {
       case Null => "null"
       case Num(x) => x.toString()
       case Bool(b) => b.toString
-      case Id(varname) => varname
+      case Var(name) => name
       case Add(e1, e2) => e1 ~~ "+" ~~ e2
       case Sub(e1, e2) => e1 ~~ "-" ~~ e2
       case Mul(e1, e2) => e1 ~~ "*" ~~ e2
@@ -234,25 +237,30 @@ object SourceCodePrettyPrinter {
     }
   }
   
+  private def prettyPrintFeature(feature: FeatureExpr): Doc = 
+      if (FeatureExprFactory.default == FeatureExprFactory.sat) {
+        feature.toTextExpr
+          .replace("!definedEx(", "(!")
+          .replace("definedEx", "")
+          .replace("0", "(A && !A)")
+      }
+      else {
+        "("+
+        feature.toTextExpr
+          .replace("!definedEx(", "(!")
+          .replace("definedEx", "")
+          .replace("||", ") || (")
+          .replace("0", "(A && (!A))") + ")"
+      }
+        
+  
+  
   private def prettyPrintFeatureExprOpen(feature: FeatureExpr, breakLine: Boolean): Doc = {
     if (feature.isTautology()) 
       Empty
     else {
-      val doc: Doc = "//#if " ~ (
-          if (FeatureExprFactory.default == FeatureExprFactory.sat)
-            feature.toTextExpr
-              .replace("!definedEx(", "(!")
-              .replace("definedEx", "")
-              .replace("0", "(A && !A)")
-          else
-            "("+
-            feature.toTextExpr
-              .replace("!definedEx(", "(!")
-              .replace("definedEx", "")
-              .replace("||", ") || (")
-              .replace("0", "(A && (!A))")
-              +")"
-        )
+      val doc: Doc = "//#if " ~ prettyPrintFeature(feature)     
+        
       (if (breakLine) Line else Empty) ~ doc ~ " "
     }
   }
@@ -262,6 +270,13 @@ object SourceCodePrettyPrinter {
       Empty 
     else {
       (if (breakLine) Line else Text(" ")) ~ "//#endif"
+    }
+  }
+  
+  def prettyPrintConditional(elem: Conditional[ASTNode]): Doc = {
+    elem match {
+      case One(node) => node
+      case Choice(feature, thn, els) => "#if " ~ prettyPrintFeature(feature) ~> prettyPrintConditional(thn) <~ "#else" ~> prettyPrintConditional(els) <~ "#endif"
     }
   }
 }

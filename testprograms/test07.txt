@@ -1,18 +1,19 @@
 begin
-c = e;
-//#if ((D))
-if(77 < d) {
-  //#if ((A) && (E))
-  b = b;
-  //#endif 
-  c = 26;
+b = 97;
+a = 34;
+a = 14;
+a = e;
+//#if ((D)) 
+e = (b / d);
+//#endif
+if(c <= 71) {
+  d = e;
+} else {
+  //#if ((B) && (F)) 
+  d = 50;
+  //#endif
 }
-//#endif 
-//#if ((E))
-e = 11;
-//#endif 
-b = d;
-e = (c + e);
-a = 50;
-e = 40;
+//#if ((B)) 
+c = d;
+//#endif
 end

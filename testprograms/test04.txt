@@ -1,18 +1,8 @@
 begin
-b = 56;
-//#if ((!B) ) || ( (B) && (!D) && (!E))
-b = 6;
-//#endif 
-//#if ((A && (!A)))
-while(d == 15) {
-  e = 85;
-  c = 88;
-}
-//#endif 
-while(c >= 63) {
-  //#if ((A && (!A)))
-  e = d;
-  //#endif 
-  e = c;
-}
+a = 55;
+d = 63;
+//#if ((D)) 
+a = (89 * e);
+//#endif
+d = a;
 end

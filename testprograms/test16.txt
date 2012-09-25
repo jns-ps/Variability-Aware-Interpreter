@@ -1,101 +1,44 @@
 begin
-def inv(x) {
-  res = 0 - x;
+def sum(a, b) {
+  res = a + b;
 }
-a = 65;
-//#if ((A && (!A)))
-a = (d - a);
-//#endif 
-if(inv((93 / inv(c))) > inv((67 - 32))) {
-  d = (5 - e);
-  //#if ((A && (!A)))
-  c = (60 * inv(26));
-  //#endif 
-  //#if ((!D))
-  a = 9;
-  //#endif 
+b = c;
+//#if ((E)) 
+d = 88;
+//#endif
+b = 65;
+d = (c / c);
+e = (60 - d);
+b = ((74 / b) / 31);
+b = sum(55, 96);
+a = 16;
+i = 0;
+while(i < 24) {
+  //#if ((A)) 
+  b = 21;
+  //#endif
+  d = (63 * 57);
+  i = i + 1;
 }
-//#if ((A && (!A)))
+d = (19 + 96);
+d = 66;
 c = c;
-//#endif 
-d = 49;
-//#if ((!F))
-if(34 <= (85 - inv(a))) {
-  c = 96;
+e = sum(c, e);
+if(71 < 62) {
+  b = 46;
+  d = d;
+  c = a;
 } else {
-  //#if ((A && (!A)))
-  b = (a / inv((16 + b)));
-  //#endif 
-  //#if ((!A) && (C) && (!D))
-  c = c;
-  //#endif 
+  b = ((a / b) * e);
 }
-//#endif 
-//#if ((A))
-e = 78;
-//#endif 
-//#if ((A && (!A)))
-e = inv(e);
-//#endif 
-//#if ((C))
-if(98 >= 74) {
-  //#if ((F))
-  d = 51;
-  //#endif 
-} else {
-  //#if ((B))
-  while(d < (inv((95 + 72)) - (c / 37))) {
-    //#if ((D))
-    c = a;
-    //#endif 
-    //#if ((!A))
-    b = c;
-    //#endif 
-    //#if ((A && (!A)))
-    e = 37;
-    //#endif 
-  }
-  //#endif 
+//#if ((E)) 
+d = ((86 * c) - (50 * e));
+//#endif
+i = 0;
+while(i < 42) {
+  //#if ((!A)) 
+  d = a;
+  //#endif
+  i = i + 1;
 }
-//#endif 
-c = 84;
-//#if ((E))
-e = c;
-//#endif 
-//#if ((C))
-while(e == (29 / 68)) {
-  //#if ((E))
-  e = d;
-  //#endif 
-  a = d;
-}
-//#endif 
-a = 79;
-while(c >= b) {
-  //#if ((F))
-  while(e >= b) {
-    //#if ((D))
-    a = inv(42);
-    //#endif 
-  }
-  //#endif 
-  a = inv(33);
-  //#if ((!F))
-  c = c;
-  //#endif 
-}
-//#if ((C))
-while(inv(73) == b) {
-  //#if ((A && (!A)))
-  if(d >= e) {
-    a = 96;
-  } else {
-    e = 16;
-  }
-  //#endif 
-}
-//#endif 
-//#if ((E))
-d = 80;
-//#endif 
 end

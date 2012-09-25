@@ -1,13 +1,4 @@
 begin
-//#if ((B) && (C))
-if(d > a) {
-  //#if ((F))
-  b = d;
-  //#endif 
-}
-//#endif 
-if((b / e) < 46) {
-  a = c;
-  a = 32;
-}
+c = 30;
+c = e;
 end
