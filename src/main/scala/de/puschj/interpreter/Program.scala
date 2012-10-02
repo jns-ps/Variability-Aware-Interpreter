@@ -17,7 +17,7 @@ sealed abstract class Program {
 
   def run(): Store[_]
  
-  override def toString() = SourceCodePrettyPrinter.prettyPrint(this)
+  override def toString() = SourceCodePrettyPrinter.print(this)
   
   def print() = println(toString)
   
@@ -151,9 +151,9 @@ case class ConfiguredProgram(private val stmts: List[Stmt]) extends Program {
   
   def getStatements() = stmts
   
-  def run(): VAStore = run(new VAStore, new VAFuncStore, new VAClassStore)
+  def run(): PlainStore = run(new PlainStore, new PlainFuncStore, new VAClassStore)
   
-  def run(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): VAStore = {
+  def run(store: PlainStore, funcStore: PlainFuncStore, classStore: VAClassStore): PlainStore = {
     for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore, classStore)
     return store
   }

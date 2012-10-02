@@ -69,7 +69,7 @@ case class ClassDec(name: String, args: List[Opt[String]], superClass: String, c
 
 abstract class ClassDef
 case class VACDef(args: List[Opt[String]], superClass: String, fields: List[Opt[Assign]], constStore: VAStore, funcStore: VAFuncStore) extends ClassDef
-//case class PlainCDef(args: List[String], superClass: String, fields: List[Assign], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
+case class PlainCDef(args: List[String], superClass: String, fields: List[Assign], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
 case class CErr(msg: String) extends ClassDef
 
 

@@ -42,22 +42,22 @@ sealed abstract class Store[T] {
 }
 
 
-//class PlainStore extends Store[Value] {
-//  
-//  def undefined(s: String) = UndefinedValue(s)
-//  
-//  override def equals(that: Any): Boolean = {
-//    if (!that.isInstanceOf[PlainStore])
-//        return false
-//    val s = that.asInstanceOf[PlainStore]
-//    if (!getStoredVariables().equals(s.getStoredVariables()))
-//        return false
-//    for (variable <- getStoredVariables())
-//        if (!entries.get(variable).equals(s.entries.get(variable).get))
-//            return false
-//    true
-//  }
-//}
+class PlainStore extends Store[Value] {
+  
+  def undefined(s: String) = UndefinedValue(s)
+  
+  override def equals(that: Any): Boolean = {
+    if (!that.isInstanceOf[PlainStore])
+        return false
+    val s = that.asInstanceOf[PlainStore]
+    if (!getStoredVariables().equals(s.getStoredVariables()))
+        return false
+    for (variable <- getStoredVariables())
+        if (!entries.get(variable).equals(s.entries.get(variable).get))
+            return false
+    true
+  }
+}
 
 
 class VAStore extends Store[Conditional[Value]] {
@@ -110,9 +110,9 @@ sealed abstract class FuncStore[T] {
   }
 }
 
-//class PlainFuncStore extends FuncStore[FuncDef] {
-//    def undefined(s: String) = FErr(s)
-//}
+class PlainFuncStore extends FuncStore[FuncDef] {
+    def undefined(s: String) = FErr(s)
+}
 
 class VAFuncStore extends FuncStore[Conditional[FuncDef]] {
     def undefined(s: String) = One(FErr(s))

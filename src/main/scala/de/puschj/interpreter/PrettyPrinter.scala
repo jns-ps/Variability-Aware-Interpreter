@@ -7,103 +7,17 @@ import de.fosd.typechef.conditional.Conditional
 import de.fosd.typechef.conditional.One
 import de.fosd.typechef.conditional.Choice
 
-//object ASTPrettyPrinter {
-//  
-//  private implicit def toDoc(node: ASTNode): Doc = prettyPrintNode(node)
-//  private implicit def string(s: String): Doc = Text(s)
-//  
-//  def prettyPrint(prgm: Program): String = {
-//    if (prgm.isEmpty) return ""
-//    var doc: Doc = Empty
-//    
-//    prgm match {
-//      case p: VariableProgram => 
-//        for (optStmt <- p.getStatements()) {
-//	      doc = doc <~ prettyPrintStatement(optStmt.entry, optStmt.feature)
-//	    }
-//      case p: ConfiguredProgram =>
-//	    for (stmt <- p.getStatements()) {
-//	      doc = doc <~ prettyPrintStatement(stmt, null)
-//	    }
-//    }
-//    doc = "Program" ~~> doc
-//    doc.mkString
-//  }    
-//  
-//  def prettyPrintStatement(statement: Statement, feature: FeatureExpr): Doc = {
-//     var doc: Doc = Empty
-//     var stmtDoc: Doc =      
-//         statement match {
-//            case While(cond, stmt) => prettyPrintNode(cond) ~ prettyPrintStatement(stmt)
-//         }
-//     
-//     if (feature != null) 
-//       doc = doc ~ "Opt(" ~ feature.toString() ~ ")" /~ stmtDoc
-//     else 
-//       doc = stmtDoc
-//
-//    statement.getClass().getCanonicalName() ~~> doc  
-//  }
-//  
-//  private def prettyPrintNode(node: ASTNode): Doc = {
-//    node match {
-//      // Statements
-//      case Assignment(name, expr) => name ~~ "=" ~~ expr ~ ";"
-//      case While(cond, stmt) => "while" ~ "(" ~cond ~ ")" ~> stmt
-//      case Block(stmts) => {
-//        if (stmts.isEmpty) Empty
-//        else {
-//	       var doc: Doc = Empty
-//	       for (optStmt <- stmts) {
-//	         doc = doc ~ prettyPrintFeatureExpr(optStmt.feature) <~ prettyPrintNode(optStmt.entry) ~ prettyPrintFeatureExprClose(optStmt.feature)
-//	       }
-//	       doc
-//        }
-//      }
-//      case If(cond, s1, s2) => "if" ~ "(" ~ cond ~ ")" ~> s1 ~ (
-//                                  if(s2.isDefined) Line ~ "else" ~> s2.get
-//                                  else Empty
-//                                )
-//      case Assert(cond) => "assert" ~ "(" ~ cond ~ ")" ~ ";"
-//
-//      // Expressions                          
-//      case Num(x) => x.toString()
-//      case Id(varname) => varname
-//      case Add(e1, e2) => e1 ~~ "+" ~~ e2
-//      case Sub(e1, e2) => e1 ~~ "-" ~~ e2
-//      case Mul(e1, e2) => e1 ~~ "*" ~~ e2
-//      case Div(e1, e2) => e1 ~~ "/" ~~ e2
-//      case Parens(expr) => "(" ~ expr ~ ")"
-//      
-//      //Conditions
-//      case Equal(e1, e2) => e1 ~~ "==" ~~ e2
-//      case GreaterThan(e1, e2) => e1 ~~ ">" ~~ e2
-//      case GreaterOE(e1, e2) => e1 ~~ ">=" ~~ e2
-//      case LessThan(e1, e2) => e1 ~~ "<" ~~ e2
-//      case LessOE(e1, e2) => e1 ~~ "<=" ~~ e2
-//      case Neg(cond) => "!" ~ "(" ~ cond ~ ")"
-//      
-//      case node => node.toString()
-//    }
-//  }
-//  
-//  private def prettyPrintFeatureExpr(feature: FeatureExpr): Doc = {
-//    if (feature.isTautology()) Empty else Line ~ "//#ifdef " ~ feature.toString()
-//  }
-//  
-//  private def prettyPrintFeatureExprClose(feature: FeatureExpr): Doc = {
-//    if (feature.isTautology()) Empty else Line ~ "//#endif "
-//  }
-//}
-
-
 
 object SourceCodePrettyPrinter {
   
   private implicit def toDoc(node: ASTNode): Doc = prettyPrintNode(node)
   private implicit def string(s: String): Doc = Text(s)
   
-  def prettyPrint(prgm: Program): String = {
+  def print(prgm: Program) = prettyPrint(prgm).mkString
+  
+  def printNode(node: ASTNode) = prettyPrintNode(node).mkString
+  
+  private def prettyPrint(prgm: Program): Doc = {
     var doc: Doc = Empty
     
     prgm match {
@@ -117,11 +31,10 @@ object SourceCodePrettyPrinter {
           doc = doc <~ prettyPrintNode(stmt)
         }
     }
-    doc = "begin" ~ doc <~ "end" 
-    doc.mkString
+    "begin" ~ doc <~ "end" 
   }
   
-  def prettyPrintNode(node: ASTNode): Doc = {
+  private def prettyPrintNode(node: ASTNode): Doc = {
     node match {
       // Statements
       case ExprStmt(expr) => expr ~ ";"

@@ -5,74 +5,78 @@ import de.fosd.typechef.featureexpr.FeatureExprFactory.False
 import de.fosd.typechef.featureexpr.FeatureExprFactory.True
 import de.fosd.typechef.featureexpr.FeatureExpr
 import de.fosd.typechef.featureexpr.FeatureExprFactory
+import InterpreterConstraints._
+import SourceCodePrettyPrinter.print
+import SourceCodePrettyPrinter.printNode
 
+object InterpreterConstraints {
+  val LOOP_EXCEEDANCE_VALUE = 10000000
+}
 
 object VAInterpreter {
-  
-  private val LOOP_EXCEEDANCE_VALUE = 1000
-  
-//  var nWhileLoops = 0
-//  var nWhileAbordsOnStart = 0
 
   @throws(classOf[LoopExceededException])
-  def execute(s: Stmt, context: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
-    if (context.isContradiction()) return
+  def execute(s: Stmt, vctx: FeatureExpr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
+    if (vctx.isContradiction()) return
     s match {
       case ExprStmt(expr) => eval(One(expr), store, funcStore, classStore)
 
       case Assign(expr, value) => expr match {
-        case Var(name) => store.put(name, Choice(context, eval(value, store, funcStore, classStore), store.get(name)).simplify)
+        case Var(name) => store.put(name, Choice(vctx, eval(value, store, funcStore, classStore), store.get(name)).simplify)
         case Field(e, name) => {
           eval(One(e), store, funcStore, classStore).map(_ match {
             case e: ErrorValue => e
             case VAObjectValue(cName, fields) => {
               // TODO: consider check for field existance
               // TODO: consider blocking assignments to variables named the same as existing constants
-              fields.put(name, Choice(context, eval(value, store, funcStore, classStore), fields.get(name)).simplify)
+              fields.put(name, Choice(vctx, eval(value, store, funcStore, classStore), fields.get(name)).simplify)
             }
             case v => IllegalOPValue("field access to non object value")
           })
         }
         case e => IllegalOPValue("assignment to non variable")
       }
-      case Block(stmts) => for (stm <- stmts) execute(stm.entry, stm.feature and context, store, funcStore, classStore)
+      case Block(stmts) => {
+        for (Opt(fe, stm) <- stmts) 
+          execute(stm, fe and vctx, store, funcStore, classStore)
+      }
 
-      case w @ While(c, block) => {
-//        nWhileLoops += 1
+      case w@While(c, block) => {
         var isSat: Boolean = true
         var n = 0
         while (isSat && (n < LOOP_EXCEEDANCE_VALUE)) {
-          val x: FeatureExpr = whenTrue(c, store, funcStore, classStore)
-          isSat = (context and x).isSatisfiable
+          val truectx: FeatureExpr = whenTrue(c, store, funcStore, classStore)
+          val iterctx = vctx and truectx
+          isSat = iterctx.isSatisfiable
           if (isSat)
-            execute(block, context and x, store, funcStore, classStore)
-//          if ((n == 0) && (!isSat)) nWhileAbordsOnStart += 1
+            execute(block, iterctx, store, funcStore, classStore)
           n += 1
         }
         if (n >= LOOP_EXCEEDANCE_VALUE) {
-          throw new LoopExceededException("Exceeded Loop in Statement: \n" + SourceCodePrettyPrinter.prettyPrintNode(w).mkString)
+          throw new LoopExceededException("Exceeded Loop in Statement: \n" + printNode(w))
         }
       }
       case If(c, s1, s2) => {
         val x: FeatureExpr = whenTrue(c, store, funcStore, classStore)
-        if (context.isSatisfiable) {
+        if (vctx.isSatisfiable) {
           if (x.isSatisfiable)
-            execute(s1, context and x, store, funcStore, classStore)
+            execute(s1, vctx and x, store, funcStore, classStore)
           if (s2.isDefined)
-            execute(s2.get, context andNot x, store, funcStore, classStore)
+            execute(s2.get, vctx andNot x, store, funcStore, classStore)
         }
       }
       case Assert(cnd) => {
         val whentrue: FeatureExpr = whenTrue(One(cnd), store, funcStore, classStore)
-        val equivToContext: Boolean = whentrue.equivalentTo(context)
+        val equivToContext: Boolean = whentrue.equivalentTo(vctx)
         if (!(whentrue.isTautology || equivToContext)) {
-          throw new AssertionError("violation of " + cnd +
-            "\nexpected to be true when: " + context +
-            "\nactually was true when: " + whentrue)
+          throw new AssertionError("violation of " + 
+            printNode(cnd) +
+            "\nexpected to be 'true' in context: " + vctx +
+            "\nactually was 'true' in context: " + whentrue)
         }
       }
       case FuncDec(name, args, body) => {
-        funcStore.put(name, Choice(context, One(FDef(args, body)), funcStore.get(name)).simplify)
+        funcStore.put(name, Choice(vctx, One(FDef(args, body)), funcStore.get(name)).simplify)
       }
       case ClassDec(name, args, superClass, optConsts, optFields, optFuncDecs) => {
         val cFuncStore = new VAFuncStore
@@ -86,7 +90,7 @@ object VAInterpreter {
           val value = optConst.entry.value
           cConstStore.put(name, Choice(optConst.feature, eval(value, store, funcStore, classStore), cConstStore.get(name)).simplify)
         }
-        classStore.put(name, Choice(context, One(VACDef(args, superClass, optFields, cConstStore, cFuncStore)), classStore.get(name)).simplify)
+        classStore.put(name, Choice(vctx, One(VACDef(args, superClass, optFields, cConstStore, cFuncStore)), classStore.get(name)).simplify)
       }
     }
   }
@@ -113,14 +117,17 @@ object VAInterpreter {
       case Null => One(NullValue())
       case Num(n) => One(IntValue(n))
       case Var(name) => store.get(name)
+      case Par(e) => eval(One(e), store, funcStore, classStore)
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
       case Sub(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue - b.getIntValue))
       case Mul(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue * b.getIntValue))
-      case Div(e1, e2) => calculateValue(e1, e2, (a, b) => if (b.getIntValue == 0)
-        UndefinedValue("divide by zero")
-      else
-        IntValue(a.getIntValue / b.getIntValue))
-      case Par(e) => eval(One(e), store, funcStore, classStore)
+      case Div(e1, e2) => calculateValue(e1, e2, (a, b) =>
+          if (b.getIntValue == 0)
+            UndefinedValue("divide by zero")
+          else
+            IntValue(a.getIntValue / b.getIntValue)
+      )
+      
 
       // conditions
       case Neg(c) => eval(One(c), store, funcStore, classStore).map(_ match {
@@ -248,38 +255,19 @@ object VAInterpreter {
       case value => value.getBoolValue
     })
 
-//  def allFields(className: String, classStore: VAClassStore) : Conditional[List[String]] = {
-//    if (className.equals("Object")) 
-//      One(List.empty[String])
-//    else {
-//      classStore.get(className).mapr(_ match {
-//        case VACDef(args, superClass, fields, consts, methods) => {
-//          var res: Conditional[List[String]] = One(List.empty[String])
-//          val assignmentVars = fields.map(a => Opt(a.feature, a.entry.expr.asInstanceOf[Id].x))
-//          for (variable <- (args ++ assignmentVars)) {
-//              res = res.mapr(l => Choice(variable.feature, One(variable.entry :: l), One(l))).simplify
-//          }
-//          res.simplify
-//        }
-//        case CErr(_) => One(List.empty[String])
-//      })
-//    }
-//  }
-
-  // TODO: lookupMethod() for Superclasses
+//  TODO: def allFields(className: String, classStore: VAClassStore) : Conditional[List[String]] = { ...  }
+//  TODO: def lookupMethod() for Superclasses
 }
 
 object PlainInterpreter {
   
-  private val LOOP_EXCEEDANCE_VALUE = 1000
-
   @throws(classOf[LoopExceededException])
-  def execute(s: Stmt, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Unit = {
+  def execute(s: Stmt, store: PlainStore, funcStore: PlainFuncStore, classStore: VAClassStore): Unit = {
     s match {
       case ExprStmt(expr) => eval(expr, store, funcStore, classStore)
 
       case Assign(expr, One(value)) => expr match {
-        case Var(name) => store.put(name, One(eval(value, store, funcStore, classStore)))
+        case Var(name) => store.put(name, eval(value, store, funcStore, classStore))
         case Field(e, name) => {
           eval(e, store, funcStore, classStore) match {
             case e: ErrorValue => e
@@ -295,7 +283,8 @@ object PlainInterpreter {
       }
 
       case Block(stmts) => for (stm <- stmts) execute(stm.entry, store, funcStore, classStore)
-      case w @ While(One(c), s) => {
+      case w@While(One(c), s) => {
+        println("executing while loop in plain Interpreter")
         var n = 0
         var cnd = true
         while (cnd && (n < LOOP_EXCEEDANCE_VALUE)) {
@@ -327,7 +316,7 @@ object PlainInterpreter {
       case FuncDec(name, args, body) => {
         // TODO: remove assertion
         args.map(f => assert(f.feature == True))
-        funcStore.put(name, One(FDef(args, body)))
+        funcStore.put(name, FDef(args, body))
       }
       case ClassDec(name, args, superClass, optConsts, optFields, optFuncDecs) => {
         val cFuncStore = new VAFuncStore
@@ -349,7 +338,7 @@ object PlainInterpreter {
     }
   }
 
-  private def eval(exp: Expr, store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Value = {
+  private def eval(exp: Expr, store: PlainStore, funcStore: PlainFuncStore, classStore: VAClassStore): Value = {
 
     def calculateValue(e1: Expr, e2: Expr, f: (Value, Value) => Value): Value =
       propagateError(eval(e1, store, funcStore, classStore), eval(e2, store, funcStore, classStore), f)
@@ -367,10 +356,7 @@ object PlainInterpreter {
       // arithmetic
       case Null => NullValue()
       case Num(n) => IntValue(n)
-      case Var(name) => store.get(name) match {
-        case One(value) => value
-        case _ => throw new AssertionError("conditional Id '"+name+"' in plain interpreter")
-      }
+      case Var(name) => store.get(name)
       case Add(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue + b.getIntValue))
       case Sub(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue - b.getIntValue))
       case Mul(e1, e2) => calculateValue(e1, e2, (a, b) => IntValue(a.getIntValue * b.getIntValue))
@@ -398,31 +384,25 @@ object PlainInterpreter {
       // functions
       case Call(name, args) => {
         funcStore.get(name) match {
-            case One(fdef) => fdef match {
-              case FErr(msg) => UndefinedValue(msg)
-              case FDef(fargs, fbody) => {
-                val nArgs = fargs.size
-                if (nArgs != args.size)
-                  throw new RuntimeException("Illegal number of function arguments.")
-                val vals = args.map(a => eval(a.entry, store, funcStore, classStore))
-                val staticScopeStore = new VAStore()
-                for (i <- 0 until nArgs) {
-                  // TODO: remove assertion
-                  assert(fargs(i).feature == True)
-                  staticScopeStore.put(fargs(i).entry, One(vals(i)))
-                }
-                  
-                execute(fbody, staticScopeStore, funcStore, classStore)
-                if (!staticScopeStore.contains("res"))
-                  UndefinedValue("'" + name + "' returning void")
-                else
-                  staticScopeStore.get("res") match {
-                    case One(res) => res
-                    case _ => throw new AssertionError("conditional function def '"+name+"' called in plain interpreter")
-                  }
-              }
+          case FErr(msg) => UndefinedValue(msg)
+          case FDef(fargs, fbody) => {
+            val nArgs = fargs.size
+            if (nArgs != args.size)
+              throw new RuntimeException("Illegal number of function arguments.")
+            val vals = args.map(a => eval(a.entry, store, funcStore, classStore))
+            val staticScopeStore = new PlainStore()
+            for (i <- 0 until nArgs) {
+              // TODO: remove assertion
+              assert(fargs(i).feature == True)
+              staticScopeStore.put(fargs(i).entry, vals(i))
             }
-            case _ => throw new AssertionError("conditional function def '"+name+"' called in plain interpreter")
+              
+            execute(fbody, staticScopeStore, funcStore, classStore)
+            if (!staticScopeStore.contains("res"))
+              UndefinedValue("'" + name + "' returning void")
+            else
+              staticScopeStore.get("res")
+          }
         }
       }
       case New(name, argsNew) => {
@@ -445,11 +425,13 @@ object PlainInterpreter {
                   objectStore.put(argsClass(i).entry, One(vals(i)))
                 }
                 objectStore.put("this", One(obj))
-                fields.map(f => {
-                  // TODO: remove assertion
-                  assert(f.feature == True)
-                  execute(f.entry, objectStore, funcStore, classStore)
-                })
+                fields.map({
+                      case Opt(f, Assign(Var(vname), One(value))) => {
+                        // TODO: remove assertion
+                        assert(f == True)
+                        objectStore.put(vname, One(eval(value, store, funcStore, classStore)))
+                      }
+                    })
                 obj
               }
             }
@@ -488,33 +470,27 @@ object PlainInterpreter {
           case v @ VAObjectValue(cName, fields) => {
             classStore.get(cName) match {
                 case One(cdef) => cdef match {
-                  case VACDef(_, _, _, _, funcStore) => funcStore.get(call.fname) match {
-                    case One(fdef) => fdef match {
+                  case PlainCDef(_, _, _, _, funcStore) => funcStore.get(call.fname) match {
                       case FErr(msg) => UndefinedValue(msg)
                       case FDef(fargs, fbody) => {
                         val nArgs = fargs.size
                         if (nArgs != call.args.size)
                           throw new RuntimeException("Illegal number of arguments: '"+v.className+"."+call.fname+"'")
                         val vals = call.args.map(a => eval(a.entry, store, funcStore, classStore))
-                        val staticScopeStore = new VAStore()
-                        staticScopeStore.put("this", One(v))
+                        val staticScopeStore = new PlainStore()
+                        staticScopeStore.put("this", v)
                         for (i <- 0 until nArgs) {
                           // TODO: remove assertion
                           assert(fargs(i).feature == True)
-                          staticScopeStore.put(fargs(i).entry, One(vals(i)))
+                          staticScopeStore.put(fargs(i).entry, vals(i))
                         }
                               
                         execute(fbody, staticScopeStore, funcStore, classStore)
                         if (!staticScopeStore.contains("res"))
                           UndefinedValue("'" + call.fname + "' returning void")
                         else
-                          staticScopeStore.get("res") match {
-                            case One(res) => res
-                            case _ => throw new AssertionError("conditional result for '"+call.fname+"' in plain interpreter")
-                          }
+                          staticScopeStore.get("res")
                       }
-                    }
-                    case _ => throw new AssertionError("function '"+call.fname+"' conditional in plain interpreter")
                   }
                   case e: CErr => UndefinedValue("class '" + cName + "' not defined")
                 }
