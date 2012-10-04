@@ -1,0 +1,34 @@
+begin
+x = 10000;
+//#ifdef A
+x = 10001;
+//#endif
+//#ifdef B
+x = 10002;
+//#endif
+//#ifdef C
+x = 10003;
+//#endif
+//#ifdef D
+x = 10004;
+//#endif
+//#ifdef E
+x = 10005;
+//#endif
+//#ifdef F
+x = 10006;
+//#endif
+//#ifdef G
+x = 10007;
+//#endif
+//#ifdef H
+x = 10008;
+//#endif
+
+sum = 0;
+i = 1;
+while(i < x) {
+  sum = sum + fibo(i);
+  i = i + 1;
+}
+end

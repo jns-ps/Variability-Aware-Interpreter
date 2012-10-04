@@ -1,0 +1,40 @@
+begin
+x = 100;
+//#ifdef A
+x = 101;
+//#endif
+//#ifdef B
+x = 102;
+//#endif
+//#ifdef C
+x = 103;
+//#endif
+//#ifdef D
+x = 104;
+//#endif
+//#ifdef E
+x = 105;
+//#endif
+//#ifdef F
+x = 106;
+//#endif
+//#ifdef G
+x = 107;
+//#endif
+//#ifdef H
+x = 108;
+//#endif
+//#ifdef I
+x = 109;
+//#endif
+//#ifdef J
+x = 110;
+//#endif
+
+sum = 0;
+i = 1;
+while(i < x) {
+  sum = sum + i;
+  i = i + 1;
+}
+end

@@ -1,0 +1,54 @@
+begin
+
+def fibo(a) {
+    if (a == 1 || a == 2) {
+      res = 1;
+    } else {
+      res = fibo(a-1) + fibo(a-2);    
+    }
+}
+
+def max(a,b) { 
+   if (a > b) {
+     res = a;
+   } else {
+     res = b;
+   }
+}
+
+x = 1;
+//#ifdef A
+x = 2;
+//#endif
+//#ifdef B
+x = 3;
+//#endif
+//#ifdef C
+x = 4;
+//#endif
+//#ifdef D
+x = 5;
+//#endif
+//#ifdef E
+x = 6;
+//#endif
+//#ifdef F
+x = 7;
+//#endif
+x = 8;
+//#ifdef G
+x = 9;
+//#endif
+//#ifdef H
+x = 10;
+//#endif
+//#ifdef I
+x = 11;
+//#endif
+//#ifdef J
+x = 12;
+//#endif
+
+m = max(x, 25);
+res = fibo(m);
+end

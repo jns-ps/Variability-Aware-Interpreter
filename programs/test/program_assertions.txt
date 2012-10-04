@@ -1,0 +1,8 @@
+begin
+a = 0;
+assert(a == 0);
+//#ifdef X
+a = 5;
+assert(a == 5);
+//#endif
+end

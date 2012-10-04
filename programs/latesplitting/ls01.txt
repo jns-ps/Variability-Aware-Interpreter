@@ -1,0 +1,13 @@
+begin
+x = 10000;
+//#ifdef A
+x = 10001;
+//#endif
+
+sum = 0;
+i = 1;
+while(i < x) {
+  sum = sum + fibo(i);
+  i = i + 1;
+}
+end
