@@ -204,7 +204,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     name <- genStoreVarName
     value <- genExpression(funcNames)
   } yield {
-    Assign(Var(name), One(value))
+    Assign(name, One(value))
   }
   
   def genBlock(nested: Int, funcNames: Seq[String], indexVariable: String): Gen[Block] = for {
@@ -212,7 +212,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     stmts <- listOfN(n, genOptStatementNested(nested, funcNames))
   } yield {
     if (!indexVariable.isEmpty) 
-      Block(stmts :+ Opt(True, Assign(Var(indexVariable), One(Add(Var(indexVariable),Num(1))))))
+      Block(stmts :+ Opt(True, Assign(indexVariable, One(Add(Var(indexVariable),Num(1))))))
     else
       Block(stmts)
   }
@@ -261,7 +261,7 @@ object InterpreterAutoCheck extends Properties("Interpreter") {
     for (stmt <- stmts) {
       stmt.entry match {
         case While(c, b) => {
-          result += Opt(True, Assign(Var(getIndexVariableName(nested)), One(Num(0))))
+          result += Opt(True, Assign(getIndexVariableName(nested), One(Num(0))))
           result += Opt(stmt.feature, While(c, Block(addIndexAssignments(nested + 1, b.stmts))))
         }
         case If(c, thn, els) => {

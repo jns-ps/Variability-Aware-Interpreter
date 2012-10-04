@@ -37,7 +37,6 @@ object SourceCodePrettyPrinter {
   private def prettyPrintNode(node: ASTNode): Doc = {
     node match {
       // Statements
-      case ExprStmt(expr) => expr ~ ";"
       case Assign(expr, value) => expr ~~ "=" ~~ prettyPrintConditional(value) ~ ";"
       case While(cond, stmt) => {
         var doc: Doc = "while" ~ "(" ~ prettyPrintConditional(cond) ~ ")"
@@ -78,30 +77,6 @@ object SourceCodePrettyPrinter {
         }
         doc ~ ")" ~~ body
       }
-      
-      case ClassDec(name, args, superClass, consts, fields, methods) => {
-        var head = "class" ~~ name ~~ "("
-        for (i <- 0 until args.size) {
-          head = head ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
-          if (i < args.size - 1) {
-            head = head ~ ", "
-          }
-        }
-        head = head ~ ")"
-        
-        var body: Doc = Empty
-        for (i <- 0 until consts.size) {
-          body = body <~ prettyPrintFeatureExprOpen(consts(i).feature, true) ~ "const" ~~ consts(i).entry ~ prettyPrintFeatureExprClose(consts(i).feature, true)
-        }
-        for (i <- 0 until fields.size) {
-          body = body <~ prettyPrintFeatureExprOpen(fields(i).feature, true) ~ "var" ~~ fields(i).entry ~ prettyPrintFeatureExprClose(fields(i).feature, true)
-        }
-        for (i <- 0 until methods.size) {
-          body = body <~ prettyPrintFeatureExprOpen(methods(i).feature, true) ~ methods(i).entry ~ prettyPrintFeatureExprClose(methods(i).feature, true)
-        }
-        
-        head ~~ "{" ~> body <~ "}" 
-      }
 
       // Expressions         
       case Null => "null"
@@ -132,20 +107,7 @@ object SourceCodePrettyPrinter {
           }
         }
         doc ~ ")"
-      }
-      case New(name, args) => {
-        var doc = "new" ~~ name ~ "("
-        for (i <- 0 until args.size) {
-          doc = doc ~ prettyPrintFeatureExprOpen(args(i).feature, false) ~ args(i).entry ~ prettyPrintFeatureExprClose(args(i).feature, false)
-          if (i < args.size - 1) {
-            doc = doc ~ ", "
-          }
-        }
-        doc ~ ")"
-      }
-      case Field(expr, name) => expr ~ "." ~ name
-      case MethodCall(expr, call) => expr ~ "." ~ call
-      
+      }     
 //      case node => node.toString()
     }
   }

@@ -1,6 +1,5 @@
 package de.fosd.vainterpretation.parser
 
-import de.fosd.typechef.conditional.Opt
 import de.fosd.typechef.featureexpr.FeatureExprFactory
 import de.fosd.typechef.parser.java15.JavaLexer
 import de.fosd.typechef.parser.java15.TokenWrapper
@@ -13,33 +12,27 @@ import de.fosd.vainterpretation.interpreter.Assign
 import de.fosd.vainterpretation.interpreter.Block
 import de.fosd.vainterpretation.interpreter.Bool
 import de.fosd.vainterpretation.interpreter.Call
-import de.fosd.vainterpretation.interpreter.ClassDec
 import de.fosd.vainterpretation.interpreter.Div
 import de.fosd.vainterpretation.interpreter.Eq
 import de.fosd.vainterpretation.interpreter.Expr
-import de.fosd.vainterpretation.interpreter.ExprStmt
-import de.fosd.vainterpretation.interpreter.Field
 import de.fosd.vainterpretation.interpreter.FuncDec
 import de.fosd.vainterpretation.interpreter.GoE
 import de.fosd.vainterpretation.interpreter.GrT
-import de.fosd.vainterpretation.interpreter.Var
 import de.fosd.vainterpretation.interpreter.If
 import de.fosd.vainterpretation.interpreter.LeT
 import de.fosd.vainterpretation.interpreter.LoE
-import de.fosd.vainterpretation.interpreter.MethodCall
 import de.fosd.vainterpretation.interpreter.Mul
 import de.fosd.vainterpretation.interpreter.NEq
 import de.fosd.vainterpretation.interpreter.Neg
-import de.fosd.vainterpretation.interpreter.New
 import de.fosd.vainterpretation.interpreter.Null
 import de.fosd.vainterpretation.interpreter.Num
 import de.fosd.vainterpretation.interpreter.Or
 import de.fosd.vainterpretation.interpreter.Par
 import de.fosd.vainterpretation.interpreter.Stmt
 import de.fosd.vainterpretation.interpreter.Sub
+import de.fosd.vainterpretation.interpreter.Var
 import de.fosd.vainterpretation.interpreter.VariableProgram
 import de.fosd.vainterpretation.interpreter.While
-import de.fosd.typechef.conditional.One
 
 
 class WhileParser extends MultiFeatureParser() {
@@ -70,13 +63,10 @@ class WhileParser extends MultiFeatureParser() {
 // Statements
 // =====================
     
-    lazy val stmt: MultiParser[Stmt] = assert | exprStmt | assign | whileStmt | block | ifStmt
+    lazy val stmt: MultiParser[Stmt] = assert | assign | whileStmt | block | ifStmt
     
-    lazy val exprStmt = expr <~ ";" ^^ {
-      case expr => ExprStmt(expr)
-    }
-    lazy val assign = expr ~ "=" ~ (expr !) ~ ";" ^^ {
-      case x~_~e~_ => new Assign(x, e)
+    lazy val assign = identifier ~ "=" ~ (expr !) ~ ";" ^^ {
+      case n~_~e~_ => new Assign(n, e)
     }
     lazy val block = "{" ~ (stmt *) ~ "}" ^^ {
       case _~stmtlst~_ => Block(stmtlst) 
@@ -90,28 +80,12 @@ class WhileParser extends MultiFeatureParser() {
     lazy val assert = "assert" ~> "(" ~> expr  <~ ")" <~ ";" ^^ {
       case c => Assert(c)
     }
-    lazy val decl = classDecl | funcDecl
+    lazy val decl = funcDecl
     
     lazy val funcDecl = "def" ~> identifier ~ ("(" ~> repSep(identifier, ",") <~ ")") ~ block ^^ {
       case funcName~funcArgs~funcBody => FuncDec(funcName, funcArgs, funcBody)
     }
-    lazy val fieldDecl = "var" ~> identifier ~ (("=" ~> (expr !))?) <~ ";" ^^ {
-      case name~Some(expr) => Assign(Var(name), expr)
-      case name~None => Assign(Var(name), One(Null))
-    }
-    lazy val constDecl = "const" ~> identifier ~ ("=" ~> (expr !) <~ ";") ^^ {
-      case name~expr => Assign(Var(name), expr)
-    }
-    
-    lazy val classDecl = "class" ~> identifier ~ (("(" ~> repSep(identifier, ",") <~")")?) ~ (("extends" ~> identifier)?) ~ ("{" ~> 
-                                                        repOpt(constDecl)) ~ 
-                                                        repOpt(fieldDecl) ~
-                                                        (repOpt(funcDecl) <~ "}") ^^ {
-      case name~Some(args)~Some(superClass)~consts~fields~funcs => ClassDec(name, args, superClass, consts, fields, funcs)
-      case name~Some(args)~None~consts~fields~funcs => ClassDec(name, args, "Object",  consts, fields, funcs)
-      case name~None~Some(superClass)~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], superClass, consts, fields, funcs)
-      case name~None~None~consts~fields~funcs => ClassDec(name, List.empty[Opt[String]], "Object",  consts, fields, funcs)
-    }
+
 
 // =====================
 // Expressions
@@ -139,7 +113,6 @@ class WhileParser extends MultiFeatureParser() {
     lazy val factor: MultiParser[Expr] = 
       parenthesis |
       call |
-      classNew |
       literal |
       nullExpr |
       integer ^^ { case i => Num(i) } |
@@ -151,10 +124,6 @@ class WhileParser extends MultiFeatureParser() {
       
     lazy val call : MultiParser[Call] = identifier ~ ("(" ~> repSep(expr, ",") <~ ")")  ^^ {
       case name~args => Call(name, args)
-    }
-    
-    lazy val classNew : MultiParser[Expr] = "new" ~> identifier ~ ("(" ~> repSep(expr, ",") <~ ")") ^^ {
-      case classId~args => New(classId, args)
     }
       
     lazy val parenthesis : MultiParser[Par] = "(" ~> (expr) <~ ")" ^^ {
@@ -179,14 +148,7 @@ class WhileParser extends MultiFeatureParser() {
       case "!=" => NEq(l, r._2)
       case "&&" => And(l, r._2)
       case "||" => Or(l, r._2)
-      
-      case "." => {
-        r._2 match {
-          case c: Call => MethodCall(l, c)
-          case Var(x) => Field(l, x)
-          case e => throw new IllegalArgumentException("Bad syntax.")
-        }
-      }
+
     }
 
     def parse(code:String): VariableProgram = {

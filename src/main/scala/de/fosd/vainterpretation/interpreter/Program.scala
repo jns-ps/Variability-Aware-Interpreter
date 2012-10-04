@@ -32,12 +32,12 @@ case class VariableProgram(private val stmts: List[Opt[Stmt]]) extends Program {
   
   def getStatements() = stmts
   
-  def run(): VAStore = run(new VAStore, new VAFuncStore, new VAClassStore)
+  def run(): VAStore = run(new VAStore, new VAFuncStore)
   
-  def run(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): VAStore = {
+  def run(store: VAStore, funcStore: VAFuncStore): VAStore = {
     for(stm <- stmts) 
       try {
-        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore, classStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => println(e.toString)
@@ -45,12 +45,12 @@ case class VariableProgram(private val stmts: List[Opt[Stmt]]) extends Program {
     return store
   }
   
-  def runLoopCheck(): Boolean = runLoopCheck(new VAStore, new VAFuncStore, new VAClassStore)
+  def runLoopCheck(): Boolean = runLoopCheck(new VAStore, new VAFuncStore)
   
-  def runLoopCheck(store: VAStore, funcStore: VAFuncStore, classStore: VAClassStore): Boolean = {
+  def runLoopCheck(store: VAStore, funcStore: VAFuncStore): Boolean = {
     for(stm <- stmts)
       try {
-        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore, classStore)
+        VAInterpreter.execute(stm.entry, stm.feature, store, funcStore)
       }
       catch {
         case e: LoopExceededException => return false
@@ -76,12 +76,9 @@ case class VariableProgram(private val stmts: List[Opt[Stmt]]) extends Program {
     
     
       stmt match {
-            case ExprStmt(expr) => ExprStmt(filterExpression(expr, selectedFeatures))
-        
             case Assert(expr) => Assert(filterExpression(expr, selectedFeatures))
             
-            case Assign(expr, value) => Assign(filterExpression(expr, selectedFeatures), 
-                                                       value.simplify(context))
+            case Assign(name, value) => Assign(name, value.simplify(context))
         
             case Block(stmts) => Block(filterStatements(stmts, selectedFeatures, context))
             case If(cond, thenB, elseB) => If(cond.simplify(context), Block(filterStatements(thenB.stmts, selectedFeatures, context)), 
@@ -95,15 +92,7 @@ case class VariableProgram(private val stmts: List[Opt[Stmt]]) extends Program {
                                                       args.filter(_.feature.evaluate(selectedFeatures))
                                                           .map(a => Opt(True, a.entry)), 
                                                       Block(filterStatements(body.stmts, selectedFeatures, context)))
-            
-            case ClassDec(name, args, superClass, optConsts, optFields, optFuncDecs) =>
-              val filteredArgs = args.filter(_.feature.evaluate(selectedFeatures))
-                                     .map(a => Opt(True, a.entry))
-              val filteredConsts = filterStatements(optConsts, selectedFeatures, context).asInstanceOf[List[Opt[Assign]]]
-              val filteredFields = filterStatements(optFields, selectedFeatures, context).asInstanceOf[List[Opt[Assign]]]
-              val filteredFuncDecs = filterStatements(optFuncDecs, selectedFeatures, context).asInstanceOf[List[Opt[FuncDec]]]
-              ClassDec(name, filteredArgs, superClass, filteredConsts, filteredFields, filteredFuncDecs)
-          }
+      }
   }
   
   private def filterExpressions(exprs: List[Opt[Expr]], selectedFeatures: Set[String]): List[Opt[Expr]] = {
@@ -130,9 +119,6 @@ case class VariableProgram(private val stmts: List[Opt[Stmt]]) extends Program {
           case Or(e1, e2)  => Or (filterExpression(e1, selectedFeatures), filterExpression(e2, selectedFeatures))
           
           case Call(name, args) => Call(name, filterExpressions(args, selectedFeatures))
-          case New(name, args) => New(name, filterExpressions(args, selectedFeatures))
-          case MethodCall(expr, call) => MethodCall(filterExpression(expr, selectedFeatures), 
-                                                    filterExpression(call, selectedFeatures).asInstanceOf[Call])
           case e => e
         }
   }
@@ -148,10 +134,10 @@ case class ConfiguredProgram(private val stmts: List[Stmt]) extends Program {
   
   def getStatements() = stmts
   
-  def run(): PlainStore = run(new PlainStore, new PlainFuncStore, new VAClassStore)
+  def run(): PlainStore = run(new PlainStore, new PlainFuncStore)
   
-  def run(store: PlainStore, funcStore: PlainFuncStore, classStore: VAClassStore): PlainStore = {
-    for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore, classStore)
+  def run(store: PlainStore, funcStore: PlainFuncStore): PlainStore = {
+    for(stm <- stmts) PlainInterpreter.execute(stm, store, funcStore)
     return store
   }
   

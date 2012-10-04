@@ -14,11 +14,10 @@ sealed abstract class ASTNode {
 // =====================
 
 sealed abstract class Stmt extends ASTNode 
-case class Assign(expr: Expr, value: Conditional[Expr]) extends Stmt
+case class Assign(name: String, value: Conditional[Expr]) extends Stmt
 case class Block(stmts: List[Opt[Stmt]]) extends Stmt
 case class While(cond: Conditional[Expr], body: Block) extends Stmt
 case class If(cond: Conditional[Expr], then: Block, els: Option[Block]) extends Stmt
-case class ExprStmt(expr: Expr) extends Stmt
 case class Assert(cond: Expr) extends Stmt
 
 // =====================
@@ -50,13 +49,6 @@ case class Or(e1: Expr, e2: Expr) extends Expr
 // functions
 case class Call(fname: String, args: List[Opt[Expr]]) extends Expr
 
-// classes
-case class New(name: String, args: List[Opt[Expr]]) extends Expr
-case class Field(expr: Expr, name: String) extends Expr
-case class MethodCall(expr: Expr, call: Call) extends Expr
-
-
-
 // functions
 case class FuncDec(name: String, args: List[Opt[String]], body: Block) extends Stmt
 
@@ -64,13 +56,6 @@ sealed abstract class FuncDef
 case class FDef(args: List[Opt[String]], body: Block) extends FuncDef
 case class FErr(msg: String) extends FuncDef
 
-// classes
-case class ClassDec(name: String, args: List[Opt[String]], superClass: String, consts: List[Opt[Assign]], fields: List[Opt[Assign]], methods: List[Opt[FuncDec]]) extends Stmt
-
-abstract class ClassDef
-case class VACDef(args: List[Opt[String]], superClass: String, fields: List[Opt[Assign]], constStore: VAStore, funcStore: VAFuncStore) extends ClassDef
-case class PlainCDef(args: List[String], superClass: String, fields: List[Assign], constStore: PlainStore, funcStore: PlainFuncStore) extends ClassDef
-case class CErr(msg: String) extends ClassDef
 
 
 

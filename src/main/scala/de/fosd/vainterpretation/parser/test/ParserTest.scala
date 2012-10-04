@@ -39,24 +39,4 @@ class ParserTest {
   def testParseFunctions() {
       parser.parseFile("programs\\test\\program_functions.txt")
   }
-  
-  @Test
-  def testParseClasses() {
-    parser.parseFile("programs\\test\\program_classes.txt")
-  }
-  
-  @Test
-  def testParseClasses2() {
-    parser.parseFile("programs\\test\\program_classes2.txt")
-  }
-  
-  @Test
-  def testParseCollections() {
-    parser.parseFile("programs\\test\\program_collections.txt")
-  }
-  
-  @Test
-  def testParseGPL() {
-    parser.parseFile("programs\\test\\program_GPL.txt")
-  }
 }

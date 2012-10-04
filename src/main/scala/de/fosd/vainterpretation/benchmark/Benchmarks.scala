@@ -178,7 +178,7 @@ object Benchmarks {
   def benchmarkEarlyJoining() = {
     val resultList = new ResultList
      for (i <- 0 to 10) {
-       resultList += programInterpretationBenchmark(parser.parseFile("testprograms\\earlyjoining\\ej"+(if (i<10) "0"+i else i)+".txt"), FEATURES10)
+       resultList += programInterpretationBenchmark(parser.parseFile("programs\\earlyjoining\\ej"+(if (i<10) "0"+i else i)+".txt"), FEATURES10)
        System.out.print("|")
      }
      println()
@@ -188,7 +188,7 @@ object Benchmarks {
   def benchmarkLateSplitting() = {
     val resultList = new ResultList
      for (i <- 0 to 10) {
-       resultList += programInterpretationBenchmark(parser.parseFile("testprograms\\latesplitting\\ls"+(if (i<10) "0"+i else i)+".txt"), FEATURES10)
+       resultList += programInterpretationBenchmark(parser.parseFile("programs\\latesplitting\\ls"+(if (i<10) "0"+i else i)+".txt"), FEATURES10)
        System.out.print("|")
      }
      println()
@@ -204,7 +204,7 @@ object Benchmarks {
   def benchmarkGeneratedTestprograms() = {
      val resultList = new ResultList
      for (i <- 0 until 100) {
-       resultList += programInterpretationBenchmark(parser.parseFile("testprograms\\test"+(if (i<10) "0"+i else i)+".txt"), FEATURENAMES.toSet)
+       resultList += programInterpretationBenchmark(parser.parseFile("programs\\generated\\"+(if (i<10) "0"+i else i)+".txt"), FEATURENAMES.toSet)
        System.out.print("|")
      }
      println()
@@ -215,7 +215,7 @@ object Benchmarks {
     val compoundSeries = new CompoundResultSeries()
     
 //  warmup benchmark
-    benchmarkGeneratedTestprograms()
+//    benchmarkGeneratedTestprograms()
     
     for (i <- 0 until 3) {
         println("test "+i+" progress:  ")
