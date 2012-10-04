@@ -204,7 +204,7 @@ object Benchmarks {
   def benchmarkGeneratedTestprograms() = {
      val resultList = new ResultList
      for (i <- 0 until 100) {
-       resultList += programInterpretationBenchmark(parser.parseFile("programs\\generated\\"+(if (i<10) "0"+i else i)+".txt"), FEATURENAMES.toSet)
+       resultList += programInterpretationBenchmark(parser.parseFile("programs\\generated\\test"+(if (i<10) "0"+i else i)+".txt"), FEATURENAMES.toSet)
        System.out.print("|")
      }
      println()
